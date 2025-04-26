@@ -36,3 +36,5 @@ Simple notepad based on monaco editor
 | Close | Ctrl+W |
 | Restore | Ctrl+Shift+T |
 | Word wrap | Alt+Z |
+
+Download [here](https://github.com/FirowMD/notepad-md/releases)

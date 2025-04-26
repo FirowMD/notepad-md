@@ -50,6 +50,9 @@
         fontSize: $editorStore.fontSize,
         wordWrap: $editorStore.wordWrap ? 'on' : 'off',
         renderWhitespace: $editorStore.showInvisibles ? 'all' : 'none',
+        minimap: {
+          enabled: false
+        }
       });
 
       editor.getModel().onDidChangeContent(() => {

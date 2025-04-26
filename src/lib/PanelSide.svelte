@@ -16,8 +16,8 @@
     : files;
 </script>
 
-<div class="flex flex-col min-w-48 max-w-48 h-full bg-surface-900 gap-2">
-  <div class="flex items-center px-2 pt-2 sticky top-0 bg-surface-900 z-10">
+<div class="flex flex-col min-w-48 max-w-48 h-full bg-surface-900">
+  <div class="flex items-center px-2 py-2 bg-surface-900 z-10">
     <div class="relative w-full">
       <input
         type="text"
@@ -29,8 +29,8 @@
     </div>
   </div>
   
-  <div class="flex-1 overflow-y-auto">
-    <div class="flex flex-col gap-1 w-full">
+  <div class="flex-1 overflow-y-auto min-h-0">
+    <div class="flex flex-col gap-1 w-full pb-12">
       {#each filteredFiles as file, index (file.id)}
         <TabFile 
           {file} 

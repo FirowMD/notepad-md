@@ -2,13 +2,14 @@ import { writable } from 'svelte/store';
 import { configStore } from './configStore';
 
 export type Theme = 
+  | 'NotepadMD'
   | 'catppuccin' | 'cerberus' | 'concord' | 'crimson' | 'fennec' 
   | 'hamlindigo' | 'legacy' | 'mint' | 'modern' | 'mona' | 'nosh' 
   | 'nouveau' | 'pine' | 'reign' | 'rocket' | 'rose' | 'sahara' 
   | 'seafoam' | 'terminus' | 'vintage' | 'vox' | 'wintry';
 
 function createThemeStore() {
-  const { subscribe, set } = writable<Theme>('cerberus');
+  const { subscribe, set } = writable<Theme>('NotepadMD');
 
   return {
     subscribe,

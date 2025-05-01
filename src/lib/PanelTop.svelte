@@ -34,9 +34,9 @@
   }
 
   const themes = [
-    'catppuccin', 'cerberus', 'concord', 'crimson', 'fennec',
-    'hamlindigo', 'legacy', 'mint', 'modern', 'mona', 'nosh',
-    'nouveau', 'pine', 'reign', 'rocket', 'rose', 'sahara',
+    'NotepadMD', 'catppuccin', 'cerberus', 'concord', 'crimson',
+    'fennec', 'hamlindigo', 'legacy', 'mint', 'modern', 'mona',
+    'nosh', 'nouveau', 'pine', 'reign', 'rocket', 'rose', 'sahara',
     'seafoam', 'terminus', 'vintage', 'vox', 'wintry'
   ] as const;
 

@@ -91,7 +91,7 @@ fn create_default_config(config_file_path: &str, app_handle: &tauri::AppHandle) 
     let _ = std::fs::File::create(config_file_path).map_err(|e| e.to_string())?;
     
     let default_config = AppConfig {
-        colorscheme: Some("cerberus".to_string()),
+        colorscheme: Some("NotepadMD".to_string()),
         recent_files: Some(vec![]),
         opened_files: Some(vec![]),
         font_size: Some(14),

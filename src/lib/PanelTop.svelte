@@ -186,10 +186,10 @@
   });
 </script>
 
-<div class="flex flex-row w-full min-h-[40px] max-h-[40px] bg-primary-800 items-center px-2 gap-2">
+<div class="flex flex-row w-full min-h-[40px] max-h-[40px] bg-surface-800 items-center px-2 gap-2">
   <button 
     type="button" 
-    class="btn btn-sm h-8 flex items-center preset-filled-primary-500 rounded-none"
+    class="btn btn-sm h-8 flex items-center preset-filled-surface-500 rounded-none"
     on:click={handleNewFile}
     title="New (Ctrl+N)"
   >
@@ -197,7 +197,7 @@
   </button>
   <button 
     type="button" 
-    class="btn btn-sm h-8 flex items-center preset-filled-primary-500 rounded-none"
+    class="btn btn-sm h-8 flex items-center preset-filled-surface-500 rounded-none"
     on:click={handleOpenFile}
     title="Open (Ctrl+O)"
   >
@@ -205,16 +205,16 @@
   </button>
   <button 
     type="button" 
-    class="btn btn-sm h-8 flex items-center preset-filled-primary-500 rounded-none"
+    class="btn btn-sm h-8 flex items-center preset-filled-surface-500 rounded-none"
     on:click={handleSaveFile}
     title="Save (Ctrl+S)"
   >
     <Save size={16} />
   </button>
-  <div class="w-px h-6 bg-primary-700 mx-1"></div>
+  <div class="w-px h-6 bg-surface-700 mx-1"></div>
   <button 
     type="button" 
-    class="btn btn-sm h-8 flex items-center preset-filled-primary-500 rounded-none"
+    class="btn btn-sm h-8 flex items-center preset-filled-surface-500 rounded-none"
     on:click={handleRestoreFile}
     title="Restore (Ctrl+Shift+T)"
   >
@@ -222,7 +222,7 @@
   </button>
   <button 
     type="button" 
-    class="btn btn-sm h-8 flex items-center {wordWrap ? 'preset-tonal-primary' : 'preset-filled-primary-500'} rounded-none"
+    class="btn btn-sm h-8 flex items-center {wordWrap ? 'preset-tonal-surface' : 'preset-filled-surface-500'} rounded-none"
     on:click={() => editorStore.setWordWrap(!wordWrap)}
     title="Word Wrap (Alt+Z)"
   >
@@ -230,17 +230,17 @@
   </button>
   <button 
     type="button" 
-    class="btn btn-sm h-8 flex items-center {showInvisibles ? 'preset-tonal-primary' : 'preset-filled-primary-500'} rounded-none"
+    class="btn btn-sm h-8 flex items-center {showInvisibles ? 'preset-tonal-surface' : 'preset-filled-surface-500'} rounded-none"
     on:click={() => editorStore.setShowInvisibles(!showInvisibles)}
     title="Show Space Characters"
   >
     <Eye size={16} />
   </button>
-  <div class="w-px h-6 bg-primary-700 mx-1"></div>
+  <div class="w-px h-6 bg-surface-700 mx-1"></div>
   <div class="relative">
     <button 
       type="button" 
-      class="btn btn-sm h-8 flex items-center {isThemeMenuOpen ? 'preset-tonal-primary' : 'preset-filled-primary-500'} rounded-none"
+      class="btn btn-sm h-8 flex items-center {isThemeMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500'} rounded-none"
       on:click={() => isThemeMenuOpen = !isThemeMenuOpen}
       title="Theme"
     >
@@ -257,7 +257,7 @@
           <button
             role="menuitem"
             class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors capitalize"
-            class:bg-primary-500={$themeStore === theme}
+            class:bg-surface-500={$themeStore === theme}
             on:click={() => {
               themeStore.setTheme(theme);
               isThemeMenuOpen = false;
@@ -272,7 +272,7 @@
   <div class="relative">
     <button 
       type="button" 
-      class="btn btn-sm h-8 flex items-center gap-2 {isLanguageMenuOpen ? 'preset-tonal-primary' : 'preset-filled-primary-500'} rounded-none"
+      class="btn btn-sm h-8 flex items-center gap-2 {isLanguageMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500'} rounded-none"
       on:click={() => isLanguageMenuOpen = !isLanguageMenuOpen}
       title="Theme"
     >
@@ -290,7 +290,7 @@
           <button
             role="menuitem"
             class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors capitalize"
-            class:bg-primary-500={language === lang}
+            class:bg-surface-500={language === lang}
             on:click={() => handleLanguageChange(lang)}
           >
             {lang}
@@ -302,7 +302,7 @@
   <div class="relative">
     <button 
       type="button" 
-      class="btn btn-sm h-8 flex items-center gap-2 {isFontSizeMenuOpen ? 'preset-tonal-primary' : 'preset-filled-primary-500'} rounded-none"
+      class="btn btn-sm h-8 flex items-center gap-2 {isFontSizeMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500'} rounded-none"
       on:click={() => isFontSizeMenuOpen = !isFontSizeMenuOpen}
       title="Font Size"
     >
@@ -319,7 +319,7 @@
           <button
             role="menuitem"
             class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
-            class:bg-primary-500={fontSize === size}
+            class:bg-surface-500={fontSize === size}
             on:click={() => handleFontSizeChange(size)}
           >
             {size}px
@@ -328,10 +328,10 @@
       </div>
     {/if}
   </div>
-  <div class="w-px h-6 bg-primary-700 mx-1"></div>
+  <div class="w-px h-6 bg-surface-700 mx-1"></div>
   <button
     type="button"
-    class="btn btn-sm h-8 flex items-center preset-filled-primary-500 rounded-none"
+    class="btn btn-sm h-8 flex items-center preset-filled-surface-500 rounded-none"
     on:click={handleAbout}
     title="About"
   >

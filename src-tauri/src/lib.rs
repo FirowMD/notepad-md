@@ -244,7 +244,18 @@ pub fn run() {
         }
     }
 
-    tauri::Builder::default()
+    let mut builder = tauri::Builder::default();
+
+    #[cfg(desktop)]
+    {
+        builder = builder.plugin(tauri_plugin_single_instance::init(|app, _argv, _cwd| {
+            // Focus the main window when attempting to launch another instance
+            let window = app.get_webview_window("main").unwrap();
+            let _ = window.set_focus();
+        }));
+    }
+
+    builder
         .manage(Mutex::new(WatcherState::new()))
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())

@@ -27,7 +27,7 @@
           lineNumber: activeFile.cursor.line,
           column: activeFile.cursor.column
         });
-        editor.revealPositionInCenter({
+        editor.revealPosition({
           lineNumber: activeFile.cursor.line,
           column: activeFile.cursor.column
         });

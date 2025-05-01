@@ -20,9 +20,17 @@
         if (currentValue !== activeFile.content) {
           editor.setValue(activeFile.content);
         }
-        // Update editor language to match file's language
         editorStore.setLanguage(activeFile.language);
         editor.getModel().setLanguage(activeFile.language);
+        
+        editor.setPosition({
+          lineNumber: activeFile.cursor.line,
+          column: activeFile.cursor.column
+        });
+        editor.revealPositionInCenter({
+          lineNumber: activeFile.cursor.line,
+          column: activeFile.cursor.column
+        });
       }
     } else {
       $rawText = '';
@@ -84,6 +92,16 @@
 
       editor.onDidChangeCursorPosition((e: any) => {
         editorStore.setCursor(e.position.lineNumber, e.position.column);
+
+        // Save cursor position in current file
+        if ($fileStore.activeFileId) {
+          fileStore.updateFile($fileStore.activeFileId, {
+            cursor: {
+              line: e.position.lineNumber,
+              column: e.position.column
+            }
+          });
+        }
       });
 
       editor.getModel().onDidChangeLanguage((e: any) => {

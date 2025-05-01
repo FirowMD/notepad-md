@@ -41,9 +41,15 @@ function createEditorStore() {
     setEncoding: (encoding: string) => 
       update(state => ({ ...state, encoding })),
     setWordWrap: (enabled: boolean) => 
-      update(state => ({ ...state, wordWrap: enabled })),
+      update(state => {
+        configStore.save({ word_wrap: enabled });
+        return { ...state, wordWrap: enabled };
+      }),
     setShowInvisibles: (enabled: boolean) => 
-      update(state => ({ ...state, showInvisibles: enabled })),
+      update(state => {
+        configStore.save({ show_invisibles: enabled });
+        return { ...state, showInvisibles: enabled };
+      }),
     setLineEnding: (ending: 'CRLF' | 'LF' | 'CR') =>
       update(state => ({ ...state, lineEnding: ending })),
     setFontSize: (size: number) => 

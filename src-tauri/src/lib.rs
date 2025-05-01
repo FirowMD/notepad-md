@@ -15,7 +15,9 @@ struct AppConfig {
     colorscheme: Option<String>,
     recent_files: Option<Vec<String>>,
     opened_files: Option<Vec<String>>,
-    font_size: Option<i32>
+    font_size: Option<i32>,
+    word_wrap: Option<bool>,
+    show_invisibles: Option<bool>
 }
 
 struct AppData {
@@ -93,6 +95,8 @@ fn create_default_config(config_file_path: &str, app_handle: &tauri::AppHandle) 
         recent_files: Some(vec![]),
         opened_files: Some(vec![]),
         font_size: Some(14),
+        word_wrap: Some(false),
+        show_invisibles: Some(false)
     };
 
     let default_config_str = serde_json::to_string(&default_config).map_err(|e| e.to_string())?;
@@ -218,7 +222,9 @@ fn get_config(app_handle: tauri::AppHandle) -> Result<AppConfig, String> {
         colorscheme: app_data.app_config.colorscheme.clone(),
         recent_files: app_data.app_config.recent_files.clone(),
         opened_files: app_data.app_config.opened_files.clone(),
-        font_size: app_data.app_config.font_size.clone()
+        font_size: app_data.app_config.font_size.clone(),
+        word_wrap: app_data.app_config.word_wrap.clone(),
+        show_invisibles: app_data.app_config.show_invisibles.clone()
     })
 }
 
@@ -248,7 +254,9 @@ pub fn run() {
                     colorscheme: None,
                     recent_files: None,
                     opened_files: Some(files_to_open),
-                    font_size: None
+                    font_size: None,
+                    word_wrap: None,
+                    show_invisibles: None
                 },
             }),
         })

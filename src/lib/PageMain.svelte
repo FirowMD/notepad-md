@@ -53,6 +53,14 @@
         if (config.font_size) {
           editorStore.setFontSize(config.font_size);
         }
+
+        if (config.word_wrap !== undefined) {
+          editorStore.setWordWrap(config.word_wrap);
+        }
+
+        if (config.show_invisibles !== undefined) {
+          editorStore.setShowInvisibles(config.show_invisibles);
+        }
         
         if (config.opened_files) {
           for (const filePath of config.opened_files) {

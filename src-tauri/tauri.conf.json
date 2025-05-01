@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "notepad-md",
+        "title": "NotepadMD",
         "width": 800,
         "height": 600,
         "dragDropEnabled": true

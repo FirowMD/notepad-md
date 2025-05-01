@@ -11,6 +11,8 @@
   let containerRef: HTMLDivElement;
   let editor: any;
 
+  let previousActiveFileId: string | null = null;
+
   $: {
     const activeFile = $fileStore.files.find(f => f.id === $fileStore.activeFileId);
     if (activeFile) {
@@ -23,14 +25,18 @@
         editorStore.setLanguage(activeFile.language);
         editor.getModel().setLanguage(activeFile.language);
         
-        editor.setPosition({
-          lineNumber: activeFile.cursor.line,
-          column: activeFile.cursor.column
-        });
-        editor.revealPosition({
-          lineNumber: activeFile.cursor.line,
-          column: activeFile.cursor.column
-        });
+        // Only set cursor position when switching between files
+        if (previousActiveFileId !== $fileStore.activeFileId) {
+          editor.setPosition({
+            lineNumber: activeFile.cursor.line,
+            column: activeFile.cursor.column
+          });
+          editor.revealPosition({
+            lineNumber: activeFile.cursor.line,
+            column: activeFile.cursor.column
+          });
+          previousActiveFileId = $fileStore.activeFileId;
+        }
       }
     } else {
       $rawText = '';
@@ -140,8 +146,8 @@
     </EasyMonacoEditor>
   </div>
 
-  <div class="flex h-6 w-full px-2 preset-filled-primary-500 items-center text-xs sticky bottom-0">
-    <div class="flex text-left gap-4 sticky left-0 w-full shrink-0 bg-primary-500 z-10">
+  <div class="flex h-6 w-full px-2 preset-filled-secondary-500 items-center text-xs sticky bottom-0">
+    <div class="flex text-left gap-4 sticky left-0 w-full shrink-0 bg-secondary-500 z-10">
       <span>{$editorStore.language}</span>
       <span>|</span>
       <span>Length: {$editorStore.stats.length}</span>
@@ -149,7 +155,7 @@
       <span>Lines: {$editorStore.stats.lines}</span>
     </div>
     <div class="flex-1"></div>
-    <div class="flex text-right gap-4 sticky right-4 shrink-0 bg-primary-500 z-10">
+    <div class="flex text-right gap-4 sticky right-4 shrink-0 bg-secondary-500 z-10">
       <span>Ln {$editorStore.cursor.line}, Col {$editorStore.cursor.column}</span>
       <span>|</span>
       <span>{$editorStore.lineEnding}</span>

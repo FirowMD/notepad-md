@@ -3,9 +3,7 @@
 Simple notepad based on monaco editor
 
 <div style="display: flex; gap: 10px;">
-    <img src="docs/images/notepad-md-1.png" width="32%" alt="Notepad MD Screenshot 1">
-    <img src="docs/images/notepad-md-2.png" width="32%" alt="Notepad MD Screenshot 2">
-    <img src="docs/images/notepad-md-3.png" width="32%" alt="Notepad MD Screenshot 3">
+    <img src="docs/images/notepad-md.png" width="100%" alt="Notepad MD Screenshot">
 </div>
 
 ## Features
@@ -21,8 +19,8 @@ Simple notepad based on monaco editor
 - [x] Word wrap
 - [x] Show/hide space characters
 - [x] Keyboard shortcuts
-- [ ] Encodings
-- [ ] Save cursor position
+- [x] Encodings
+- [x] Save cursor position
 
 ## Keyboard Shortcuts
 

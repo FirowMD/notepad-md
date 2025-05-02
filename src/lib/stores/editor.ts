@@ -39,7 +39,10 @@ function createEditorStore() {
     setLanguage: (language: string) => 
       update(state => ({ ...state, language })),
     setEncoding: (encoding: string) => 
-      update(state => ({ ...state, encoding })),
+      update(state => {
+        configStore.save({ default_encoding: encoding });
+        return { ...state, encoding };
+      }),
     setWordWrap: (enabled: boolean) => 
       update(state => {
         configStore.save({ word_wrap: enabled });

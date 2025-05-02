@@ -76,7 +76,10 @@
         const files = Array.isArray(selected) ? selected : [selected];
         
         for (const filePath of files) {
-          const content = await invoke('read_file', { path: filePath });
+          const content = await invoke('read_file', { 
+            path: filePath,
+            encoding: $editorStore.encoding || 'utf-8'
+          });
           const pathParts = filePath.split(/[/\\]/);
           const fileName = pathParts[pathParts.length - 1];
           const extension = fileName.split('.').pop()?.toLowerCase() || '';
@@ -178,6 +181,38 @@
     }
   }
 
+  const encodings = [
+    'utf-8',
+    'utf-16le',
+    'utf-16be',
+    'windows-1252'
+  ];
+
+  let isEncodingMenuOpen = false;
+
+  async function handleEncodingChange(encoding: string) {
+    editorStore.setEncoding(encoding);
+    if ($fileStore.activeFileId) {
+      const activeFile = $fileStore.files.find(f => f.id === $fileStore.activeFileId);
+      if (activeFile && activeFile.path) {
+        try {
+          const content = await invoke('read_file', { 
+            path: activeFile.path,
+            encoding: encoding 
+          });
+          fileStore.updateFile($fileStore.activeFileId, {
+            content: content as string,
+            encoding: encoding,
+            modified: new Date()
+          });
+        } catch (error) {
+          console.error('Error reading file with new encoding:', error);
+        }
+      }
+    }
+    isEncodingMenuOpen = false;
+  }
+
   onMount(() => {
     window.addEventListener('keydown', handleKeydown);
     return () => {
@@ -274,7 +309,7 @@
       type="button" 
       class="btn btn-sm h-8 flex items-center gap-2 {isLanguageMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500'} rounded-none"
       on:click={() => isLanguageMenuOpen = !isLanguageMenuOpen}
-      title="Theme"
+      title="Language"
     >
       <Code size={16} />
       <span class="text-xs capitalize">{language}</span>
@@ -294,6 +329,35 @@
             on:click={() => handleLanguageChange(lang)}
           >
             {lang}
+          </button>
+        {/each}
+      </div>
+    {/if}
+  </div>
+  <div class="relative">
+    <button 
+      type="button" 
+      class="btn btn-sm h-8 flex items-center gap-2 {isEncodingMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500'} rounded-none"
+      on:click={() => isEncodingMenuOpen = !isEncodingMenuOpen}
+      title="Encoding"
+    >
+      <span class="text-xs uppercase">{$editorStore.encoding || 'UTF-8'}</span>
+    </button>
+    {#if isEncodingMenuOpen}
+      <div 
+        role="menu"
+        tabindex="0"
+        class="absolute left-0 top-full mt-1 w-48 bg-surface-700 shadow-xl z-50 max-h-64 overflow-y-auto"
+        on:mouseleave={() => isEncodingMenuOpen = false}
+      >
+        {#each encodings as encoding}
+          <button
+            role="menuitem"
+            class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors uppercase"
+            class:bg-surface-500={$editorStore.encoding === encoding}
+            on:click={() => handleEncodingChange(encoding)}
+          >
+            {encoding}
           </button>
         {/each}
       </div>

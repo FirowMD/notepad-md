@@ -123,8 +123,25 @@ fn create_default_config(config_file_path: &str, app_handle: &tauri::AppHandle) 
 }
 
 #[tauri::command]
-fn read_file(path: &str) -> Result<String, String> {
-    fs::read_to_string(path).map_err(|e| e.to_string())
+fn read_file(path: &str, encoding: Option<String>) -> Result<String, String> {
+    let bytes = fs::read(path).map_err(|e| e.to_string())?;
+    
+    match encoding.as_deref().unwrap_or("utf-8") {
+        "utf-8" | "UTF-8" => String::from_utf8(bytes).map_err(|e| e.to_string()),
+        "utf-16le" | "UTF-16LE" => {
+            let (decoded, _, _) = encoding_rs::UTF_16LE.decode(&bytes);
+            Ok(decoded.into_owned())
+        }
+        "utf-16be" | "UTF-16BE" => {
+            let (decoded, _, _) = encoding_rs::UTF_16BE.decode(&bytes);
+            Ok(decoded.into_owned())
+        }
+        "windows-1252" | "WINDOWS-1252" => {
+            let (decoded, _, _) = encoding_rs::WINDOWS_1252.decode(&bytes);
+            Ok(decoded.into_owned())
+        }
+        _ => String::from_utf8(bytes).map_err(|e| e.to_string()), // fallback to UTF-8
+    }
 }
 
 #[tauri::command]

@@ -7,4 +7,5 @@ export interface AppConfig {
   font_size?: number;
   word_wrap?: boolean;
   show_invisibles?: boolean;
+  default_encoding?: string;
 }

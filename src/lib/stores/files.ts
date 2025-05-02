@@ -102,7 +102,10 @@ function createFileStore() {
       const filePath = recentFiles[0];
       
       try {
-        const content = await invoke('read_file', { path: filePath });
+        const content = await invoke('read_file', { 
+          path: filePath,
+          encoding: config.default_encoding || 'utf-8'
+        });
         const pathParts = filePath.split(/[/\\]/);
         const fileName = pathParts[pathParts.length - 1];
         const extension = fileName.split('.').pop()?.toLowerCase() || '';

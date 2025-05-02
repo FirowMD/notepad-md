@@ -191,24 +191,29 @@
   let isEncodingMenuOpen = false;
 
   async function handleEncodingChange(encoding: string) {
-    editorStore.setEncoding(encoding);
     if ($fileStore.activeFileId) {
       const activeFile = $fileStore.files.find(f => f.id === $fileStore.activeFileId);
       if (activeFile && activeFile.path) {
         try {
           const content = await invoke('read_file', { 
             path: activeFile.path,
-            encoding: encoding 
+            encoding: encoding
           });
-          fileStore.updateFile($fileStore.activeFileId, {
+          
+          fileStore.updateFile(activeFile.id, {
             content: content as string,
-            encoding: encoding,
-            modified: new Date()
+            encoding: encoding
           });
+          
+          editorStore.setEncoding(encoding);
+          
         } catch (error) {
-          console.error('Error reading file with new encoding:', error);
+          console.error('Error changing file encoding:', error);
         }
       }
+    } else {
+      // If no file is open, just update the default encoding
+      editorStore.setEncoding(encoding);
     }
     isEncodingMenuOpen = false;
   }

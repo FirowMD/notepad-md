@@ -3,7 +3,7 @@
 Simple notepad based on monaco editor
 
 <div style="display: flex; gap: 10px;">
-    <img src="docs/images/notepad-md.png" width="100%" alt="Notepad MD Screenshot">
+    <img src="docs/images/notepad-md.png" alt="Notepad MD Screenshot">
 </div>
 
 ## Features

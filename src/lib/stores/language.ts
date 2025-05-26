@@ -31,7 +31,11 @@ export const languageExtensions: LanguageExtension = {
   'editorconfig': 'editorconfig',
   'sh': 'bash',
   'bash': 'bash',
+  'bat': 'bat',
+  'cmd': 'bat',
   'ps1': 'powershell',
+  'psm1': 'powershell',
+  'psd1': 'powershell',
   'py': 'python',
   'rb': 'ruby',
   'pl': 'perl',
@@ -88,20 +92,35 @@ export const languageExtensions: LanguageExtension = {
   'diff': 'diff',
   'patch': 'patch',
   'puml': 'plantuml',
-  'mmd': 'mermaid'
+  'mmd': 'mermaid',
+  'xml': 'xml',
+  'xaml': 'xml',
+  'xhtml': 'html',
+  'svg': 'xml',
+  'plist': 'xml',
+  'reg': 'registry',
+  'vbs': 'vb',
+  'wsf': 'xml',
+  'razor': 'razor',
+  'cshtml': 'razor',
+  'vbhtml': 'razor',
+  'aspx': 'aspx',
+  'ascx': 'aspx',
+  'asmx': 'aspx',
+  'ashx': 'aspx'
 };
 
 export const availableLanguages = [
-  'plaintext', 'ansible', 'asciidoc', 'assembly', 'bash', 'bazel', 'bibtex', 'c', 'chef',
-  'clojure', 'cmake', 'config', 'cpp', 'cue', 'css', 'dart', 'diff', 'dockerfile',
-  'editorconfig', 'elixir', 'env', 'erlang', 'fsharp', 'gas', 'gdb', 'gherkin', 'gitignore',
-  'go', 'gradle', 'groovy', 'haskell', 'hex', 'html', 'ini', 'java', 'javascript', 'julia',
-  'json', 'jsx', 'kotlin', 'kubernetes', 'latex', 'less', 'log', 'lua', 'makefile',
-  'markdown', 'matlab', 'mermaid', 'nasm', 'nim', 'nix', 'ocaml', 'patch', 'perl',
-  'php', 'plantuml', 'powershell', 'properties', 'puppet', 'python',
-  'r', 'rego', 'restructuredtext', 'ruby', 'rust', 'sas', 'scala', 'scheme', 'scss',
-  'sql', 'stata', 'svelte', 'swift', 'terraform', 'toml', 'tsx', 'typescript',
-  'vagrantfile', 'vbnet', 'vue', 'wolfram', 'xml', 'yaml', 'zig'
+  'plaintext', 'ansible', 'asciidoc', 'assembly', 'aspx', 'bat', 'bash', 'bazel', 'bibtex', 
+  'c', 'chef', 'clojure', 'cmake', 'config', 'cpp', 'csharp', 'css', 'dart', 'diff', 
+  'dockerfile', 'editorconfig', 'elixir', 'env', 'erlang', 'fsharp', 'gas', 'gdb', 
+  'gherkin', 'gitignore', 'go', 'gradle', 'groovy', 'haskell', 'hex', 'html', 'ini', 
+  'java', 'javascript', 'julia', 'json', 'jsx', 'kotlin', 'kubernetes', 'latex', 'less', 
+  'log', 'lua', 'makefile', 'markdown', 'matlab', 'mermaid', 'nasm', 'nim', 'nix', 
+  'ocaml', 'patch', 'perl', 'php', 'plantuml', 'powershell', 'properties', 'puppet', 
+  'python', 'r', 'razor', 'registry', 'rego', 'restructuredtext', 'ruby', 'rust', 'sas', 
+  'scala', 'scheme', 'scss', 'sql', 'stata', 'svelte', 'swift', 'terraform', 'toml', 
+  'tsx', 'typescript', 'vagrantfile', 'vb', 'vbnet', 'vue', 'wolfram', 'xml', 'yaml', 'zig'
 ];
 
 

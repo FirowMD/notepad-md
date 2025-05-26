@@ -250,6 +250,29 @@ fn get_config(app_handle: tauri::AppHandle) -> Result<AppConfig, String> {
     })
 }
 
+fn add_to_opened_files(app_handle: &tauri::AppHandle, path: String) -> Result<(), String> {
+    let app_data = app_handle.state::<Storage>();
+    let mut app_data = app_data.app_data.lock().map_err(|e| e.to_string())?;
+    
+    let mut opened_files = app_data.app_config.opened_files.take().unwrap_or_default();
+    
+    if !opened_files.contains(&path) {
+        opened_files.insert(0, path);
+        app_data.app_config.opened_files = Some(opened_files);
+        
+        save_config(app_handle.clone(), AppConfig {
+            colorscheme: app_data.app_config.colorscheme.clone(),
+            recent_files: app_data.app_config.recent_files.clone(),
+            opened_files: app_data.app_config.opened_files.clone(),
+            font_size: app_data.app_config.font_size.clone(),
+            word_wrap: app_data.app_config.word_wrap.clone(),
+            show_invisibles: app_data.app_config.show_invisibles.clone()
+        })?;
+    }
+    
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let cli_args: Vec<String> = std::env::args().collect();
@@ -270,8 +293,16 @@ pub fn run() {
 
     #[cfg(desktop)]
     {
-        builder = builder.plugin(tauri_plugin_single_instance::init(|app, _argv, _cwd| {
-            // Focus the main window when attempting to launch another instance
+        builder = builder.plugin(tauri_plugin_single_instance::init(|app, argv, _cwd| {
+            for path in argv.iter().skip(1) {
+                if let Ok(canonical_path) = std::fs::canonicalize(path) {
+                    if canonical_path.exists() {
+                        if let Some(path_str) = canonical_path.to_str() {
+                            add_to_opened_files(&app, path_str.to_string()).unwrap();
+                        }
+                    }
+                }
+            }
             let window = app.get_webview_window("main").unwrap();
             let _ = window.set_focus();
         }));

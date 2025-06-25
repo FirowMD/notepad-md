@@ -3,11 +3,13 @@
   import PanelSide from "../lib/PanelSide.svelte";
   import PanelEditor from "../lib/PanelEditor.svelte";
   import PanelTop from "../lib/PanelTop.svelte";
+  import NotificationContainer from "../lib/NotificationContainer.svelte";
   import { getCurrentWebview } from "@tauri-apps/api/webview";
   import { fileStore } from './stores/files';
   import { configStore } from './stores/configStore';
   import { themeStore } from './stores/theme';
   import { editorStore } from './stores/editor';
+  import { notificationStore } from './stores/notification';
   import { getLanguageFromExtension } from './stores/language';
   import type { AppConfig } from './types/config';
   import { onMount, onDestroy } from 'svelte';
@@ -83,6 +85,7 @@
                 language: getLanguageFromExtension(extension),
                 created: new Date(),
                 modified: new Date(),
+                isModified: false, // Restored files start as not modified
                 cursor: {
                   line: 1,
                   column: 1
@@ -127,7 +130,8 @@
         if (file) {
           try {
             const content = await invoke('read_file', { path: filePath });
-            fileStore.updateFile(file.id, {
+            // Use updateFileFromExternal to preserve modified state
+            fileStore.updateFileFromExternal(file.id, {
               content: content as string,
               modified: new Date()
             });
@@ -173,6 +177,7 @@
         language: getLanguageFromExtension(extension),
         created: new Date(),
         modified: new Date(),
+        isModified: false, // Dropped files start as not modified
         cursor: {
           line: 1,
           column: 1
@@ -192,6 +197,7 @@
       }
     } catch (error) {
       console.error('Error reading file:', error);
+      notificationStore.show("Error reading file", "error");
     }
   }
 </script>
@@ -216,4 +222,7 @@
       </div>
     </div>
   {/if}
+
+  <!-- Import and use the new notification container -->
+  <NotificationContainer />
 </div>

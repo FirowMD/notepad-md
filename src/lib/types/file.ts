@@ -7,6 +7,7 @@ export interface FileInfo {
   language: string;
   created: Date;
   modified: Date;
+  isModified: boolean; // New field to track if file has unsaved changes
   cursor: {
     line: number;
     column: number;

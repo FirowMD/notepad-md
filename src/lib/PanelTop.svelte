@@ -4,6 +4,7 @@
   import { editorStore } from './stores/editor';
   import { themeStore } from './stores/theme';
   import { fileStore } from './stores/files';
+  import { notificationStore } from './stores/notification';
   import { availableLanguages, getLanguageFromExtension } from './stores/language';
   import { open, save, message } from '@tauri-apps/plugin-dialog';
   import { onMount } from 'svelte';
@@ -53,6 +54,7 @@
       language: 'plaintext',
       created: new Date(),
       modified: new Date(),
+      isModified: false, // New files start as not modified
       cursor: {
         line: 1,
         column: 1
@@ -94,6 +96,7 @@
             language: getLanguageFromExtension(extension),
             created: new Date(),
             modified: new Date(),
+            isModified: false, // Opened files start as not modified
             cursor: {
               line: 1,
               column: 1
@@ -117,6 +120,7 @@
       }
     } catch (err) {
       console.error("Error opening file:", err);
+      notificationStore.show("Error opening file", "error");
     }
   }
 
@@ -148,8 +152,14 @@
           modified: new Date()
         });
       }
+      
+      // Mark file as saved and show notification
+      fileStore.markAsSaved(activeFile.id);
+      notificationStore.show("File saved successfully", "success", 2500);
+      
     } catch (err) {
       console.error("Error saving file:", err);
+      notificationStore.show("Error saving file", "error");
     }
   }
 
@@ -209,6 +219,7 @@
           
         } catch (error) {
           console.error('Error changing file encoding:', error);
+          notificationStore.show("Error changing file encoding", "error");
         }
       }
     } else {

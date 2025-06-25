@@ -3,6 +3,7 @@
   import type { FileInfo } from '../types/file';
   import { fileStore } from '../stores/files';
   import { contextMenuStore } from '../stores/contextMenu';
+  import { notificationStore } from '../stores/notification';
   import { ArrowUp, ArrowDown } from 'lucide-svelte';
   import { save } from '@tauri-apps/plugin-dialog';
   import { onMount } from 'svelte';
@@ -63,6 +64,7 @@
       await invoke('run_explorer', { path: file.path });
     } catch (error) {
       console.error('Failed to open file path:', error);
+      notificationStore.show("Failed to open file path", "error");
     }
     contextMenuStore.close();
   }
@@ -122,8 +124,10 @@
           });
           
           await invoke('watch_file', { path: newPath });
+          notificationStore.show("File renamed successfully", "success", 2500);
         } catch (error) {
           console.error('Error renaming file:', error);
+          notificationStore.show("Error renaming file", "error");
           newFileName = file.name;
           isRenaming = false;
           return;
@@ -166,9 +170,13 @@
           name: fileName,
           modified: new Date()
         });
+        
+        fileStore.markAsSaved(file.id);
+        notificationStore.show("File saved successfully", "success", 2500);
       }
     } catch (err) {
       console.error("Error saving file:", err);
+      notificationStore.show("Error saving file", "error");
     }
     contextMenuStore.close();
   }
@@ -228,7 +236,7 @@
     type="button"
     class="flex-1 btn rounded-none h-14 flex flex-col items-start overflow-hidden {isActive ? 'preset-filled-primary-500' : 'preset-filled-surface-500'}"
     on:click={handleClick}
-    title={file.name}
+    title="{file.name}{file.isModified ? ' (modified)' : ''}"
   >
     {#if isRenaming}
       <input
@@ -242,7 +250,12 @@
       <span class="text-xs text-left opacity-50 truncate w-full">{dateCreated} {timeCreated}</span>
     {:else}
       <div class="w-full min-w-0">
-        <span class="text-sm text-left truncate block w-full">{file.name}</span>
+        <div class="flex items-center gap-1 w-full">
+          <span class="text-sm text-left truncate flex-1">{file.name}</span>
+          {#if file.isModified}
+            <span class="text-tertiary-400 font-bold flex-shrink-0 text-xs" title="File has unsaved changes">●</span>
+          {/if}
+        </div>
         <span class="text-xs text-left opacity-50 truncate block w-full">{dateCreated} {timeCreated}</span>
       </div>
     {/if}

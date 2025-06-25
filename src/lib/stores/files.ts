@@ -31,7 +31,8 @@ function createFileStore() {
       // Use nextId for new files
       const fileWithId = {
         ...file,
-        id: store.nextId.toString()
+        id: store.nextId.toString(),
+        isModified: file.isModified ?? false // Ensure isModified is set
       };
 
       const newStore = {
@@ -120,6 +121,7 @@ function createFileStore() {
           language: getLanguageFromExtension(extension),
           created: new Date(),
           modified: new Date(),
+          isModified: false, // Restored files are not modified
           cursor: { line: 1, column: 1 },
           stats: {
             lines: (content as string).split('\n').length,
@@ -149,6 +151,25 @@ function createFileStore() {
     updateFile: (id: string, updates: Partial<FileInfo>) => update(store => ({
       ...store,
       files: store.files.map(f => f.id === id ? { ...f, ...updates } : f)
+    })),
+    // Update file content from external changes (don't mark as modified unless already modified)
+    updateFileFromExternal: (id: string, updates: Partial<FileInfo>) => update(store => ({
+      ...store,
+      files: store.files.map(f => {
+        if (f.id === id) {
+          // Keep the current modified state for external updates
+          return { ...f, ...updates, isModified: f.isModified };
+        }
+        return f;
+      })
+    })),
+    markAsModified: (id: string) => update(store => ({
+      ...store,
+      files: store.files.map(f => f.id === id ? { ...f, isModified: true, modified: new Date() } : f)
+    })),
+    markAsSaved: (id: string) => update(store => ({
+      ...store,
+      files: store.files.map(f => f.id === id ? { ...f, isModified: false } : f)
     })),
     reorderFiles: (newFiles: FileInfo[]) => update(store => {
       const updatedFiles = newFiles.map(file => ({

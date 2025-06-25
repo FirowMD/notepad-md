@@ -12,42 +12,72 @@
   let editor: any;
 
   let previousActiveFileId: string | null = null;
+  let isSystemChange = false; // Track if change is from system vs user input
+  let editorInitialized = false;
+  let lastContentHash = ''; // Track content to detect actual changes
+
+  // Function to create a simple hash of content
+  function hashContent(content: string): string {
+    let hash = 0;
+    for (let i = 0; i < content.length; i++) {
+      const char = content.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash; // Convert to 32-bit integer
+    }
+    return hash.toString();
+  }
 
   $: {
     const activeFile = $fileStore.files.find(f => f.id === $fileStore.activeFileId);
+    if (activeFile && editor && editorInitialized) {
+      const currentValue = editor.getValue();
+      
+      // Only update if content is actually different
+      if (currentValue !== activeFile.content) {
+        isSystemChange = true;
+        editor.setValue(activeFile.content);
+        lastContentHash = hashContent(activeFile.content);
+        
+        // Small delay to ensure the change handler processes this as system change
+        setTimeout(() => {
+          isSystemChange = false;
+        }, 10);
+      }
+      
+      editorStore.setLanguage(activeFile.language);
+      editor.getModel().setLanguage(activeFile.language);
+      
+      // Only set cursor position when switching between files
+      if (previousActiveFileId !== $fileStore.activeFileId) {
+        editor.setPosition({
+          lineNumber: activeFile.cursor.line,
+          column: activeFile.cursor.column
+        });
+        editor.revealPosition({
+          lineNumber: activeFile.cursor.line,
+          column: activeFile.cursor.column
+        });
+        previousActiveFileId = $fileStore.activeFileId;
+      }
+    } else if (!activeFile && editor && editorInitialized) {
+      isSystemChange = true;
+      editor.setValue('');
+      editor.getModel().setLanguage('plaintext');
+      lastContentHash = '';
+      setTimeout(() => {
+        isSystemChange = false;
+      }, 10);
+    }
+    
+    // Update rawText for the writable store
     if (activeFile) {
       $rawText = activeFile.content;
-      if (editor) {
-        const currentValue = editor.getValue();
-        if (currentValue !== activeFile.content) {
-          editor.setValue(activeFile.content);
-        }
-        editorStore.setLanguage(activeFile.language);
-        editor.getModel().setLanguage(activeFile.language);
-        
-        // Only set cursor position when switching between files
-        if (previousActiveFileId !== $fileStore.activeFileId) {
-          editor.setPosition({
-            lineNumber: activeFile.cursor.line,
-            column: activeFile.cursor.column
-          });
-          editor.revealPosition({
-            lineNumber: activeFile.cursor.line,
-            column: activeFile.cursor.column
-          });
-          previousActiveFileId = $fileStore.activeFileId;
-        }
-      }
     } else {
       $rawText = '';
-      if (editor) {
-        editor.setValue('');
-        editor.getModel().setLanguage('plaintext');
-      }
     }
   }
 
-  $: if (editor) {
+  $: if (editor && editorInitialized) {
     editor.updateOptions({
       wordWrap: $editorStore.wordWrap ? 'on' : 'off',
       renderWhitespace: $editorStore.showInvisibles ? 'all' : 'none',
@@ -58,7 +88,7 @@
   const handleMonaco = (monaco: any) => {
     if (monaco && editorRef) {
       editor = monaco.editor.create(editorRef, {
-        value: $rawText,
+        value: '',
         language: 'markdown',
         theme: 'vs-dark',
         fontSize: $editorStore.fontSize,
@@ -69,15 +99,48 @@
         }
       });
 
+      // Set initial content if there's an active file
+      const activeFile = $fileStore.files.find(f => f.id === $fileStore.activeFileId);
+      if (activeFile) {
+        isSystemChange = true;
+        editor.setValue(activeFile.content);
+        lastContentHash = hashContent(activeFile.content);
+        setTimeout(() => {
+          isSystemChange = false;
+        }, 10);
+      }
+
+      editorInitialized = true;
+
       editor.getModel().onDidChangeContent(() => {
         const value = editor.getValue();
+        const currentHash = hashContent(value);
+        
+        // Update the writable store
         $rawText = value;
         
         if ($fileStore.activeFileId) {
+          // Always update file content
           fileStore.updateFile($fileStore.activeFileId, {
             content: value,
             modified: new Date()
           });
+          
+          // Only mark as modified if this is a user change and content actually changed
+          if (!isSystemChange && currentHash !== lastContentHash) {
+            const activeFile = $fileStore.files.find(f => f.id === $fileStore.activeFileId);
+            if (activeFile) {
+              // For new files (no path), mark as modified only if there's actual content
+              if (!activeFile.path && value.trim() !== '') {
+                fileStore.markAsModified($fileStore.activeFileId);
+              }
+              // For existing files, mark as modified on any user change
+              else if (activeFile.path) {
+                fileStore.markAsModified($fileStore.activeFileId);
+              }
+            }
+            lastContentHash = currentHash;
+          }
         }
         
         const hasCarriageReturn = value.includes('\r');
@@ -112,12 +175,6 @@
 
       editor.getModel().onDidChangeLanguage((e: any) => {
         editorStore.setLanguage(e.newLanguage);
-      });
-
-      rawText.subscribe((newValue) => {
-        if (editor && editor.getValue() !== newValue) {
-          editor.setValue(newValue);
-        }
       });
 
       const resizeObserver = new ResizeObserver(() => {

@@ -18,6 +18,7 @@
   let isDragging = false;
   let unlisten: (() => void) | undefined;
   let unlistenFileChange: (() => void) | undefined;
+  let unlistenFilesUpdated: (() => void) | undefined;
 
   function handleTabSwitch(event: KeyboardEvent) {
     if (event.ctrlKey && !event.altKey && event.key === 'Tab') {
@@ -140,6 +141,64 @@
           }
         }
       });
+
+      unlistenFilesUpdated = await listen('files-updated', async () => {
+        // Reload config and load any new files
+        const config = await configStore.load();
+        
+        if (config && config.opened_files) {
+          for (const filePath of config.opened_files) {
+            // Check if file is already open
+            const existingFile = $fileStore.files.find(f => f.path === filePath);
+            if (existingFile) {
+              // File already open, just set it as active
+              fileStore.setActiveFile(existingFile.id);
+              continue;
+            }
+            
+            try {
+              const content = await invoke('read_file', { 
+                path: filePath,
+                encoding: config.default_encoding || 'utf-8'
+              });
+              const pathParts = filePath.split(/[/\\]/);
+              const fileName = pathParts[pathParts.length - 1];
+              const extension = fileName.split('.').pop()?.toLowerCase() || '';
+              
+              const nextId = ($fileStore.files.length + 1).toString();
+              const fileInfo = {
+                id: nextId,
+                path: filePath,
+                name: fileName,
+                content: content as string,
+                encoding: 'utf-8',
+                language: getLanguageFromExtension(extension),
+                created: new Date(),
+                modified: new Date(),
+                isModified: false,
+                cursor: {
+                  line: 1,
+                  column: 1
+                },
+                stats: {
+                  lines: (content as string).split('\n').length,
+                  length: (content as string).length
+                }
+              };
+              
+              fileStore.addFile(fileInfo);
+              
+              try {
+                await invoke('watch_file', { path: filePath });
+              } catch (error) {
+                console.error('Error setting up file watch:', error);
+              }
+            } catch (error) {
+              console.error('Error loading new file:', error);
+            }
+          }
+        }
+      });
     };
 
     initialize();
@@ -148,6 +207,7 @@
       window.removeEventListener('keydown', handleTabSwitch);
       if (unlisten) unlisten();
       if (unlistenFileChange) unlistenFileChange();
+      if (unlistenFilesUpdated) unlistenFilesUpdated();
     };
   });
 
@@ -155,6 +215,7 @@
     window.removeEventListener('keydown', handleTabSwitch);
     if (unlisten) unlisten();
     if (unlistenFileChange) unlistenFileChange();
+    if (unlistenFilesUpdated) unlistenFilesUpdated();
   });
 
   async function handleFileDrop(filePath: string) {

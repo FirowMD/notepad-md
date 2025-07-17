@@ -305,6 +305,8 @@ pub fn run() {
             }
             let window = app.get_webview_window("main").unwrap();
             let _ = window.set_focus();
+            // Emit event to refresh the frontend with new files
+            let _ = window.emit("files-updated", ());
         }));
     }
 

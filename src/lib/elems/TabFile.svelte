@@ -234,7 +234,12 @@
   </div>
   <button
     type="button"
-    class="flex-1 btn rounded-none h-14 flex flex-col items-start overflow-hidden {isActive ? 'preset-filled-primary-500' : 'preset-filled-surface-500'}"
+    class="flex-1 btn rounded-none h-14 flex flex-col items-start overflow-hidden {
+      isActive && file.isModified ? 'preset-tonal-primary' :
+      isActive ? 'preset-filled-primary-500' :
+      file.isModified ? 'preset-tonal-surface' :
+      'preset-filled-surface-500'
+    }"
     on:click={handleClick}
     title="{file.name}{file.isModified ? ' (modified)' : ''}"
   >
@@ -252,9 +257,6 @@
       <div class="w-full min-w-0">
         <div class="flex items-center gap-1 w-full">
           <span class="text-sm text-left truncate flex-1">{file.name}</span>
-          {#if file.isModified}
-            <span class="text-tertiary-400 font-bold flex-shrink-0 text-xs" title="File has unsaved changes">●</span>
-          {/if}
         </div>
         <span class="text-xs text-left opacity-50 truncate block w-full">{dateCreated} {timeCreated}</span>
       </div>

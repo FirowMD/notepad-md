@@ -168,7 +168,7 @@
   }
 
   async function handleAbout() {
-    await message('NotepadMD v.0.1.2', 'About');
+    await message('NotepadMD v.0.1.3', 'About');
   }
 
   function handleKeydown(event: KeyboardEvent) {

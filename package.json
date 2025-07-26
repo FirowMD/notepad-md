@@ -1,6 +1,6 @@
 {
   "name": "notepad-md",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Simple notepad based on monaco editor",
   "type": "module",
   "scripts": {

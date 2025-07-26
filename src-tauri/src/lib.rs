@@ -235,7 +235,7 @@ fn add_to_opened_files(app_handle: &tauri::AppHandle, path: String) -> Result<()
     let mut opened_files = app_data.app_config.opened_files.take().unwrap_or_default();
     
     if !opened_files.contains(&path) {
-        opened_files.insert(0, path);
+        opened_files.push(path);
         app_data.app_config.opened_files = Some(opened_files);
         
         save_config(app_handle.clone(), AppConfig {
@@ -288,7 +288,7 @@ pub fn run() {
         }));
     }
 
-    builder
+    let app = builder
         .manage(Mutex::new(WatcherState::new()))
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
@@ -297,12 +297,21 @@ pub fn run() {
                 app_config: AppConfig {
                     colorscheme: None,
                     recent_files: None,
-                    opened_files: Some(files_to_open),
+                    opened_files: None,
                     font_size: None,
                     word_wrap: None,
                     show_invisibles: None
                 },
             }),
+        })
+        .setup(move |app| {
+            let _ = load_config(app.handle().clone());
+            
+            for file_path in files_to_open {
+                let _ = add_to_opened_files(&app.handle(), file_path);
+            }
+            
+            Ok(())
         })
         .invoke_handler(tauri::generate_handler![
             get_config,
@@ -314,7 +323,8 @@ pub fn run() {
             rename_file,
             watch_file,
             unwatch_file
-        ])
-        .run(tauri::generate_context!())
+        ]);
+    
+    app.run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

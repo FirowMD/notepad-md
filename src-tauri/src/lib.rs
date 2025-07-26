@@ -256,7 +256,6 @@ pub fn run() {
     let cli_args: Vec<String> = std::env::args().collect();
     let mut files_to_open: Vec<String> = Vec::new();
 
-    // Process CLI arguments (skip the first arg as it's the program path)
     for arg in cli_args.iter().skip(1) {
         if let Ok(canonical_path) = std::fs::canonicalize(arg) {
             if canonical_path.exists() {
@@ -272,6 +271,8 @@ pub fn run() {
     #[cfg(desktop)]
     {
         builder = builder.plugin(tauri_plugin_single_instance::init(|app, argv, _cwd| {
+            let _ = load_config(app.clone());
+            
             for path in argv.iter().skip(1) {
                 if let Ok(canonical_path) = std::fs::canonicalize(path) {
                     if canonical_path.exists() {

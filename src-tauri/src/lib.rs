@@ -69,19 +69,9 @@ fn save_config(app_handle: tauri::AppHandle, config: AppConfig) -> Result<(), St
 
 fn read_config(config_file_path: &str, app_handle: &tauri::AppHandle) -> Result<(), String> {
     let config_file = std::fs::File::open(config_file_path).map_err(|e| e.to_string())?;
-    let mut app_config: AppConfig = serde_json::from_reader(config_file).map_err(|e| e.to_string())?;
+    let app_config: AppConfig = serde_json::from_reader(config_file).map_err(|e| e.to_string())?;
     let app_data = app_handle.state::<Storage>();
     let mut app_data = app_data.app_data.lock().map_err(|e| e.to_string())?;
-    
-    if let (Some(existing_files), Some(new_files)) = (&app_data.app_config.opened_files, &app_config.opened_files) {
-        let mut merged_files: Vec<String> = existing_files.clone();
-        for file in new_files {
-            if !merged_files.contains(file) {
-                merged_files.insert(0, file.clone());
-            }
-        }
-        app_config.opened_files = Some(merged_files);
-    }
     
     app_data.app_config = app_config;
     Ok(())
@@ -105,19 +95,7 @@ fn create_default_config(config_file_path: &str, app_handle: &tauri::AppHandle) 
     let app_data = app_handle.state::<Storage>();
     let mut app_data = app_data.app_data.lock().map_err(|e| e.to_string())?;
 
-    if let (Some(existing_files), Some(new_files)) = (&app_data.app_config.opened_files, &default_config.opened_files) {
-        let mut merged_files: Vec<String> = existing_files.clone();
-        for file in new_files {
-            if !merged_files.contains(file) {
-                merged_files.insert(0, file.clone());
-            }
-        }
-        let mut updated_config = default_config;
-        updated_config.opened_files = Some(merged_files);
-        app_data.app_config = updated_config;
-    } else {
-        app_data.app_config = default_config;
-    }
+    app_data.app_config = default_config;
 
     Ok(())
 }
@@ -305,7 +283,6 @@ pub fn run() {
             }
             let window = app.get_webview_window("main").unwrap();
             let _ = window.set_focus();
-            // Emit event to refresh the frontend with new files
             let _ = window.emit("files-updated", ());
         }));
     }

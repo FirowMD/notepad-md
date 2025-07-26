@@ -185,16 +185,16 @@
   function handleKeydown(event: KeyboardEvent) {
     if (!isActive) return;
 
-    if (event.ctrlKey && !event.shiftKey && event.key === 'e') {
+    if (event.ctrlKey && !event.shiftKey && event.code === 'KeyE') {
       event.preventDefault();
       handleOpenFilePath();
-    } else if (!event.ctrlKey && !event.shiftKey && event.key === 'F2') {
+    } else if (!event.ctrlKey && !event.shiftKey && event.code === 'F2') {
       event.preventDefault();
       handleRename();
-    } else if (event.ctrlKey && event.shiftKey && event.key === 'S') {
+    } else if (event.ctrlKey && event.shiftKey && event.code === 'KeyS') {
       event.preventDefault();
       handleSaveAs();
-    } else if (event.ctrlKey && !event.shiftKey && event.key === 'w') {
+    } else if (event.ctrlKey && !event.shiftKey && event.code === 'KeyW') {
       event.preventDefault();
       handleClose(new MouseEvent('click'));
     }

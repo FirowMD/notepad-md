@@ -173,19 +173,19 @@
 
   function handleKeydown(event: KeyboardEvent) {
     // Prevent default behavior for these shortcuts
-    if ((event.ctrlKey || event.metaKey) && !event.shiftKey && event.key === 'n') {
+    if ((event.ctrlKey || event.metaKey) && !event.shiftKey && event.code === 'KeyN') {
       event.preventDefault();
       handleNewFile();
-    } else if ((event.ctrlKey || event.metaKey) && !event.shiftKey && event.key === 'o') {
+    } else if ((event.ctrlKey || event.metaKey) && !event.shiftKey && event.code === 'KeyO') {
       event.preventDefault();
       handleOpenFile();
-    } else if ((event.ctrlKey || event.metaKey) && !event.shiftKey && event.key === 's') {
+    } else if ((event.ctrlKey || event.metaKey) && !event.shiftKey && event.code === 'KeyS') {
       event.preventDefault();
       handleSaveFile();
-    } else if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key === 'T') {
+    } else if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.code === 'KeyT') {
       event.preventDefault();
       handleRestoreFile();
-    } else if (event.altKey && !event.ctrlKey && !event.shiftKey && event.key === 'z') {
+    } else if (event.altKey && !event.ctrlKey && !event.shiftKey && event.code === 'KeyZ') {
       event.preventDefault();
       editorStore.setWordWrap(!wordWrap);
     }

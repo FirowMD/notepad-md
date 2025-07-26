@@ -21,7 +21,7 @@
   let unlistenFilesUpdated: (() => void) | undefined;
 
   function handleTabSwitch(event: KeyboardEvent) {
-    if (event.ctrlKey && !event.altKey && event.key === 'Tab') {
+    if (event.ctrlKey && !event.altKey && event.code === 'Tab') {
       event.preventDefault();
       
       const files = $fileStore.files;

@@ -4,6 +4,7 @@
   import { writable } from 'svelte/store';
   import { editorStore } from './stores/editor';
   import { fileStore } from './stores/files';
+  import TopBar from './TopBar.svelte';
 
   const rawText = writable('');
 
@@ -197,6 +198,7 @@
 </script>
 
 <div class="w-full h-full flex flex-col">
+  <TopBar />
   <div class="w-full h-full relative" bind:this={containerRef}>
     <EasyMonacoEditor onLoad={handleMonaco}>
       <div class="h-full w-full absolute inset-0" bind:this={editorRef}></div>

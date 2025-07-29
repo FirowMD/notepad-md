@@ -54,7 +54,8 @@
       language: 'plaintext',
       created: new Date(),
       modified: new Date(),
-      isModified: false, // New files start as not modified
+      isModified: false,
+      hash: '',
       cursor: {
         line: 1,
         column: 1
@@ -78,10 +79,10 @@
         const files = Array.isArray(selected) ? selected : [selected];
         
         for (const filePath of files) {
-          const content = await invoke('read_file', { 
+          const fileData = await invoke('read_file', { 
             path: filePath,
             encoding: $editorStore.encoding || 'utf-8'
-          });
+          }) as { content: string, hash: string };
           const pathParts = filePath.split(/[/\\]/);
           const fileName = pathParts[pathParts.length - 1];
           const extension = fileName.split('.').pop()?.toLowerCase() || '';
@@ -91,19 +92,20 @@
             id: nextId,
             path: filePath,
             name: fileName,
-            content: content as string,
+            content: fileData.content,
             encoding: 'utf-8',
             language: getLanguageFromExtension(extension),
             created: new Date(),
             modified: new Date(),
-            isModified: false, // Opened files start as not modified
+            isModified: false,
+            hash: fileData.hash,
             cursor: {
               line: 1,
               column: 1
             },
             stats: {
-              lines: (content as string).split('\n').length,
-              length: (content as string).length
+              lines: fileData.content.split('\n').length,
+              length: fileData.content.length
             }
           };
       
@@ -142,6 +144,8 @@
         content: activeFile.content
       });
       
+      const savedHash = await invoke('calculate_file_hash_command', { content: activeFile.content }) as string;
+      
       if (savePath !== activeFile.path) {
         const pathParts = savePath.split(/[/\\]/);
         const fileName = pathParts[pathParts.length - 1];
@@ -149,11 +153,16 @@
         fileStore.updateFile(activeFile.id, {
           path: savePath,
           name: fileName,
+          hash: savedHash,
+          modified: new Date()
+        });
+      } else {
+        fileStore.updateFile(activeFile.id, {
+          hash: savedHash,
           modified: new Date()
         });
       }
       
-      // Mark file as saved and show notification
       fileStore.markAsSaved(activeFile.id);
       notificationStore.show("File saved successfully", "success", 2500);
       
@@ -172,7 +181,6 @@
   }
 
   function handleKeydown(event: KeyboardEvent) {
-    // Prevent default behavior for these shortcuts
     if ((event.ctrlKey || event.metaKey) && !event.shiftKey && event.code === 'KeyN') {
       event.preventDefault();
       handleNewFile();
@@ -205,14 +213,15 @@
       const activeFile = $fileStore.files.find(f => f.id === $fileStore.activeFileId);
       if (activeFile && activeFile.path) {
         try {
-          const content = await invoke('read_file', { 
+          const fileData = await invoke('read_file', { 
             path: activeFile.path,
             encoding: encoding
-          });
+          }) as { content: string, hash: string };
           
           fileStore.updateFile(activeFile.id, {
-            content: content as string,
-            encoding: encoding
+            content: fileData.content,
+            encoding: encoding,
+            hash: fileData.hash
           });
           
           editorStore.setEncoding(encoding);
@@ -223,7 +232,6 @@
         }
       }
     } else {
-      // If no file is open, just update the default encoding
       editorStore.setEncoding(encoding);
     }
     isEncodingMenuOpen = false;

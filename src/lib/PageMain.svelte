@@ -68,10 +68,10 @@
         if (config.opened_files) {
           for (const filePath of config.opened_files) {
             try {
-              const content = await invoke('read_file', { 
+              const fileData = await invoke('read_file', { 
                 path: filePath,
                 encoding: config.default_encoding || 'utf-8'
-              });
+              }) as { content: string, hash: string };
               const pathParts = filePath.split(/[/\\]/);
               const fileName = pathParts[pathParts.length - 1];
               const extension = fileName.split('.').pop()?.toLowerCase() || '';
@@ -81,19 +81,20 @@
                 id: nextId,
                 path: filePath,
                 name: fileName,
-                content: content as string,
+                content: fileData.content,
                 encoding: 'utf-8',
                 language: getLanguageFromExtension(extension),
                 created: new Date(),
                 modified: new Date(),
                 isModified: false, // Restored files start as not modified
+                hash: fileData.hash,
                 cursor: {
                   line: 1,
                   column: 1
                 },
                 stats: {
-                  lines: (content as string).split('\n').length,
-                  length: (content as string).length
+                  lines: fileData.content.split('\n').length,
+                  length: fileData.content.length
                 }
               };
               
@@ -130,12 +131,16 @@
         
         if (file) {
           try {
-            const content = await invoke('read_file', { path: filePath });
-            // Use updateFileFromExternal to preserve modified state
-            fileStore.updateFileFromExternal(file.id, {
-              content: content as string,
-              modified: new Date()
-            });
+            const fileData = await invoke('read_file', { path: filePath }) as { content: string, hash: string };
+            // Only update if the content hash has actually changed
+            if (fileData.hash !== file.hash) {
+              // Use updateFileFromExternal to preserve modified state
+              fileStore.updateFileFromExternal(file.id, {
+                content: fileData.content,
+                hash: fileData.hash,
+                modified: new Date()
+              });
+            }
           } catch (error) {
             console.error('Error reading updated file:', error);
           }
@@ -157,10 +162,10 @@
             }
             
             try {
-              const content = await invoke('read_file', { 
+              const fileData = await invoke('read_file', { 
                 path: filePath,
                 encoding: config.default_encoding || 'utf-8'
-              });
+              }) as { content: string, hash: string };
               const pathParts = filePath.split(/[/\\]/);
               const fileName = pathParts[pathParts.length - 1];
               const extension = fileName.split('.').pop()?.toLowerCase() || '';
@@ -170,19 +175,20 @@
                 id: nextId,
                 path: filePath,
                 name: fileName,
-                content: content as string,
+                content: fileData.content,
                 encoding: 'utf-8',
                 language: getLanguageFromExtension(extension),
                 created: new Date(),
                 modified: new Date(),
                 isModified: false,
+                hash: fileData.hash,
                 cursor: {
                   line: 1,
                   column: 1
                 },
                 stats: {
-                  lines: (content as string).split('\n').length,
-                  length: (content as string).length
+                  lines: fileData.content.split('\n').length,
+                  length: fileData.content.length
                 }
               };
               
@@ -220,10 +226,10 @@
 
   async function handleFileDrop(filePath: string) {
     try {
-      const content = await invoke('read_file', { 
+      const fileData = await invoke('read_file', { 
         path: filePath,
         encoding: $editorStore.encoding 
-      });
+      }) as { content: string, hash: string };
       const pathParts = filePath.split(/[/\\]/);
       const fileName = pathParts[pathParts.length - 1];
       const extension = fileName.split('.').pop()?.toLowerCase() || '';
@@ -233,19 +239,20 @@
         id: nextId,
         path: filePath,
         name: fileName,
-        content: content as string,
+        content: fileData.content,
         encoding: 'utf-8',
         language: getLanguageFromExtension(extension),
         created: new Date(),
         modified: new Date(),
         isModified: false, // Dropped files start as not modified
+        hash: fileData.hash,
         cursor: {
           line: 1,
           column: 1
         },
         stats: {
-          lines: (content as string).split('\n').length,
-          length: (content as string).length
+          lines: fileData.content.split('\n').length,
+          length: fileData.content.length
         }
       }; 
 

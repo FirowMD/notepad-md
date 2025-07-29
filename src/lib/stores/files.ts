@@ -21,7 +21,7 @@ function createFileStore() {
   return {
     subscribe,
     addFile: (file: FileInfo) => update(store => {
-      const existingFile = store.files.find(f => f.path === file.path && file.path !== '');
+      const existingFile = store.files.find(f => f.hash === file.hash && file.hash !== '');
       if (existingFile) {
         return {
           ...store,
@@ -103,10 +103,10 @@ function createFileStore() {
       const filePath = recentFiles[0];
       
       try {
-        const content = await invoke('read_file', { 
+        const fileData = await invoke('read_file', { 
           path: filePath,
           encoding: config.default_encoding || 'utf-8'
-        });
+        }) as { content: string, hash: string };
         const pathParts = filePath.split(/[/\\]/);
         const fileName = pathParts[pathParts.length - 1];
         const extension = fileName.split('.').pop()?.toLowerCase() || '';
@@ -116,16 +116,17 @@ function createFileStore() {
           id: store.nextId.toString(),
           path: filePath,
           name: fileName,
-          content: content as string,
+          content: fileData.content,
           encoding: 'utf-8',
           language: getLanguageFromExtension(extension),
           created: new Date(),
           modified: new Date(),
           isModified: false, // Restored files are not modified
+          hash: fileData.hash,
           cursor: { line: 1, column: 1 },
           stats: {
-            lines: (content as string).split('\n').length,
-            length: (content as string).length
+            lines: fileData.content.split('\n').length,
+            length: fileData.content.length
           }
         };
         

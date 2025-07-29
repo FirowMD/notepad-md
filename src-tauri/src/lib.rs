@@ -9,6 +9,7 @@ use std::path::PathBuf;
 use tauri::Manager;
 use tauri::Emitter;
 use serde::{Deserialize, Serialize};
+use sha2::{Sha256, Digest};
 
 #[derive(Serialize, Deserialize)]
 struct AppConfig {
@@ -38,6 +39,18 @@ impl WatcherState {
             watchers: HashMap::new(),
         }
     }
+}
+
+fn calculate_file_hash(content: &str) -> String {
+    let mut hasher = Sha256::new();
+    hasher.update(content.as_bytes());
+    format!("{:x}", hasher.finalize())
+}
+
+#[derive(Serialize, Deserialize)]
+struct FileData {
+    content: String,
+    hash: String,
 }
 
 #[tauri::command]
@@ -101,11 +114,11 @@ fn create_default_config(config_file_path: &str, app_handle: &tauri::AppHandle) 
 }
 
 #[tauri::command]
-fn read_file(path: &str, encoding: Option<String>) -> Result<String, String> {
+fn read_file(path: &str, encoding: Option<String>) -> Result<FileData, String> {
     let bytes = fs::read(path).map_err(|e| e.to_string())?;
     
-    if let Some(enc) = encoding {
-        let result = match enc.to_uppercase().as_str() {
+    let content = if let Some(enc) = encoding {
+        match enc.to_uppercase().as_str() {
             "UTF-8" | "UTF8" => String::from_utf8_lossy(&bytes).into_owned(),
             "UTF-16LE" => {
                 let (decoded, _, _) = encoding_rs::UTF_16LE.decode(&bytes);
@@ -120,11 +133,19 @@ fn read_file(path: &str, encoding: Option<String>) -> Result<String, String> {
                 decoded.into_owned()
             },
             _ => String::from_utf8_lossy(&bytes).into_owned(),
-        };
-        return Ok(result);
-    }
+        }
+    } else {
+        String::from_utf8_lossy(&bytes).into_owned()
+    };
 
-    Ok(String::from_utf8_lossy(&bytes).into_owned())
+    let hash = calculate_file_hash(&content);
+    
+    Ok(FileData { content, hash })
+}
+
+#[tauri::command]
+fn calculate_file_hash_command(content: &str) -> String {
+    calculate_file_hash(content)
 }
 
 #[tauri::command]
@@ -318,6 +339,7 @@ pub fn run() {
             load_config,
             save_config,
             read_file,
+            calculate_file_hash_command,
             run_explorer,
             save_file,
             rename_file,

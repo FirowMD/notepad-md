@@ -139,7 +139,11 @@ function createFileStore() {
         
         await invoke('watch_file', { path: filePath });
       } catch (error) {
-        await message(`Failed to restore file: ${filePath}`, { title: 'Error' });
+        if (String(error).includes('File too large')) {
+          await message('File too large (>100MB). Large files are not supported.', { title: 'Error' });
+        } else {
+          await message(`Failed to restore file: ${filePath}`, { title: 'Error' });
+        }
         await configStore.save({
           recent_files: recentFiles.slice(1)
         });

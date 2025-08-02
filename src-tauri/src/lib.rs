@@ -115,6 +115,13 @@ fn create_default_config(config_file_path: &str, app_handle: &tauri::AppHandle) 
 
 #[tauri::command]
 fn read_file(path: &str, encoding: Option<String>) -> Result<FileData, String> {
+    let metadata = fs::metadata(path).map_err(|e| e.to_string())?;
+    let file_size = metadata.len();
+    
+    if file_size > 100 * 1024 * 1024 {
+        return Err("File too large (>100MB). Large files are not supported.".to_string());
+    }
+    
     let bytes = fs::read(path).map_err(|e| e.to_string())?;
     
     let content = if let Some(enc) = encoding {

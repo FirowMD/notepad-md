@@ -122,7 +122,11 @@
       }
     } catch (err) {
       console.error("Error opening file:", err);
-      notificationStore.show("Error opening file", "error");
+      if (String(err).includes('File too large')) {
+        notificationStore.show('File too large (>100MB). Large files are not supported.', 'warning');
+      } else {
+        notificationStore.show("Error opening file", "error");
+      }
     }
   }
 
@@ -228,7 +232,11 @@
           
         } catch (error) {
           console.error('Error changing file encoding:', error);
-          notificationStore.show("Error changing file encoding", "error");
+          if (String(error).includes('File too large')) {
+            notificationStore.show('File too large (>100MB). Large files are not supported.', 'warning');
+          } else {
+            notificationStore.show("Error changing file encoding", "error");
+          }
         }
       }
     } else {

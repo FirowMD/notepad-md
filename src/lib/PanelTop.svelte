@@ -45,29 +45,22 @@
   let isThemeMenuOpen = false;
 
   function handleNewFile() {
-    const nextId = ($fileStore.files.length + 1).toString();
-    const fileInfo = {
-      id: nextId,
-      path: '',
-      name: 'untitled.txt',
-      content: '',
-      encoding: 'utf-8',
-      language: 'plaintext',
-      created: new Date(),
-      modified: new Date(),
-      isModified: false,
-      hash: '',
-      cursor: {
-        line: 1,
-        column: 1
-      },
-      stats: {
-        lines: 1,
-        length: 0
-      }
-    };
+    fileStore.addUntitledFile();
+  }
 
-    fileStore.addFile(fileInfo);
+  async function handleCloseActiveFile() {
+    const activeFileId = $fileStore.activeFileId;
+    if (activeFileId) {
+      const activeFile = $fileStore.files.find(f => f.id === activeFileId);
+      if (activeFile?.path) {
+        try {
+          await invoke('unwatch_file', { path: activeFile.path });
+        } catch (error) {
+          console.error('Error unwatching file:', error);
+        }
+      }
+      fileStore.removeFile(activeFileId);
+    }
   }
 
   async function handleOpenFile() {
@@ -124,7 +117,7 @@
     } catch (err) {
       console.error("Error opening file:", err);
       if (String(err).includes('File too large')) {
-        notificationStore.show('File too large (>100MB). Large files are not supported.', 'warning');
+        notificationStore.show('File too large (>100MB). Large files are not supported.', 'error');
       } else {
         notificationStore.show("Error opening file", "error");
       }
@@ -244,6 +237,9 @@
     } else if (event.altKey && !event.ctrlKey && !event.shiftKey && event.code === 'KeyZ') {
       event.preventDefault();
       editorStore.setWordWrap(!wordWrap);
+    } else if ((event.ctrlKey || event.metaKey) && !event.shiftKey && event.code === 'KeyW') {
+      event.preventDefault();
+      handleCloseActiveFile();
     }
   }
 
@@ -277,7 +273,7 @@
         } catch (error) {
           console.error('Error changing file encoding:', error);
           if (String(error).includes('File too large')) {
-            notificationStore.show('File too large (>100MB). Large files are not supported.', 'warning');
+            notificationStore.show('File too large (>100MB). Large files are not supported.', 'error');
           } else {
             notificationStore.show("Error changing file encoding", "error");
           }

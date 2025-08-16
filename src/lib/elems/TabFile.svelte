@@ -197,9 +197,6 @@
     } else if (event.ctrlKey && event.shiftKey && event.code === 'KeyS') {
       event.preventDefault();
       handleSaveAs();
-    } else if (event.ctrlKey && !event.shiftKey && event.code === 'KeyW') {
-      event.preventDefault();
-      handleClose(new MouseEvent('click'));
     }
   }
 

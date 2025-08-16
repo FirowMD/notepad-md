@@ -9,17 +9,44 @@ interface FileStore {
   files: FileInfo[];
   activeFileId: string | null;
   nextId: number;
+  untitledCounter: number;
 }
 
 function createFileStore() {
   const { subscribe, set, update } = writable<FileStore>({
     files: [],
     activeFileId: null,
-    nextId: 1
+    nextId: 1,
+    untitledCounter: 0
   });
 
   return {
     subscribe,
+    addUntitledFile: () => update(store => {
+      const untitledName = `Untitled_${store.untitledCounter}.txt`;
+      const fileInfo = {
+        id: store.nextId.toString(),
+        path: '',
+        name: untitledName,
+        content: '',
+        encoding: 'utf-8',
+        language: 'plaintext',
+        created: new Date(),
+        modified: new Date(),
+        isModified: false,
+        hash: '',
+        cursor: { line: 1, column: 1 },
+        stats: { lines: 1, length: 0 }
+      };
+
+      return {
+        ...store,
+        files: [...store.files, fileInfo],
+        activeFileId: store.nextId.toString(),
+        nextId: store.nextId + 1,
+        untitledCounter: store.untitledCounter + 1
+      };
+    }),
     addFile: (file: FileInfo) => update(store => {
       const existingFile = store.files.find(f => f.hash === file.hash && file.hash !== '');
       if (existingFile) {

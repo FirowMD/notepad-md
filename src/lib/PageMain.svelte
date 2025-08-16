@@ -106,7 +106,7 @@
             } catch (error) {
               console.error('Error restoring file:', error);
               if (String(error).includes('File too large')) {
-                notificationStore.show('File too large (>100MB). Large files are not supported.', 'warning');
+                notificationStore.show('File too large (>100MB). Large files are not supported.', 'error');
               }
             }
           }
@@ -143,7 +143,7 @@
           } catch (error) {
             console.error('Error reading updated file:', error);
             if (String(error).includes('File too large')) {
-              notificationStore.show('File too large (>100MB). Large files are not supported.', 'warning');
+              notificationStore.show('File too large (>100MB). Large files are not supported.', 'error');
             }
           }
         }
@@ -201,7 +201,7 @@
             } catch (error) {
               console.error('Error loading new file:', error);
               if (String(error).includes('File too large')) {
-                notificationStore.show('File too large (>100MB). Large files are not supported.', 'warning');
+                notificationStore.show('File too large (>100MB). Large files are not supported.', 'error');
               }
             }
           }
@@ -268,7 +268,7 @@
     } catch (error) {
       console.error('Error reading file:', error);
       if (String(error).includes('File too large')) {
-        notificationStore.show('File too large (>100MB). Large files are not supported.', 'warning');
+        notificationStore.show('File too large (>100MB). Large files are not supported.', 'error');
       } else {
         notificationStore.show("Error reading file", "error");
       }

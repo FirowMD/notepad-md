@@ -26,7 +26,6 @@ function createNotificationStore() {
         notifications: [...state.notifications, notification]
       }));
 
-      // Auto-remove notification after duration
       setTimeout(() => {
         update(state => ({
           notifications: state.notifications.filter(n => n.id !== id)

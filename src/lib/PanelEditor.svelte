@@ -4,7 +4,6 @@
   import { writable } from 'svelte/store';
   import { editorStore } from './stores/editor';
   import { fileStore } from './stores/files';
-  import TopBar from './TopBar.svelte';
 
   const rawText = writable('');
 
@@ -13,17 +12,16 @@
   let editor: any;
 
   let previousActiveFileId: string | null = null;
-  let isSystemChange = false; // Track if change is from system vs user input
+  let isSystemChange = false;
   let editorInitialized = false;
-  let lastContentHash = ''; // Track content to detect actual changes
+  let lastContentHash = '';
 
-  // Function to create a simple hash of content
   function hashContent(content: string): string {
     let hash = 0;
     for (let i = 0; i < content.length; i++) {
       const char = content.charCodeAt(i);
       hash = ((hash << 5) - hash) + char;
-      hash = hash & hash; // Convert to 32-bit integer
+      hash = hash & hash;
     }
     return hash.toString();
   }
@@ -33,13 +31,11 @@
     if (activeFile && editor && editorInitialized) {
       const currentValue = editor.getValue();
       
-      // Only update if content is actually different
       if (currentValue !== activeFile.content) {
         isSystemChange = true;
         editor.setValue(activeFile.content);
         lastContentHash = hashContent(activeFile.content);
         
-        // Small delay to ensure the change handler processes this as system change
         setTimeout(() => {
           isSystemChange = false;
         }, 10);
@@ -48,7 +44,6 @@
       editorStore.setLanguage(activeFile.language);
       editor.getModel().setLanguage(activeFile.language);
       
-      // Only set cursor position when switching between files
       if (previousActiveFileId !== $fileStore.activeFileId) {
         editor.setPosition({
           lineNumber: activeFile.cursor.line,
@@ -70,7 +65,6 @@
       }, 10);
     }
     
-    // Update rawText for the writable store
     if (activeFile) {
       $rawText = activeFile.content;
     } else {
@@ -100,7 +94,6 @@
         }
       });
 
-      // Set initial content if there's an active file
       const activeFile = $fileStore.files.find(f => f.id === $fileStore.activeFileId);
       if (activeFile) {
         isSystemChange = true;
@@ -117,25 +110,20 @@
         const value = editor.getValue();
         const currentHash = hashContent(value);
         
-        // Update the writable store
         $rawText = value;
         
         if ($fileStore.activeFileId) {
-          // Always update file content
           fileStore.updateFile($fileStore.activeFileId, {
             content: value,
             modified: new Date()
           });
           
-          // Only mark as modified if this is a user change and content actually changed
           if (!isSystemChange && currentHash !== lastContentHash) {
             const activeFile = $fileStore.files.find(f => f.id === $fileStore.activeFileId);
             if (activeFile) {
-              // For new files (no path), mark as modified only if there's actual content
               if (!activeFile.path && value.trim() !== '') {
                 fileStore.markAsModified($fileStore.activeFileId);
               }
-              // For existing files, mark as modified on any user change
               else if (activeFile.path) {
                 fileStore.markAsModified($fileStore.activeFileId);
               }
@@ -163,7 +151,6 @@
       editor.onDidChangeCursorPosition((e: any) => {
         editorStore.setCursor(e.position.lineNumber, e.position.column);
 
-        // Save cursor position in current file
         if ($fileStore.activeFileId) {
           fileStore.updateFile($fileStore.activeFileId, {
             cursor: {
@@ -198,7 +185,6 @@
 </script>
 
 <div class="w-full h-full flex flex-col">
-  <TopBar />
   <div class="w-full h-full relative" bind:this={containerRef}>
     <EasyMonacoEditor onLoad={handleMonaco}>
       <div class="h-full w-full absolute inset-0" bind:this={editorRef}></div>

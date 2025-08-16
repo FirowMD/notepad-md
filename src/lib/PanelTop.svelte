@@ -1,6 +1,7 @@
 <script lang="ts">
   import { invoke } from "@tauri-apps/api/core";
-  import { FilePlus, FolderOpen, Save, WrapText, Eye, Palette, Code, RotateCcw, Info } from "lucide-svelte";
+  import { FilePlus, FolderOpen, Save, WrapText, Eye, Palette, Code, RotateCcw, Info, Minus, Square, X } from "lucide-svelte";
+  import { getCurrentWindow } from "@tauri-apps/api/window";
   import { editorStore } from './stores/editor';
   import { themeStore } from './stores/theme';
   import { fileStore } from './stores/files';
@@ -184,6 +185,46 @@
     await message('NotepadMD v.0.1.3', 'About');
   }
 
+  async function minimizeWindow(event: MouseEvent) {
+    event.stopPropagation();
+    try {
+      console.log('Attempting to minimize window...');
+      await getCurrentWindow().minimize();
+    } catch (error) {
+      console.error('Error minimizing window:', error);
+    }
+  }
+
+  async function toggleMaximizeWindow(event: MouseEvent) {
+    event.stopPropagation();
+    try {
+      console.log('Attempting to toggle maximize window...');
+      await getCurrentWindow().toggleMaximize();
+    } catch (error) {
+      console.error('Error toggling maximize:', error);
+    }
+  }
+
+  async function closeWindow(event: MouseEvent) {
+    event.stopPropagation();
+    try {
+      console.log('Attempting to close window...');
+      await getCurrentWindow().close();
+    } catch (error) {
+      console.error('Error closing window:', error);
+    }
+  }
+
+  $: windowTitle = (() => {
+    const activeFile = $fileStore.files.find(f => f.id === $fileStore.activeFileId);
+    if (activeFile) {
+      const fileName = activeFile.name || 'Untitled';
+      const modifiedIndicator = activeFile.isModified ? ' •' : '';
+      return `${fileName}${modifiedIndicator}`;
+    }
+    return 'NotepadMD';
+  })();
+
   function handleKeydown(event: KeyboardEvent) {
     if ((event.ctrlKey || event.metaKey) && !event.shiftKey && event.code === 'KeyN') {
       event.preventDefault();
@@ -253,7 +294,40 @@
   });
 </script>
 
-<div class="flex flex-row w-full min-h-[40px] max-h-[40px] bg-surface-800 items-center px-2 gap-2">
+<div class="flex flex-col w-full">
+  <div class="flex flex-row w-full min-h-[30px] max-h-[30px] bg-surface-900 items-center">
+    <div class="flex-1 px-3 text-sm font-medium text-surface-200 select-none" data-tauri-drag-region>
+      {windowTitle}
+    </div>
+    <div class="flex">
+      <button
+        type="button"
+        class="titlebar-button hover:bg-surface-700 w-[30px] h-[30px] flex items-center justify-center"
+        on:click={minimizeWindow}
+        title="Minimize"
+      >
+        <Minus size={14} />
+      </button>
+      <button
+        type="button"
+        class="titlebar-button hover:bg-surface-700 w-[30px] h-[30px] flex items-center justify-center"
+        on:click={toggleMaximizeWindow}
+        title="Maximize"
+      >
+        <Square size={12} />
+      </button>
+      <button
+        type="button"
+        class="titlebar-button hover:bg-red-600 w-[30px] h-[30px] flex items-center justify-center"
+        on:click={closeWindow}
+        title="Close"
+      >
+        <X size={14} />
+      </button>
+    </div>
+  </div>
+  
+  <div class="flex flex-row w-full min-h-[40px] max-h-[40px] bg-surface-800 items-center px-2 gap-2">
   <button 
     type="button" 
     class="btn btn-sm h-8 flex items-center preset-filled-surface-500 rounded-none"
@@ -433,4 +507,5 @@
   >
     <Info size={16} />
   </button>
+  </div>
 </div>

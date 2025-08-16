@@ -31,10 +31,8 @@
       let nextIndex;
       
       if (event.shiftKey) {
-        // Ctrl+Shift+Tab - move backwards
         nextIndex = currentIndex <= 0 ? files.length - 1 : currentIndex - 1;
       } else {
-        // Ctrl+Tab - move forwards
         nextIndex = currentIndex >= files.length - 1 ? 0 : currentIndex + 1;
       }
       
@@ -86,7 +84,7 @@
                 language: getLanguageFromExtension(extension),
                 created: new Date(),
                 modified: new Date(),
-                isModified: false, // Restored files start as not modified
+                isModified: false,
                 hash: fileData.hash,
                 cursor: {
                   line: 1,
@@ -135,9 +133,7 @@
         if (file) {
           try {
             const fileData = await invoke('read_file', { path: filePath }) as { content: string, hash: string };
-            // Only update if the content hash has actually changed
             if (fileData.hash !== file.hash) {
-              // Use updateFileFromExternal to preserve modified state
               fileStore.updateFileFromExternal(file.id, {
                 content: fileData.content,
                 hash: fileData.hash,
@@ -154,15 +150,12 @@
       });
 
       unlistenFilesUpdated = await listen('files-updated', async () => {
-        // Reload config and load any new files
         const config = await configStore.load();
         
         if (config && config.opened_files) {
           for (const filePath of config.opened_files) {
-            // Check if file is already open
             const existingFile = $fileStore.files.find(f => f.path === filePath);
             if (existingFile) {
-              // File already open, just set it as active
               fileStore.setActiveFile(existingFile.id);
               continue;
             }
@@ -253,7 +246,7 @@
         language: getLanguageFromExtension(extension),
         created: new Date(),
         modified: new Date(),
-        isModified: false, // Dropped files start as not modified
+        isModified: false,
         hash: fileData.hash,
         cursor: {
           line: 1,
@@ -304,6 +297,5 @@
     </div>
   {/if}
 
-  <!-- Import and use the new notification container -->
   <NotificationContainer />
 </div>

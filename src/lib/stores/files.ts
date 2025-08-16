@@ -28,11 +28,10 @@ function createFileStore() {
           activeFileId: existingFile.id
         };
       }
-      // Use nextId for new files
       const fileWithId = {
         ...file,
         id: store.nextId.toString(),
-        isModified: file.isModified ?? false // Ensure isModified is set
+        isModified: file.isModified ?? false
       };
 
       const newStore = {
@@ -121,7 +120,7 @@ function createFileStore() {
           language: getLanguageFromExtension(extension),
           created: new Date(),
           modified: new Date(),
-          isModified: false, // Restored files are not modified
+          isModified: false,
           hash: fileData.hash,
           cursor: { line: 1, column: 1 },
           stats: {
@@ -157,12 +156,10 @@ function createFileStore() {
       ...store,
       files: store.files.map(f => f.id === id ? { ...f, ...updates } : f)
     })),
-    // Update file content from external changes (don't mark as modified unless already modified)
     updateFileFromExternal: (id: string, updates: Partial<FileInfo>) => update(store => ({
       ...store,
       files: store.files.map(f => {
         if (f.id === id) {
-          // Keep the current modified state for external updates
           return { ...f, ...updates, isModified: f.isModified };
         }
         return f;

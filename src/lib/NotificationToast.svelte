@@ -16,7 +16,6 @@
     dispatch('close', notification.id);
   }
 
-  // Get type-specific classes as strings to help Tailwind parsing
   $: bgClass = notification.type === 'success' ? 'bg-gradient-to-r from-tertiary-500/10 to-tertiary-600/5' :
                notification.type === 'error' ? 'bg-gradient-to-r from-error-500/10 to-error-600/5' :
                'bg-gradient-to-r from-primary-500/10 to-primary-600/5';
@@ -44,7 +43,6 @@
   out:fly={{ x: 300, duration: 300, easing: quintOut }}
 >
   <div class="flex items-start gap-3 p-4">
-    <!-- Icon with animation -->
     <div 
       class="flex-shrink-0 w-6 h-6 rounded-full {iconClass} flex items-center justify-center shadow-md"
       in:scale={{ duration: 300, delay: 200, easing: quintOut }}
@@ -64,14 +62,12 @@
       {/if}
     </div>
     
-    <!-- Message content -->
     <div class="flex-1 min-w-0 pt-0.5">
       <p class="text-sm font-medium {textClass} leading-5 pr-2">
         {notification.message}
       </p>
     </div>
     
-    <!-- Close button -->
     <button
       type="button"
       class="flex-shrink-0 rounded-md p-1.5 {textClass} hover:bg-surface-600/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-transparent {ringClass} transition-all duration-200"

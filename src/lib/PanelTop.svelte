@@ -139,7 +139,10 @@
       let savePath: string | null = activeFile.path;
       
       if (!savePath) {
-        savePath = await save({});
+        const suggestedName = activeFile.name && activeFile.name !== 'Untitled' ? activeFile.name : 'untitled.txt';
+        savePath = await save({
+          defaultPath: suggestedName
+        });
 
         if (!savePath) return;
       }

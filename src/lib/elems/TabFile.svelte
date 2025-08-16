@@ -154,7 +154,10 @@
 
   async function handleSaveAs() {
     try {
-      const savePath = await save({});
+      const suggestedName = file.name && file.name !== 'Untitled' ? file.name : 'untitled.txt';
+      const savePath = await save({
+        defaultPath: suggestedName
+      });
       
       if (savePath) {
         await invoke('save_file', { 

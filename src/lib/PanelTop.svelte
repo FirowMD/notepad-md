@@ -178,7 +178,7 @@
   }
 
   async function handleAbout() {
-    await message('NotepadMD v.0.1.3', 'About');
+    await message('NotepadMD v.0.1.4', 'About');
   }
 
   async function minimizeWindow(event: MouseEvent) {

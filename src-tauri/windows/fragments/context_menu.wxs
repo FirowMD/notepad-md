@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+  <Fragment>
+    <DirectoryRef Id="TARGETDIR">
+      <Component Id="ContextMenuRegistryEntries" Guid="*">
+        
+        <!-- Context menu for all files -->
+        <RegistryKey
+          Root="HKCR"
+          Key="*\shell\Open with NotepadMD"
+          Action="createAndRemoveOnUninstall"
+        >
+          <RegistryValue
+            Type="string"
+            Value="Open with NotepadMD"
+            KeyPath="yes"
+          />
+          <RegistryValue
+            Type="string"
+            Name="Icon"
+            Value="[INSTALLDIR]notepad-md.exe,0"
+          />
+        </RegistryKey>
+        
+        <RegistryKey
+          Root="HKCR"
+          Key="*\shell\Open with NotepadMD\command"
+          Action="createAndRemoveOnUninstall"
+        >
+          <RegistryValue
+            Type="string"
+            Value="&quot;[INSTALLDIR]notepad-md.exe&quot; &quot;%1&quot;"
+          />
+        </RegistryKey>
+        
+        <!-- Context menu for directories -->
+        <RegistryKey
+          Root="HKCR"
+          Key="Directory\shell\Open with NotepadMD"
+          Action="createAndRemoveOnUninstall"
+        >
+          <RegistryValue
+            Type="string"
+            Value="Open with NotepadMD"
+          />
+          <RegistryValue
+            Type="string"
+            Name="Icon"
+            Value="[INSTALLDIR]notepad-md.exe,0"
+          />
+        </RegistryKey>
+        
+        <RegistryKey
+          Root="HKCR"
+          Key="Directory\shell\Open with NotepadMD\command"
+          Action="createAndRemoveOnUninstall"
+        >
+          <RegistryValue
+            Type="string"
+            Value="&quot;[INSTALLDIR]notepad-md.exe&quot; &quot;%1&quot;"
+          />
+        </RegistryKey>
+        
+        <!-- Context menu for directory background -->
+        <RegistryKey
+          Root="HKCR"
+          Key="Directory\Background\shell\Open with NotepadMD"
+          Action="createAndRemoveOnUninstall"
+        >
+          <RegistryValue
+            Type="string"
+            Value="Open with NotepadMD"
+          />
+          <RegistryValue
+            Type="string"
+            Name="Icon"
+            Value="[INSTALLDIR]notepad-md.exe,0"
+          />
+        </RegistryKey>
+        
+        <RegistryKey
+          Root="HKCR"
+          Key="Directory\Background\shell\Open with NotepadMD\command"
+          Action="createAndRemoveOnUninstall"
+        >
+          <RegistryValue
+            Type="string"
+            Value="&quot;[INSTALLDIR]notepad-md.exe&quot; &quot;%V&quot;"
+          />
+        </RegistryKey>
+        
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+</Wix>

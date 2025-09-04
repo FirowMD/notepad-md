@@ -221,6 +221,15 @@
     return 'NotepadMD';
   })();
 
+  async function startDragging(event: MouseEvent) {
+    event.preventDefault();
+    try {
+      await getCurrentWindow().startDragging();
+    } catch (error) {
+      console.error('Error starting drag:', error);
+    }
+  }
+
   function handleKeydown(event: KeyboardEvent) {
     if ((event.ctrlKey || event.metaKey) && !event.shiftKey && event.code === 'KeyN') {
       event.preventDefault();
@@ -295,7 +304,12 @@
 
 <div class="flex flex-col w-full">
   <div class="flex flex-row w-full min-h-[30px] max-h-[30px] bg-surface-900 items-center">
-    <div class="flex-1 px-3 text-sm font-medium text-surface-200 select-none" data-tauri-drag-region>
+    <div 
+      class="flex-1 px-3 text-sm font-medium text-surface-200 select-none cursor-move"
+      on:mousedown={startDragging}
+      role="button"
+      tabindex="-1"
+    >
       {windowTitle}
     </div>
     <div class="flex">

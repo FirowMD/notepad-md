@@ -282,7 +282,7 @@
 >
   <PanelTop />
   <PaneGroup direction="horizontal" class="flex w-full h-full">
-    <Pane defaultSize={20} minSize={10}>
+    <Pane defaultSize={20} minSize={20}>
       <PanelSide />
     </Pane>
     <PaneResizer class="w-1 bg-surface-700 hover:bg-primary-500/20 transition-colors cursor-col-resize" />

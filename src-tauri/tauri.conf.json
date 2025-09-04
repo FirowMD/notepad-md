@@ -34,9 +34,6 @@
       "icons/icon.ico"
     ],
     "windows": {
-      "webviewInstallMode": {
-        "type": "offlineInstaller"
-      },
       "wix": {
         "fragmentPaths": ["./windows/fragments/context_menu.wxs"],
         "componentRefs": ["ContextMenuRegistryEntries"]

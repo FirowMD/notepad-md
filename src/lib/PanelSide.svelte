@@ -16,7 +16,7 @@
     : files;
 </script>
 
-<div class="flex flex-col min-w-48 max-w-48 h-full bg-surface-900">
+<div class="flex flex-col w-full h-full bg-surface-900">
   <div class="flex items-center px-2 py-2 bg-surface-900 z-10">
     <div class="relative w-full">
       <input

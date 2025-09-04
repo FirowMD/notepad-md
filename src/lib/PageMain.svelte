@@ -4,6 +4,7 @@
   import PanelEditor from "../lib/PanelEditor.svelte";
   import PanelTop from "../lib/PanelTop.svelte";
   import NotificationContainer from "../lib/NotificationContainer.svelte";
+  import { PaneGroup, Pane, PaneResizer } from "paneforge";
   import { getCurrentWebview } from "@tauri-apps/api/webview";
   import { fileStore } from './stores/files';
   import { configStore } from './stores/configStore';
@@ -11,7 +12,6 @@
   import { editorStore } from './stores/editor';
   import { notificationStore } from './stores/notification';
   import { getLanguageFromExtension } from './stores/language';
-  import type { AppConfig } from './types/config';
   import { onMount, onDestroy } from 'svelte';
   import { listen } from '@tauri-apps/api/event';
 
@@ -281,10 +281,15 @@
   role="presentation"
 >
   <PanelTop />
-  <div class="flex flex-row w-full h-full">
-    <PanelSide />
-    <PanelEditor />
-  </div>
+  <PaneGroup direction="horizontal" class="flex w-full h-full">
+    <Pane defaultSize={20} minSize={10}>
+      <PanelSide />
+    </Pane>
+    <PaneResizer class="w-1 bg-surface-700 hover:bg-primary-500/20 transition-colors cursor-col-resize" />
+    <Pane defaultSize={80} minSize={30}>
+      <PanelEditor />
+    </Pane>
+  </PaneGroup>
 
   {#if isDragging}
     <div 

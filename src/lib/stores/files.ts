@@ -13,7 +13,7 @@ interface FileStore {
 }
 
 function createFileStore() {
-  const { subscribe, set, update } = writable<FileStore>({
+  const { subscribe, update } = writable<FileStore>({
     files: [],
     activeFileId: null,
     nextId: 1,
@@ -47,7 +47,7 @@ function createFileStore() {
         untitledCounter: store.untitledCounter + 1
       };
     }),
-    addFile: (file: FileInfo) => update(store => {
+    addFile: (file: FileInfo, skipConfigSave: boolean = false) => update(store => {
       const existingFile = store.files.find(f => f.hash === file.hash && file.hash !== '');
       if (existingFile) {
         return {
@@ -68,10 +68,12 @@ function createFileStore() {
         nextId: store.nextId + 1
       };
       
-      const openedFiles = newStore.files
-        .filter(f => f.path)
-        .map(f => f.path);
-      configStore.save({ opened_files: openedFiles });
+      if (!skipConfigSave) {
+        const openedFiles = newStore.files
+          .filter(f => f.path)
+          .map(f => f.path);
+        configStore.save({ opened_files: openedFiles });
+      }
       
       return newStore;
     }),
@@ -205,11 +207,18 @@ function createFileStore() {
         ...file
       }));
 
-      return {
+      const newStore = {
         ...store,
         files: updatedFiles,
         activeFileId: store.activeFileId
       };
+      
+      const openedFiles = newStore.files
+        .filter(f => f.path)
+        .map(f => f.path);
+      configStore.save({ opened_files: openedFiles });
+      
+      return newStore;
     })
   };
 }

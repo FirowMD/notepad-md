@@ -64,6 +64,7 @@
         }
         
         if (config.opened_files) {
+          const loadedFiles = [];
           for (const filePath of config.opened_files) {
             try {
               const fileData = await invoke('read_file', { 
@@ -96,7 +97,8 @@
                 }
               };
               
-              fileStore.addFile(fileInfo);
+              fileStore.addFile(fileInfo, true);
+              loadedFiles.push(filePath);
               
               try {
                 await invoke('watch_file', { path: filePath });
@@ -109,6 +111,10 @@
                 notificationStore.show('File too large (>100MB). Large files are not supported.', 'error');
               }
             }
+          }
+          
+          if (loadedFiles.length > 0) {
+            configStore.save({ opened_files: loadedFiles });
           }
         }
       }

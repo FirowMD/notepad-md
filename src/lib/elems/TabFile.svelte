@@ -69,6 +69,22 @@
     contextMenuStore.close();
   }
 
+  async function handleOpenInNewWindow() {
+    if (!file.path) {
+      notificationStore.show("Please save the file first", "warning");
+      contextMenuStore.close();
+      return;
+    }
+    
+    try {
+      await invoke('open_in_new_window', { path: file.path });
+    } catch (error) {
+      console.error('Failed to open in new window:', error);
+      notificationStore.show("Failed to open in new window", "error");
+    }
+    contextMenuStore.close();
+  }
+
   let contextMenuElement: HTMLDivElement;
 
   function handleWindowClick(event: MouseEvent) {
@@ -278,15 +294,21 @@
     >
       <button
         class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
-        on:click={handleOpenFilePath}
-      >
-        Open file path
-      </button>
-      <button
-        class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
         on:click={handleRename}
       >
         Rename
+      </button>
+      <button
+        class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
+        on:click={handleOpenInNewWindow}
+      >
+        Open in new window
+      </button>
+      <button
+        class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
+        on:click={handleOpenFilePath}
+      >
+        Open file path
       </button>
       <button
         class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"

@@ -202,6 +202,38 @@ fn run_explorer(path: &str) -> Result<(), String> {
 }
 
 #[tauri::command]
+fn open_in_new_window(path: &str) -> Result<(), String> {
+    let current_exe = std::env::current_exe()
+        .map_err(|e| format!("Failed to get current executable: {}", e))?;
+    
+    #[cfg(target_os = "windows")]
+    {
+        Command::new(current_exe)
+            .args(["--no-single-instance", path])
+            .spawn()
+            .map_err(|e| format!("Failed to open new window: {}", e))?;
+    }
+    
+    #[cfg(target_os = "macos")]
+    {
+        Command::new(current_exe)
+            .args(["--no-single-instance", path])
+            .spawn()
+            .map_err(|e| format!("Failed to open new window: {}", e))?;
+    }
+    
+    #[cfg(target_os = "linux")]
+    {
+        Command::new(current_exe)
+            .args(["--no-single-instance", path])
+            .spawn()
+            .map_err(|e| format!("Failed to open new window: {}", e))?;
+    }
+    
+    Ok(())
+}
+
+#[tauri::command]
 fn watch_file(path: String, window: tauri::Window) -> Result<(), String> {
     let app_handle = window.app_handle();
     let state = app_handle.state::<Mutex<WatcherState>>();
@@ -283,9 +315,12 @@ fn add_to_opened_files(app_handle: &tauri::AppHandle, path: String) -> Result<()
 pub fn run() {
     let cli_args: Vec<String> = std::env::args().collect();
     let mut files_to_open: Vec<String> = Vec::new();
+    let mut skip_single_instance = false;
 
     for arg in cli_args.iter().skip(1) {
-        if let Ok(canonical_path) = std::fs::canonicalize(arg) {
+        if arg == "--no-single-instance" {
+            skip_single_instance = true;
+        } else if let Ok(canonical_path) = std::fs::canonicalize(arg) {
             if canonical_path.exists() {
                 if let Some(path_str) = canonical_path.to_str() {
                     files_to_open.push(path_str.to_string());
@@ -298,22 +333,26 @@ pub fn run() {
 
     #[cfg(desktop)]
     {
-        builder = builder.plugin(tauri_plugin_single_instance::init(|app, argv, _cwd| {
-            let _ = load_config(app.clone());
-            
-            for path in argv.iter().skip(1) {
-                if let Ok(canonical_path) = std::fs::canonicalize(path) {
-                    if canonical_path.exists() {
-                        if let Some(path_str) = canonical_path.to_str() {
-                            add_to_opened_files(&app, path_str.to_string()).unwrap();
+        if !skip_single_instance {
+            builder = builder.plugin(tauri_plugin_single_instance::init(|app, argv, _cwd| {
+                let _ = load_config(app.clone());
+                
+                for path in argv.iter().skip(1) {
+                    if path != "--no-single-instance" {
+                        if let Ok(canonical_path) = std::fs::canonicalize(path) {
+                            if canonical_path.exists() {
+                                if let Some(path_str) = canonical_path.to_str() {
+                                    add_to_opened_files(&app, path_str.to_string()).unwrap();
+                                }
+                            }
                         }
                     }
                 }
-            }
-            let window = app.get_webview_window("main").unwrap();
-            let _ = window.set_focus();
-            let _ = window.emit("files-updated", ());
-        }));
+                let window = app.get_webview_window("main").unwrap();
+                let _ = window.set_focus();
+                let _ = window.emit("files-updated", ());
+            }));
+        }
     }
 
     let app = builder
@@ -348,6 +387,7 @@ pub fn run() {
             read_file,
             calculate_file_hash_command,
             run_explorer,
+            open_in_new_window,
             save_file,
             rename_file,
             watch_file,

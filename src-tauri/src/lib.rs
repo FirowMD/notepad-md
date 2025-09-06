@@ -1,6 +1,5 @@
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 use std::fs;
-use std::path::Path;
 use std::process::Command;
 use std::sync::Mutex;
 use notify::{Watcher, RecursiveMode, Event};
@@ -11,23 +10,8 @@ use tauri::Emitter;
 use serde::{Deserialize, Serialize};
 use sha2::{Sha256, Digest};
 
-#[derive(Serialize, Deserialize)]
-struct AppConfig {
-    colorscheme: Option<String>,
-    recent_files: Option<Vec<String>>,
-    opened_files: Option<Vec<String>>,
-    font_size: Option<i32>,
-    word_wrap: Option<bool>,
-    show_invisibles: Option<bool>
-}
-
-struct AppData {
-    app_config: AppConfig,
-}
-
-struct Storage {
-    app_data: Mutex<AppData>,
-}
+mod config;
+use config::{Storage, ConfigManager};
 
 struct WatcherState {
     watchers: HashMap<String, notify::RecommendedWatcher>,
@@ -53,65 +37,6 @@ struct FileData {
     hash: String,
 }
 
-#[tauri::command]
-fn load_config(app_handle: tauri::AppHandle) -> Result<(), String> {
-    let config_dir = app_handle.path().config_dir().unwrap();
-    let config_path = config_dir.to_str().unwrap();
-    let config_file_path = format!("{}/notepad-md.json", config_path);
-
-    if Path::new(&config_file_path).exists() {
-        read_config(&config_file_path, &app_handle)?;
-    } else {
-        create_default_config(&config_file_path, &app_handle)?;
-    }
-
-    Ok(())
-}
-
-#[tauri::command]
-fn save_config(app_handle: tauri::AppHandle, config: AppConfig) -> Result<(), String> {
-    let config_dir = app_handle.path().config_dir().unwrap();
-    let config_path = config_dir.to_str().unwrap();
-    let config_file_path = format!("{}/notepad-md.json", config_path);
-
-    let config_str = serde_json::to_string(&config).map_err(|e| e.to_string())?;
-    std::fs::write(&config_file_path, config_str).map_err(|e| e.to_string())?;
-
-    Ok(()) 
-}
-
-fn read_config(config_file_path: &str, app_handle: &tauri::AppHandle) -> Result<(), String> {
-    let config_file = std::fs::File::open(config_file_path).map_err(|e| e.to_string())?;
-    let app_config: AppConfig = serde_json::from_reader(config_file).map_err(|e| e.to_string())?;
-    let app_data = app_handle.state::<Storage>();
-    let mut app_data = app_data.app_data.lock().map_err(|e| e.to_string())?;
-    
-    app_data.app_config = app_config;
-    Ok(())
-}
-
-fn create_default_config(config_file_path: &str, app_handle: &tauri::AppHandle) -> Result<(), String> {
-    let _ = std::fs::File::create(config_file_path).map_err(|e| e.to_string())?;
-    
-    let default_config = AppConfig {
-        colorscheme: Some("NotepadMD".to_string()),
-        recent_files: Some(vec![]),
-        opened_files: Some(vec![]),
-        font_size: Some(14),
-        word_wrap: Some(false),
-        show_invisibles: Some(false)
-    };
-
-    let default_config_str = serde_json::to_string(&default_config).map_err(|e| e.to_string())?;
-    std::fs::write(config_file_path, default_config_str).map_err(|e| e.to_string())?;
-
-    let app_data = app_handle.state::<Storage>();
-    let mut app_data = app_data.app_data.lock().map_err(|e| e.to_string())?;
-
-    app_data.app_config = default_config;
-
-    Ok(())
-}
 
 #[tauri::command]
 fn read_file(path: &str, encoding: Option<String>) -> Result<FileData, String> {
@@ -274,42 +199,6 @@ fn unwatch_file(path: String, window: tauri::Window) -> Result<(), String> {
     Ok(())
 }
 
-#[tauri::command]
-fn get_config(app_handle: tauri::AppHandle) -> Result<AppConfig, String> {
-    let app_data = app_handle.state::<Storage>();
-    let app_data = app_data.app_data.lock().map_err(|e| e.to_string())?;
-    Ok(AppConfig {
-        colorscheme: app_data.app_config.colorscheme.clone(),
-        recent_files: app_data.app_config.recent_files.clone(),
-        opened_files: app_data.app_config.opened_files.clone(),
-        font_size: app_data.app_config.font_size.clone(),
-        word_wrap: app_data.app_config.word_wrap.clone(),
-        show_invisibles: app_data.app_config.show_invisibles.clone()
-    })
-}
-
-fn add_to_opened_files(app_handle: &tauri::AppHandle, path: String) -> Result<(), String> {
-    let app_data = app_handle.state::<Storage>();
-    let mut app_data = app_data.app_data.lock().map_err(|e| e.to_string())?;
-    
-    let mut opened_files = app_data.app_config.opened_files.take().unwrap_or_default();
-    
-    if !opened_files.contains(&path) {
-        opened_files.push(path);
-        app_data.app_config.opened_files = Some(opened_files);
-        
-        save_config(app_handle.clone(), AppConfig {
-            colorscheme: app_data.app_config.colorscheme.clone(),
-            recent_files: app_data.app_config.recent_files.clone(),
-            opened_files: app_data.app_config.opened_files.clone(),
-            font_size: app_data.app_config.font_size.clone(),
-            word_wrap: app_data.app_config.word_wrap.clone(),
-            show_invisibles: app_data.app_config.show_invisibles.clone()
-        })?;
-    }
-    
-    Ok(())
-}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -335,14 +224,14 @@ pub fn run() {
     {
         if !skip_single_instance {
             builder = builder.plugin(tauri_plugin_single_instance::init(|app, argv, _cwd| {
-                let _ = load_config(app.clone());
+                let _ = ConfigManager::load_config(&app);
                 
                 for path in argv.iter().skip(1) {
                     if path != "--no-single-instance" {
                         if let Ok(canonical_path) = std::fs::canonicalize(path) {
                             if canonical_path.exists() {
                                 if let Some(path_str) = canonical_path.to_str() {
-                                    add_to_opened_files(&app, path_str.to_string()).unwrap();
+                                    ConfigManager::add_to_opened_files(&app, path_str.to_string()).unwrap();
                                 }
                             }
                         }
@@ -359,31 +248,20 @@ pub fn run() {
         .manage(Mutex::new(WatcherState::new()))
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
-        .manage(Storage {
-            app_data: Mutex::new(AppData {
-                app_config: AppConfig {
-                    colorscheme: None,
-                    recent_files: None,
-                    opened_files: None,
-                    font_size: None,
-                    word_wrap: None,
-                    show_invisibles: None
-                },
-            }),
-        })
+        .manage(Storage::new())
         .setup(move |app| {
-            let _ = load_config(app.handle().clone());
+            let _ = ConfigManager::load_config(&app.handle());
             
             for file_path in files_to_open {
-                let _ = add_to_opened_files(&app.handle(), file_path);
+                let _ = ConfigManager::add_to_opened_files(&app.handle(), file_path);
             }
             
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            get_config,
-            load_config,
-            save_config,
+            config::get_config,
+            config::load_config,
+            config::save_config,
             read_file,
             calculate_file_hash_command,
             run_explorer,

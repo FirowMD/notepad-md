@@ -202,11 +202,13 @@ fn unwatch_file(path: String, window: tauri::Window) -> Result<(), String> {
 
 #[tauri::command]
 fn get_monaco_themes(app_handle: tauri::AppHandle) -> Result<Vec<String>, String> {
-    let config_dir = app_handle
-        .path()
-        .config_dir()
-        .map_err(|e| e.to_string())?;
-    let themes_dir = config_dir.join("NotepadMD").join("monaco-editor");
+    let notepad_dir = config::ConfigManager::get_notepad_md_dir(&app_handle)?;
+    let themes_dir = notepad_dir.join("monaco-editor");
+    
+    // Create the monaco-editor directory if it doesn't exist
+    if !themes_dir.exists() {
+        fs::create_dir_all(&themes_dir).map_err(|e| e.to_string())?;
+    }
     
     let mut themes = vec!["vs".to_string(), "vs-dark".to_string(), "hc-black".to_string()];
     
@@ -235,11 +237,8 @@ fn read_monaco_theme(app_handle: tauri::AppHandle, theme_name: String) -> Result
         return Ok(String::new());
     }
     
-    let config_dir = app_handle
-        .path()
-        .config_dir()
-        .map_err(|e| e.to_string())?;
-    let theme_path = config_dir.join("NotepadMD").join("monaco-editor").join(format!("{}.json", theme_name));
+    let notepad_dir = config::ConfigManager::get_notepad_md_dir(&app_handle)?;
+    let theme_path = notepad_dir.join("monaco-editor").join(format!("{}.json", theme_name));
     
     if !theme_path.exists() {
         return Err(format!("Theme file not found: {}", theme_name));

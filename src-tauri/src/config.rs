@@ -171,20 +171,28 @@ impl Storage {
 pub struct ConfigManager;
 
 impl ConfigManager {
-    pub fn get_global_config_path(app_handle: &tauri::AppHandle) -> Result<PathBuf, String> {
+    pub fn get_notepad_md_dir(app_handle: &tauri::AppHandle) -> Result<PathBuf, String> {
         let config_dir = app_handle
             .path()
             .config_dir()
             .map_err(|e| e.to_string())?;
-        Ok(config_dir.join("notepad-md-global.json"))
+        let notepad_dir = config_dir.join("NotepadMD");
+        
+        if !notepad_dir.exists() {
+            fs::create_dir_all(&notepad_dir).map_err(|e| e.to_string())?;
+        }
+        
+        Ok(notepad_dir)
+    }
+    
+    pub fn get_global_config_path(app_handle: &tauri::AppHandle) -> Result<PathBuf, String> {
+        let notepad_dir = Self::get_notepad_md_dir(app_handle)?;
+        Ok(notepad_dir.join("notepad-md-global.json"))
     }
 
     pub fn get_instance_config_path(app_handle: &tauri::AppHandle, instance_id: &str) -> Result<PathBuf, String> {
-        let config_dir = app_handle
-            .path()
-            .config_dir()
-            .map_err(|e| e.to_string())?;
-        let instances_dir = config_dir.join("notepad-md-instances");
+        let notepad_dir = Self::get_notepad_md_dir(app_handle)?;
+        let instances_dir = notepad_dir.join("notepad-md-instances");
         
         if !instances_dir.exists() {
             fs::create_dir_all(&instances_dir).map_err(|e| e.to_string())?;
@@ -202,26 +210,68 @@ impl ConfigManager {
     }
 
     pub fn migrate_legacy_config(app_handle: &tauri::AppHandle) -> Result<(), String> {
+        // First check for legacy notepad-md.json
         let legacy_path = Self::get_legacy_config_path(app_handle)?;
-        if !legacy_path.exists() {
-            return Ok(());
+        if legacy_path.exists() {
+            let legacy_config = AppConfig::from_file(&legacy_path)?;
+            
+            let global_path = Self::get_global_config_path(app_handle)?;
+            if !global_path.exists() {
+                let global_config = legacy_config.to_global();
+                global_config.save_to_file(&global_path)?;
+            }
+            
+            let instance_path = Self::get_instance_config_path(app_handle, "main")?;
+            if !instance_path.exists() {
+                let instance_config = legacy_config.to_instance();
+                instance_config.save_to_file(&instance_path)?;
+            }
+            
+            fs::remove_file(legacy_path).ok();
         }
-
-        let legacy_config = AppConfig::from_file(&legacy_path)?;
         
-        let global_path = Self::get_global_config_path(app_handle)?;
-        if !global_path.exists() {
-            let global_config = legacy_config.to_global();
-            global_config.save_to_file(&global_path)?;
+        // Now check for old locations of notepad-md-global.json and notepad-md-instances
+        let config_dir = app_handle
+            .path()
+            .config_dir()
+            .map_err(|e| e.to_string())?;
+        
+        // Migrate old global config if it exists
+        let old_global_path = config_dir.join("notepad-md-global.json");
+        if old_global_path.exists() {
+            let new_global_path = Self::get_global_config_path(app_handle)?;
+            if !new_global_path.exists() {
+                fs::rename(&old_global_path, &new_global_path).map_err(|e| e.to_string())?;
+            } else {
+                fs::remove_file(old_global_path).ok();
+            }
         }
         
-        let instance_path = Self::get_instance_config_path(app_handle, "main")?;
-        if !instance_path.exists() {
-            let instance_config = legacy_config.to_instance();
-            instance_config.save_to_file(&instance_path)?;
+        // Migrate old instances directory if it exists
+        let old_instances_dir = config_dir.join("notepad-md-instances");
+        if old_instances_dir.exists() {
+            let notepad_dir = Self::get_notepad_md_dir(app_handle)?;
+            let new_instances_dir = notepad_dir.join("notepad-md-instances");
+            
+            if !new_instances_dir.exists() {
+                fs::rename(&old_instances_dir, &new_instances_dir).map_err(|e| e.to_string())?;
+            } else {
+                // If new instances dir already exists, copy files over
+                if let Ok(entries) = fs::read_dir(&old_instances_dir) {
+                    for entry in entries {
+                        if let Ok(entry) = entry {
+                            let file_name = entry.file_name();
+                            let old_file = old_instances_dir.join(&file_name);
+                            let new_file = new_instances_dir.join(&file_name);
+                            if !new_file.exists() {
+                                fs::copy(&old_file, &new_file).ok();
+                            }
+                        }
+                    }
+                }
+                fs::remove_dir_all(old_instances_dir).ok();
+            }
         }
-        
-        fs::remove_file(legacy_path).ok();
         
         Ok(())
     }

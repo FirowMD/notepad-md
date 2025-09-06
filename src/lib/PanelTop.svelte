@@ -251,6 +251,9 @@
     } else if ((event.ctrlKey || event.metaKey) && !event.shiftKey && event.code === 'KeyW') {
       event.preventDefault();
       handleCloseActiveFile();
+    } else if ((event.ctrlKey || event.metaKey) && !event.shiftKey && event.code === 'KeyB') {
+      event.preventDefault();
+      sidePanelStore.toggle();
     }
   }
 
@@ -517,7 +520,7 @@
     type="button" 
     class="btn btn-sm h-8 flex items-center {isSidePanelVisible ? 'preset-tonal-surface' : 'preset-filled-surface-500'} rounded-none"
     on:click={() => sidePanelStore.toggle()}
-    title="Show/Hide Side Panel"
+    title="Show/Hide Side Panel (Ctrl+B)"
   >
     {#if isSidePanelVisible}
       <PanelLeftClose size={16} />

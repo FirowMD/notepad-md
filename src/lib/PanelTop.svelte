@@ -1,12 +1,13 @@
 <script lang="ts">
   import { invoke } from "@tauri-apps/api/core";
-  import { FilePlus, FolderOpen, Save, WrapText, Eye, Palette, Code, RotateCcw, Info, Minus, Square, X, PanelLeftClose, PanelLeft } from "lucide-svelte";
+  import { FilePlus, FolderOpen, Save, WrapText, Eye, Palette, Code, RotateCcw, Info, Minus, Square, X, PanelLeftClose, PanelLeft, FileCode } from "lucide-svelte";
   import { getCurrentWindow } from "@tauri-apps/api/window";
   import { editorStore } from './stores/editor';
   import { themeStore } from './stores/theme';
   import { fileStore } from './stores/files';
   import { notificationStore } from './stores/notification';
   import { sidePanelStore } from './stores/sidePanelStore';
+  import { monacoThemeStore } from './stores/monacoTheme';
   import { availableLanguages, getLanguageFromExtension } from './stores/language';
   import { open, save, message } from '@tauri-apps/plugin-dialog';
   import { onMount } from 'svelte';
@@ -16,6 +17,7 @@
   $: language = $editorStore.language;
   $: fontSize = $editorStore.fontSize;
   $: isSidePanelVisible = $sidePanelStore;
+  $: monacoTheme = $monacoThemeStore;
 
   let isFontSizeMenuOpen = false;
   const fontSizes = [8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32];
@@ -45,6 +47,8 @@
   ] as const;
 
   let isThemeMenuOpen = false;
+  let isMonacoThemeMenuOpen = false;
+  let availableMonacoThemes: string[] = ['vs', 'vs-dark', 'hc-black'];
 
   function handleNewFile() {
     fileStore.addUntitledFile();
@@ -301,6 +305,14 @@
 
   onMount(() => {
     window.addEventListener('keydown', handleKeydown);
+    
+    // Load available Monaco themes
+    monacoThemeStore.getAvailableThemes().then(themes => {
+      availableMonacoThemes = themes;
+    }).catch(error => {
+      console.error('Error loading Monaco themes:', error);
+    });
+    
     return () => {
       window.removeEventListener('keydown', handleKeydown);
     };
@@ -420,6 +432,38 @@
             on:click={() => {
               themeStore.setTheme(theme);
               isThemeMenuOpen = false;
+            }}
+          >
+            {theme}
+          </button>
+        {/each}
+      </div>
+    {/if}
+  </div>
+  <div class="relative">
+    <button 
+      type="button" 
+      class="btn btn-sm h-8 flex items-center {isMonacoThemeMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500'} rounded-none"
+      on:click={() => isMonacoThemeMenuOpen = !isMonacoThemeMenuOpen}
+      title="Monaco Editor Theme"
+    >
+      <FileCode size={16} />
+    </button>
+    {#if isMonacoThemeMenuOpen}
+      <div 
+        role="menu"
+        tabindex="0"
+        class="absolute left-0 top-full mt-1 w-48 bg-surface-700 shadow-xl z-50 max-h-64 overflow-y-auto"
+        on:mouseleave={() => isMonacoThemeMenuOpen = false}
+      >
+        {#each availableMonacoThemes as theme}
+          <button
+            role="menuitem"
+            class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
+            class:bg-surface-500={monacoTheme === theme}
+            on:click={() => {
+              monacoThemeStore.setTheme(theme);
+              isMonacoThemeMenuOpen = false;
             }}
           >
             {theme}

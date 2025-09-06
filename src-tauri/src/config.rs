@@ -7,6 +7,7 @@ use tauri::Manager;
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct GlobalConfig {
     pub colorscheme: Option<String>,
+    pub monaco_editor_theme: Option<String>,
     pub font_size: Option<i32>,
     pub word_wrap: Option<bool>,
     pub show_invisibles: Option<bool>,
@@ -16,6 +17,7 @@ impl Default for GlobalConfig {
     fn default() -> Self {
         Self {
             colorscheme: Some("NotepadMD".to_string()),
+            monaco_editor_theme: Some("vs-dark".to_string()),
             font_size: Some(14),
             word_wrap: Some(false),
             show_invisibles: Some(false),
@@ -41,6 +43,7 @@ impl Default for InstanceConfig {
 #[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct AppConfig {
     pub colorscheme: Option<String>,
+    pub monaco_editor_theme: Option<String>,
     pub recent_files: Option<Vec<String>>,
     pub opened_files: Option<Vec<String>>,
     pub font_size: Option<i32>,
@@ -52,6 +55,7 @@ impl Default for AppConfig {
     fn default() -> Self {
         Self {
             colorscheme: Some("NotepadMD".to_string()),
+            monaco_editor_theme: Some("vs-dark".to_string()),
             recent_files: Some(vec![]),
             opened_files: Some(vec![]),
             font_size: Some(14),
@@ -69,6 +73,7 @@ impl AppConfig {
     pub fn from_global_and_instance(global: GlobalConfig, instance: InstanceConfig) -> Self {
         Self {
             colorscheme: global.colorscheme,
+            monaco_editor_theme: global.monaco_editor_theme,
             font_size: global.font_size,
             word_wrap: global.word_wrap,
             show_invisibles: global.show_invisibles,
@@ -80,6 +85,7 @@ impl AppConfig {
     pub fn to_global(&self) -> GlobalConfig {
         GlobalConfig {
             colorscheme: self.colorscheme.clone(),
+            monaco_editor_theme: self.monaco_editor_theme.clone(),
             font_size: self.font_size,
             word_wrap: self.word_wrap,
             show_invisibles: self.show_invisibles,

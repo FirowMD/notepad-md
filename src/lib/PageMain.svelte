@@ -9,6 +9,7 @@
   import { fileStore } from './stores/files';
   import { configStore } from './stores/configStore';
   import { themeStore } from './stores/theme';
+  import { monacoThemeStore } from './stores/monacoTheme';
   import { editorStore } from './stores/editor';
   import { notificationStore } from './stores/notification';
   import { sidePanelStore } from './stores/sidePanelStore';
@@ -50,6 +51,11 @@
       if (config) {
         if (config.colorscheme) {
           themeStore.loadTheme(config.colorscheme);
+        }
+
+        if (config.monaco_editor_theme) {
+          // Just set the store value, the actual theme will be applied when Monaco loads
+          monacoThemeStore.set(config.monaco_editor_theme);
         }
         
         if (config.font_size) {

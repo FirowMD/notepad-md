@@ -2,6 +2,7 @@ import type { Theme } from '../stores/theme';
 
 export interface AppConfig {
   colorscheme?: Theme;
+  monaco_editor_theme?: string;
   recent_files?: string[];
   opened_files?: string[];
   font_size?: number;

@@ -71,7 +71,7 @@
 
   async function handleOpenInNewWindow() {
     if (!file.path) {
-      notificationStore.show("Please save the file first", "warning");
+      notificationStore.show("Please save the file first", "info");
       contextMenuStore.close();
       return;
     }

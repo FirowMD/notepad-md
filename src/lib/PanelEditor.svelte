@@ -4,12 +4,16 @@
   import { writable } from 'svelte/store';
   import { editorStore } from './stores/editor';
   import { fileStore } from './stores/files';
+  import { monacoThemeStore } from './stores/monacoTheme';
+  import { configStore } from './stores/configStore';
 
   const rawText = writable('');
 
   let editorRef: HTMLDivElement;
   let containerRef: HTMLDivElement;
   let editor: any;
+
+  $: monacoTheme = $monacoThemeStore;
 
   let previousActiveFileId: string | null = null;
   let isSystemChange = false;
@@ -80,12 +84,27 @@
     });
   }
   
-  const handleMonaco = (monaco: any) => {
+  const handleMonaco = async (monaco: any) => {
     if (monaco && editorRef) {
+      // Store Monaco instance in the theme store
+      monacoThemeStore.setMonaco(monaco);
+      
+      // Get the current theme from config or store
+      const config = await configStore.load();
+      const currentTheme = config?.monaco_editor_theme || $monacoThemeStore || 'vs-dark';
+      
+      // Update the store to match config
+      monacoThemeStore.set(currentTheme);
+      
+      // Set the theme if it's a custom theme
+      if (currentTheme && currentTheme !== 'vs' && currentTheme !== 'vs-dark' && currentTheme !== 'hc-black') {
+        await monacoThemeStore.setTheme(currentTheme);
+      }
+      
       editor = monaco.editor.create(editorRef, {
         value: '',
         language: 'markdown',
-        theme: 'vs-dark',
+        theme: currentTheme || 'vs-dark',
         fontSize: $editorStore.fontSize,
         wordWrap: $editorStore.wordWrap ? 'on' : 'off',
         renderWhitespace: $editorStore.showInvisibles ? 'all' : 'none',

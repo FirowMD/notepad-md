@@ -36,6 +36,12 @@ function createConfigStore() {
       } catch (error) {
         console.error('Error saving config:', error);
       }
+    },
+    updateConfig: (config: AppConfig) => {
+      set(config);
+      invoke('save_config', { config }).catch(error => {
+        console.error('Error saving config:', error);
+      });
     }
   };
 }

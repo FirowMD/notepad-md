@@ -200,6 +200,53 @@ fn unwatch_file(path: String, window: tauri::Window) -> Result<(), String> {
     Ok(())
 }
 
+#[tauri::command]
+fn get_monaco_themes(app_handle: tauri::AppHandle) -> Result<Vec<String>, String> {
+    let config_dir = app_handle
+        .path()
+        .config_dir()
+        .map_err(|e| e.to_string())?;
+    let themes_dir = config_dir.join("NotepadMD").join("monaco-editor");
+    
+    let mut themes = vec!["vs".to_string(), "vs-dark".to_string(), "hc-black".to_string()];
+    
+    if themes_dir.exists() {
+        let entries = fs::read_dir(&themes_dir).map_err(|e| e.to_string())?;
+        for entry in entries {
+            if let Ok(entry) = entry {
+                let path = entry.path();
+                if path.extension().and_then(|s| s.to_str()) == Some("json") {
+                    if let Some(filename) = path.file_stem() {
+                        if let Some(theme_name) = filename.to_str() {
+                            themes.push(theme_name.to_string());
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    Ok(themes)
+}
+
+#[tauri::command]
+fn read_monaco_theme(app_handle: tauri::AppHandle, theme_name: String) -> Result<String, String> {
+    if theme_name == "vs" || theme_name == "vs-dark" || theme_name == "hc-black" {
+        return Ok(String::new());
+    }
+    
+    let config_dir = app_handle
+        .path()
+        .config_dir()
+        .map_err(|e| e.to_string())?;
+    let theme_path = config_dir.join("NotepadMD").join("monaco-editor").join(format!("{}.json", theme_name));
+    
+    if !theme_path.exists() {
+        return Err(format!("Theme file not found: {}", theme_name));
+    }
+    
+    fs::read_to_string(theme_path).map_err(|e| e.to_string())
+}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -274,7 +321,9 @@ pub fn run() {
             save_file,
             rename_file,
             watch_file,
-            unwatch_file
+            unwatch_file,
+            get_monaco_themes,
+            read_monaco_theme
         ]);
     
     app.run(tauri::generate_context!())

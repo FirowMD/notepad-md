@@ -183,7 +183,7 @@
   }
 
   async function handleAbout() {
-    await message('NotepadMD v.0.1.5', 'About');
+    await message('NotepadMD v.0.2.0', 'About');
   }
 
 

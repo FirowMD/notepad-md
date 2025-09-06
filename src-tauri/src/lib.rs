@@ -12,6 +12,7 @@ use sha2::{Sha256, Digest};
 
 mod config;
 use config::{Storage, ConfigManager};
+use chrono::Local;
 
 struct WatcherState {
     watchers: HashMap<String, notify::RecommendedWatcher>,
@@ -205,10 +206,13 @@ pub fn run() {
     let cli_args: Vec<String> = std::env::args().collect();
     let mut files_to_open: Vec<String> = Vec::new();
     let mut skip_single_instance = false;
+    let mut instance_id = String::from("main");
 
     for arg in cli_args.iter().skip(1) {
         if arg == "--no-single-instance" {
             skip_single_instance = true;
+            let timestamp = Local::now().format("%Y%m%d_%H%M%S_%3f").to_string();
+            instance_id = format!("instance_{}", timestamp);
         } else if let Ok(canonical_path) = std::fs::canonicalize(arg) {
             if canonical_path.exists() {
                 if let Some(path_str) = canonical_path.to_str() {
@@ -248,8 +252,9 @@ pub fn run() {
         .manage(Mutex::new(WatcherState::new()))
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
-        .manage(Storage::new())
+        .manage(Storage::with_instance_id(instance_id.clone()))
         .setup(move |app| {
+            let _ = ConfigManager::set_instance_id(&app.handle(), instance_id);
             let _ = ConfigManager::load_config(&app.handle());
             
             for file_path in files_to_open {

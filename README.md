@@ -30,9 +30,9 @@ To set up monaco themes you need to copy `.json` files to `C:\Users\<username>\A
 JSON files can be found [here](https://github.com/brijeshb42/monaco-themes/tree/master/themes)
 
 <div style="display: flex; gap: 10px;">
-    <img src="docs/images/nmd-1.png" alt="Notepad MD Screenshot 1" width="33%">
-    <img src="docs/images/nmd-2.png" alt="Notepad MD Screenshot 2" width="33%">
-    <img src="docs/images/nmd-3.png" alt="Notepad MD Screenshot 3" width="33%">
+    <img src="docs/images/nmd-1.png" alt="Notepad MD Screenshot 1" width="30%">
+    <img src="docs/images/nmd-2.png" alt="Notepad MD Screenshot 2" width="30%">
+    <img src="docs/images/nmd-3.png" alt="Notepad MD Screenshot 3" width="30%">
 </div>
 
 ## Keyboard Shortcuts

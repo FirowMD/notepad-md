@@ -1,6 +1,6 @@
 <script lang="ts">
   import { invoke } from "@tauri-apps/api/core";
-  import { FilePlus, FolderOpen, Save, WrapText, Eye, Palette, Code, RotateCcw, Info, Minus, Square, X, PanelLeftClose, PanelLeft, FileCode } from "lucide-svelte";
+  import { FilePlus, FolderOpen, Save, WrapText, Eye, Palette, Code, RotateCcw, Info, PanelLeftClose, PanelLeft, FileCode } from "lucide-svelte";
   import { getCurrentWindow } from "@tauri-apps/api/window";
   import { editorStore } from './stores/editor';
   import { themeStore } from './stores/theme';
@@ -187,35 +187,6 @@
     await message('NotepadMD v.0.1.5', 'About');
   }
 
-  async function minimizeWindow(event: MouseEvent) {
-    event.stopPropagation();
-    try {
-      console.log('Attempting to minimize window...');
-      await getCurrentWindow().minimize();
-    } catch (error) {
-      console.error('Error minimizing window:', error);
-    }
-  }
-
-  async function toggleMaximizeWindow(event: MouseEvent) {
-    event.stopPropagation();
-    try {
-      console.log('Attempting to toggle maximize window...');
-      await getCurrentWindow().toggleMaximize();
-    } catch (error) {
-      console.error('Error toggling maximize:', error);
-    }
-  }
-
-  async function closeWindow(event: MouseEvent) {
-    event.stopPropagation();
-    try {
-      console.log('Attempting to close window...');
-      await getCurrentWindow().close();
-    } catch (error) {
-      console.error('Error closing window:', error);
-    }
-  }
 
   $: windowTitle = (() => {
     const activeFile = $fileStore.files.find(f => f.id === $fileStore.activeFileId);
@@ -328,32 +299,6 @@
       tabindex="-1"
     >
       {windowTitle}
-    </div>
-    <div class="flex">
-      <button
-        type="button"
-        class="titlebar-button hover:bg-surface-700 w-[30px] h-[30px] flex items-center justify-center"
-        on:click={minimizeWindow}
-        title="Minimize"
-      >
-        <Minus size={14} />
-      </button>
-      <button
-        type="button"
-        class="titlebar-button hover:bg-surface-700 w-[30px] h-[30px] flex items-center justify-center"
-        on:click={toggleMaximizeWindow}
-        title="Maximize"
-      >
-        <Square size={12} />
-      </button>
-      <button
-        type="button"
-        class="titlebar-button hover:bg-red-600 w-[30px] h-[30px] flex items-center justify-center"
-        on:click={closeWindow}
-        title="Close"
-      >
-        <X size={14} />
-      </button>
     </div>
   </div>
   

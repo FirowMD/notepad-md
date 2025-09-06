@@ -210,7 +210,6 @@ impl ConfigManager {
     }
 
     pub fn migrate_legacy_config(app_handle: &tauri::AppHandle) -> Result<(), String> {
-        // First check for legacy notepad-md.json
         let legacy_path = Self::get_legacy_config_path(app_handle)?;
         if legacy_path.exists() {
             let legacy_config = AppConfig::from_file(&legacy_path)?;
@@ -230,13 +229,11 @@ impl ConfigManager {
             fs::remove_file(legacy_path).ok();
         }
         
-        // Now check for old locations of notepad-md-global.json and notepad-md-instances
         let config_dir = app_handle
             .path()
             .config_dir()
             .map_err(|e| e.to_string())?;
         
-        // Migrate old global config if it exists
         let old_global_path = config_dir.join("notepad-md-global.json");
         if old_global_path.exists() {
             let new_global_path = Self::get_global_config_path(app_handle)?;
@@ -247,7 +244,6 @@ impl ConfigManager {
             }
         }
         
-        // Migrate old instances directory if it exists
         let old_instances_dir = config_dir.join("notepad-md-instances");
         if old_instances_dir.exists() {
             let notepad_dir = Self::get_notepad_md_dir(app_handle)?;
@@ -256,7 +252,6 @@ impl ConfigManager {
             if !new_instances_dir.exists() {
                 fs::rename(&old_instances_dir, &new_instances_dir).map_err(|e| e.to_string())?;
             } else {
-                // If new instances dir already exists, copy files over
                 if let Ok(entries) = fs::read_dir(&old_instances_dir) {
                     for entry in entries {
                         if let Ok(entry) = entry {

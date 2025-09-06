@@ -205,7 +205,6 @@ fn get_monaco_themes(app_handle: tauri::AppHandle) -> Result<Vec<String>, String
     let notepad_dir = config::ConfigManager::get_notepad_md_dir(&app_handle)?;
     let themes_dir = notepad_dir.join("monaco-editor");
     
-    // Create the monaco-editor directory if it doesn't exist
     if !themes_dir.exists() {
         fs::create_dir_all(&themes_dir).map_err(|e| e.to_string())?;
     }

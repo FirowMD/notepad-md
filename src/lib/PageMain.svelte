@@ -11,6 +11,7 @@
   import { themeStore } from './stores/theme';
   import { editorStore } from './stores/editor';
   import { notificationStore } from './stores/notification';
+  import { sidePanelStore } from './stores/sidePanelStore';
   import { getLanguageFromExtension } from './stores/language';
   import { onMount, onDestroy } from 'svelte';
   import { listen } from '@tauri-apps/api/event';
@@ -288,11 +289,13 @@
 >
   <PanelTop />
   <PaneGroup direction="horizontal" class="flex w-full h-full">
-    <Pane defaultSize={20} minSize={20}>
-      <PanelSide />
-    </Pane>
-    <PaneResizer class="w-1 bg-surface-700 hover:bg-primary-500/20 transition-colors cursor-col-resize" />
-    <Pane defaultSize={80} minSize={30}>
+    {#if $sidePanelStore}
+      <Pane defaultSize={20} minSize={20}>
+        <PanelSide />
+      </Pane>
+      <PaneResizer class="w-1 bg-surface-700 hover:bg-primary-500/20 transition-colors cursor-col-resize" />
+    {/if}
+    <Pane defaultSize={$sidePanelStore ? 80 : 100} minSize={30}>
       <PanelEditor />
     </Pane>
   </PaneGroup>

@@ -1,11 +1,12 @@
 <script lang="ts">
   import { invoke } from "@tauri-apps/api/core";
-  import { FilePlus, FolderOpen, Save, WrapText, Eye, Palette, Code, RotateCcw, Info, Minus, Square, X } from "lucide-svelte";
+  import { FilePlus, FolderOpen, Save, WrapText, Eye, Palette, Code, RotateCcw, Info, Minus, Square, X, PanelLeftClose, PanelLeft } from "lucide-svelte";
   import { getCurrentWindow } from "@tauri-apps/api/window";
   import { editorStore } from './stores/editor';
   import { themeStore } from './stores/theme';
   import { fileStore } from './stores/files';
   import { notificationStore } from './stores/notification';
+  import { sidePanelStore } from './stores/sidePanelStore';
   import { availableLanguages, getLanguageFromExtension } from './stores/language';
   import { open, save, message } from '@tauri-apps/plugin-dialog';
   import { onMount } from 'svelte';
@@ -14,6 +15,7 @@
   $: showInvisibles = $editorStore.showInvisibles;
   $: language = $editorStore.language;
   $: fontSize = $editorStore.fontSize;
+  $: isSidePanelVisible = $sidePanelStore;
 
   let isFontSizeMenuOpen = false;
   const fontSizes = [8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32];
@@ -511,6 +513,18 @@
       </div>
     {/if}
   </div>
+  <button 
+    type="button" 
+    class="btn btn-sm h-8 flex items-center {isSidePanelVisible ? 'preset-tonal-surface' : 'preset-filled-surface-500'} rounded-none"
+    on:click={() => sidePanelStore.toggle()}
+    title="Show/Hide Side Panel"
+  >
+    {#if isSidePanelVisible}
+      <PanelLeftClose size={16} />
+    {:else}
+      <PanelLeft size={16} />
+    {/if}
+  </button>
   <div class="w-px h-6 bg-surface-700 mx-1"></div>
   <button
     type="button"

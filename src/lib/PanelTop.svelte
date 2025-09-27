@@ -9,7 +9,7 @@
   import { monacoThemeStore } from './stores/monacoTheme';
   import { availableLanguages, getLanguageFromExtension } from './stores/language';
   import { configStore } from './stores/configStore';
-  import { open, save, message } from '@tauri-apps/plugin-dialog';
+  import { open, save, message, ask } from '@tauri-apps/plugin-dialog';
   import { onMount } from 'svelte';
 
   $: wordWrap = $editorStore.wordWrap;
@@ -126,8 +126,23 @@
       }
     } catch (err) {
       console.error("Error opening file:", err);
-      if (String(err).includes('File too large')) {
+      const errorStr = String(err);
+      if (errorStr.includes('File too large')) {
         notificationStore.show('File too large (>100MB). Large files are not supported.', 'error');
+      } else if (errorStr.includes('PERMISSION_DENIED')) {
+        const isAdmin = await invoke('check_admin_privileges') as boolean;
+        if (!isAdmin) {
+          const shouldRelaunch = await ask(
+            `Failed to open file due to insufficient permissions.\n\nWould you like to restart the application with administrator privileges?`,
+            { title: 'Permission Denied', kind: 'warning' }
+          );
+          if (shouldRelaunch) {
+            const files = $fileStore.files.map(f => f.path).filter(p => p);
+            await invoke('relaunch_as_admin', { args: files });
+          }
+        } else {
+          notificationStore.show('Permission denied even with admin privileges.', 'error');
+        }
       } else {
         notificationStore.show("Error opening file", "error");
       }
@@ -227,9 +242,23 @@
       isRecentFilesMenuOpen = false;
     } catch (err) {
       console.error("Error opening recent file:", err);
-      if (String(err).includes('File too large')) {
+      const errorStr = String(err);
+      if (errorStr.includes('File too large')) {
         notificationStore.show('File too large (>100MB). Large files are not supported.', 'error');
-      } else if (String(err).includes('No such file')) {
+      } else if (errorStr.includes('PERMISSION_DENIED')) {
+        const isAdmin = await invoke('check_admin_privileges') as boolean;
+        if (!isAdmin) {
+          const shouldRelaunch = await ask(
+            `Failed to open file due to insufficient permissions.\n\nWould you like to restart the application with administrator privileges?`,
+            { title: 'Permission Denied', kind: 'warning' }
+          );
+          if (shouldRelaunch) {
+            await invoke('relaunch_as_admin', { args: [filePath] });
+          }
+        } else {
+          notificationStore.show('Permission denied even with admin privileges.', 'error');
+        }
+      } else if (errorStr.includes('No such file')) {
         notificationStore.show('File not found. It may have been moved or deleted.', 'error');
         // Remove from recent files if it doesn't exist
         const updatedRecent = recentFiles.filter(f => f !== filePath);
@@ -285,7 +314,24 @@
       
     } catch (err) {
       console.error("Error saving file:", err);
-      notificationStore.show("Error saving file", "error");
+      const errorStr = String(err);
+      if (errorStr.includes('PERMISSION_DENIED')) {
+        const isAdmin = await invoke('check_admin_privileges') as boolean;
+        if (!isAdmin) {
+          const shouldRelaunch = await ask(
+            `Failed to save file due to insufficient permissions.\n\nWould you like to restart the application with administrator privileges?`,
+            { title: 'Permission Denied', kind: 'warning' }
+          );
+          if (shouldRelaunch) {
+            const files = $fileStore.files.map(f => f.path).filter(p => p);
+            await invoke('relaunch_as_admin', { args: files });
+          }
+        } else {
+          notificationStore.show('Permission denied even with admin privileges.', 'error');
+        }
+      } else {
+        notificationStore.show("Error saving file", "error");
+      }
     }
   }
 
@@ -366,8 +412,23 @@
           
         } catch (error) {
           console.error('Error changing file encoding:', error);
-          if (String(error).includes('File too large')) {
+          const errorStr = String(error);
+          if (errorStr.includes('File too large')) {
             notificationStore.show('File too large (>100MB). Large files are not supported.', 'error');
+          } else if (errorStr.includes('PERMISSION_DENIED')) {
+            const isAdmin = await invoke('check_admin_privileges') as boolean;
+            if (!isAdmin) {
+              const shouldRelaunch = await ask(
+                `Failed to read file due to insufficient permissions.\n\nWould you like to restart the application with administrator privileges?`,
+                { title: 'Permission Denied', kind: 'warning' }
+              );
+              if (shouldRelaunch) {
+                const files = $fileStore.files.map(f => f.path).filter(p => p);
+                await invoke('relaunch_as_admin', { args: files });
+              }
+            } else {
+              notificationStore.show('Permission denied even with admin privileges.', 'error');
+            }
           } else {
             notificationStore.show("Error changing file encoding", "error");
           }

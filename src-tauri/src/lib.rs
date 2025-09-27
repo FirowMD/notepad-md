@@ -9,6 +9,7 @@ use tauri::Manager;
 use tauri::Emitter;
 use serde::{Deserialize, Serialize};
 use sha2::{Sha256, Digest};
+use std::io::ErrorKind;
 
 mod config;
 use config::{Storage, ConfigManager};
@@ -41,14 +42,24 @@ struct FileData {
 
 #[tauri::command]
 fn read_file(path: &str, encoding: Option<String>) -> Result<FileData, String> {
-    let metadata = fs::metadata(path).map_err(|e| e.to_string())?;
+    let metadata = fs::metadata(path).map_err(|e| {
+        if e.kind() == ErrorKind::PermissionDenied {
+            return format!("PERMISSION_DENIED: {}", e);
+        }
+        e.to_string()
+    })?;
     let file_size = metadata.len();
     
     if file_size > 100 * 1024 * 1024 {
         return Err("File too large (>100MB). Large files are not supported.".to_string());
     }
     
-    let bytes = fs::read(path).map_err(|e| e.to_string())?;
+    let bytes = fs::read(path).map_err(|e| {
+        if e.kind() == ErrorKind::PermissionDenied {
+            return format!("PERMISSION_DENIED: {}", e);
+        }
+        e.to_string()
+    })?;
     
     let content = if let Some(enc) = encoding {
         match enc.to_uppercase().as_str() {
@@ -83,7 +94,12 @@ fn calculate_file_hash_command(content: &str) -> String {
 
 #[tauri::command]
 fn save_file(path: &str, content: &str) -> Result<(), String> {
-    fs::write(path, content).map_err(|e| e.to_string())
+    fs::write(path, content).map_err(|e| {
+        if e.kind() == ErrorKind::PermissionDenied {
+            return format!("PERMISSION_DENIED: {}", e);
+        }
+        e.to_string()
+    })
 }
 
 #[tauri::command]
@@ -251,6 +267,110 @@ fn read_monaco_theme(app_handle: tauri::AppHandle, theme_name: String) -> Result
     fs::read_to_string(theme_path).map_err(|e| e.to_string())
 }
 
+#[tauri::command]
+fn check_admin_privileges() -> bool {
+    #[cfg(target_os = "windows")]
+    {
+        use windows_sys::Win32::Foundation::{HANDLE, CloseHandle};
+        use windows_sys::Win32::Security::{GetTokenInformation, TokenElevation, TOKEN_ELEVATION, TOKEN_QUERY};
+        use windows_sys::Win32::System::Threading::{GetCurrentProcess, OpenProcessToken};
+        
+        unsafe {
+            let mut token_handle: HANDLE = std::ptr::null_mut();
+            if OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &mut token_handle) != 0 {
+                let mut elevation = TOKEN_ELEVATION { TokenIsElevated: 0 };
+                let mut size: u32 = std::mem::size_of::<TOKEN_ELEVATION>() as u32;
+                let result = GetTokenInformation(
+                    token_handle,
+                    TokenElevation,
+                    &mut elevation as *mut _ as *mut _,
+                    size,
+                    &mut size,
+                );
+                CloseHandle(token_handle);
+                return result != 0 && elevation.TokenIsElevated != 0;
+            }
+        }
+        false
+    }
+    
+    #[cfg(not(target_os = "windows"))]
+    {
+        unsafe { libc::geteuid() == 0 }
+    }
+}
+
+#[tauri::command]
+fn relaunch_as_admin(args: Vec<String>) -> Result<(), String> {
+    let current_exe = std::env::current_exe()
+        .map_err(|e| format!("Failed to get current executable: {}", e))?;
+    
+    #[cfg(target_os = "windows")]
+    {
+        use std::os::windows::process::CommandExt;
+        
+        let mut cmd = Command::new("cmd");
+        cmd.creation_flags(0x08000000); // CREATE_NO_WINDOW
+        
+        cmd.args(&[
+            "/c",
+            "powershell",
+            "-Command",
+            &format!(
+                "Start-Process -FilePath '{}' -ArgumentList '{}' -Verb RunAs",
+                current_exe.to_string_lossy(),
+                args.join(" ")
+            ),
+        ]);
+        
+        cmd.spawn()
+            .map_err(|e| format!("Failed to relaunch as admin: {}", e))?;
+        
+        std::process::exit(0);
+    }
+    
+    #[cfg(target_os = "macos")]
+    {
+        let mut cmd = Command::new("osascript");
+        let script = format!(
+            "do shell script \"'{}' {}\" with administrator privileges",
+            current_exe.to_string_lossy(),
+            args.join(" ")
+        );
+        cmd.args(&["-e", &script]);
+        
+        cmd.spawn()
+            .map_err(|e| format!("Failed to relaunch as admin: {}", e))?;
+        
+        std::process::exit(0);
+    }
+    
+    #[cfg(target_os = "linux")]
+    {
+        let mut cmd = if Command::new("pkexec").output().is_ok() {
+            let mut cmd = Command::new("pkexec");
+            cmd.arg(current_exe);
+            cmd.args(&args);
+            cmd
+        } else if Command::new("gksudo").output().is_ok() {
+            let mut cmd = Command::new("gksudo");
+            cmd.arg(current_exe);
+            cmd.args(&args);
+            cmd
+        } else {
+            let mut cmd = Command::new("sudo");
+            cmd.arg(current_exe);
+            cmd.args(&args);
+            cmd
+        };
+        
+        cmd.spawn()
+            .map_err(|e| format!("Failed to relaunch as admin: {}", e))?;
+        
+        std::process::exit(0);
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let cli_args: Vec<String> = std::env::args().collect();
@@ -327,7 +447,9 @@ pub fn run() {
             watch_file,
             unwatch_file,
             get_monaco_themes,
-            read_monaco_theme
+            read_monaco_theme,
+            check_admin_privileges,
+            relaunch_as_admin
         ]);
     
     app.run(tauri::generate_context!())

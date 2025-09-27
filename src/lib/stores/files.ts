@@ -1,7 +1,7 @@
 import { writable, get } from 'svelte/store';
 import type { FileInfo } from '../types/file';
 import { configStore } from './configStore';
-import { message } from '@tauri-apps/plugin-dialog';
+import { message, ask } from '@tauri-apps/plugin-dialog';
 import { invoke } from "@tauri-apps/api/core";
 import { getLanguageFromExtension } from './language';
 
@@ -167,8 +167,22 @@ function createFileStore() {
         
         await invoke('watch_file', { path: filePath });
       } catch (error) {
-        if (String(error).includes('File too large')) {
+        const errorStr = String(error);
+        if (errorStr.includes('File too large')) {
           await message('File too large (>100MB). Large files are not supported.', { title: 'Error' });
+        } else if (errorStr.includes('PERMISSION_DENIED')) {
+          const isAdmin = await invoke('check_admin_privileges') as boolean;
+          if (!isAdmin) {
+            const shouldRelaunch = await ask(
+              `Failed to open file due to insufficient permissions.\n\nWould you like to restart the application with administrator privileges?`,
+              { title: 'Permission Denied', kind: 'warning' }
+            );
+            if (shouldRelaunch) {
+              await invoke('relaunch_as_admin', { args: [filePath] });
+            }
+          } else {
+            await message(`Failed to restore file: ${filePath}\n\nPermission denied even with admin privileges.`, { title: 'Error' });
+          }
         } else {
           await message(`Failed to restore file: ${filePath}`, { title: 'Error' });
         }

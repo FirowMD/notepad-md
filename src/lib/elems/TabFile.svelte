@@ -202,7 +202,7 @@
 
   async function handleDelete() {
     if (!file.path) {
-      notificationStore.show("Cannot delete unsaved file", "warning");
+      notificationStore.show("Cannot delete unsaved file", "error");
       contextMenuStore.close();
       return;
     }

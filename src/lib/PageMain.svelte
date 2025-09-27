@@ -16,6 +16,7 @@
   import { getLanguageFromExtension } from './stores/language';
   import { onMount, onDestroy } from 'svelte';
   import { listen } from '@tauri-apps/api/event';
+  import { ask } from '@tauri-apps/plugin-dialog';
 
   let isDragging = false;
   let unlisten: (() => void) | undefined;
@@ -114,8 +115,22 @@
               }
             } catch (error) {
               console.error('Error restoring file:', error);
-              if (String(error).includes('File too large')) {
+              const errorStr = String(error);
+              if (errorStr.includes('File too large')) {
                 notificationStore.show('File too large (>100MB). Large files are not supported.', 'error');
+              } else if (errorStr.includes('PERMISSION_DENIED')) {
+                const isAdmin = await invoke('check_admin_privileges') as boolean;
+                if (!isAdmin) {
+                  const shouldRelaunch = await ask(
+                    `Failed to open file due to insufficient permissions.\n\nWould you like to restart the application with administrator privileges?`,
+                    { title: 'Permission Denied', kind: 'warning' }
+                  );
+                  if (shouldRelaunch) {
+                    await invoke('relaunch_as_admin', { args: [filePath] });
+                  }
+                } else {
+                  notificationStore.show('Permission denied even with admin privileges.', 'error');
+                }
               }
             }
           }
@@ -155,8 +170,23 @@
             }
           } catch (error) {
             console.error('Error reading updated file:', error);
-            if (String(error).includes('File too large')) {
+            const errorStr = String(error);
+            if (errorStr.includes('File too large')) {
               notificationStore.show('File too large (>100MB). Large files are not supported.', 'error');
+            } else if (errorStr.includes('PERMISSION_DENIED')) {
+              const isAdmin = await invoke('check_admin_privileges') as boolean;
+              if (!isAdmin) {
+                const shouldRelaunch = await ask(
+                  `Failed to read file due to insufficient permissions.\n\nWould you like to restart the application with administrator privileges?`,
+                  { title: 'Permission Denied', kind: 'warning' }
+                );
+                if (shouldRelaunch) {
+                  const files = $fileStore.files.map(f => f.path).filter(p => p);
+                  await invoke('relaunch_as_admin', { args: files });
+                }
+              } else {
+                notificationStore.show('Permission denied even with admin privileges.', 'error');
+              }
             }
           }
         }
@@ -213,8 +243,22 @@
               }
             } catch (error) {
               console.error('Error loading new file:', error);
-              if (String(error).includes('File too large')) {
+              const errorStr = String(error);
+              if (errorStr.includes('File too large')) {
                 notificationStore.show('File too large (>100MB). Large files are not supported.', 'error');
+              } else if (errorStr.includes('PERMISSION_DENIED')) {
+                const isAdmin = await invoke('check_admin_privileges') as boolean;
+                if (!isAdmin) {
+                  const shouldRelaunch = await ask(
+                    `Failed to open file due to insufficient permissions.\n\nWould you like to restart the application with administrator privileges?`,
+                    { title: 'Permission Denied', kind: 'warning' }
+                  );
+                  if (shouldRelaunch) {
+                    await invoke('relaunch_as_admin', { args: [filePath] });
+                  }
+                } else {
+                  notificationStore.show('Permission denied even with admin privileges.', 'error');
+                }
               }
             }
           }
@@ -280,8 +324,22 @@
       }
     } catch (error) {
       console.error('Error reading file:', error);
-      if (String(error).includes('File too large')) {
+      const errorStr = String(error);
+      if (errorStr.includes('File too large')) {
         notificationStore.show('File too large (>100MB). Large files are not supported.', 'error');
+      } else if (errorStr.includes('PERMISSION_DENIED')) {
+        const isAdmin = await invoke('check_admin_privileges') as boolean;
+        if (!isAdmin) {
+          const shouldRelaunch = await ask(
+            `Failed to open file due to insufficient permissions.\n\nWould you like to restart the application with administrator privileges?`,
+            { title: 'Permission Denied', kind: 'warning' }
+          );
+          if (shouldRelaunch) {
+            await invoke('relaunch_as_admin', { args: [filePath] });
+          }
+        } else {
+          notificationStore.show('Permission denied even with admin privileges.', 'error');
+        }
       } else {
         notificationStore.show("Error reading file", "error");
       }

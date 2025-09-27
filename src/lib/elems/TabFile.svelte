@@ -294,12 +294,6 @@
     >
       <button
         class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
-        on:click={handleRename}
-      >
-        Rename
-      </button>
-      <button
-        class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
         on:click={handleOpenInNewWindow}
       >
         Open in new window
@@ -309,6 +303,12 @@
         on:click={handleOpenFilePath}
       >
         Open file path
+      </button>
+      <button
+        class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
+        on:click={handleRename}
+      >
+        Rename
       </button>
       <button
         class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"

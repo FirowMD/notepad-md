@@ -93,6 +93,11 @@ fn rename_file(old_path: String, new_path: String) -> Result<(), String> {
 }
 
 #[tauri::command]
+fn delete_file(path: String) -> Result<(), String> {
+    trash::delete(&path).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
 fn run_explorer(path: &str) -> Result<(), String> {
     #[cfg(target_os = "windows")]
     {
@@ -318,6 +323,7 @@ pub fn run() {
             open_in_new_window,
             save_file,
             rename_file,
+            delete_file,
             watch_file,
             unwatch_file,
             get_monaco_themes,

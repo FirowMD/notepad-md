@@ -200,6 +200,25 @@
     contextMenuStore.close();
   }
 
+  async function handleDelete() {
+    if (!file.path) {
+      notificationStore.show("Cannot delete unsaved file", "warning");
+      contextMenuStore.close();
+      return;
+    }
+
+    try {
+      await invoke('unwatch_file', { path: file.path });
+      await invoke('delete_file', { path: file.path });
+      fileStore.removeFile(file.id);
+      notificationStore.show("File moved to recycle bin", "success", 2500);
+    } catch (error) {
+      console.error('Error deleting file:', error);
+      notificationStore.show("Error deleting file", "error");
+    }
+    contextMenuStore.close();
+  }
+
   
   function handleKeydown(event: KeyboardEvent) {
     if (!isActive) return;
@@ -315,6 +334,12 @@
         on:click={handleSaveAs}
       >
         Save as
+      </button>
+      <button
+        class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
+        on:click={handleDelete}
+      >
+        Delete
       </button>
       <button
         class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"

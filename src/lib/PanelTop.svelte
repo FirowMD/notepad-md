@@ -340,7 +340,7 @@
   }
 
   async function handleAbout() {
-    await message('NotepadMD v.0.2.0', 'About');
+    await message('NotepadMD v.0.2.1', 'About');
   }
 
 

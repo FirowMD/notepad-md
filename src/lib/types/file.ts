@@ -7,6 +7,7 @@ export interface FileInfo {
   language: string;
   created: Date;
   modified: Date;
+  fileSystemModified?: Date; // File system's last modified time
   isModified: boolean;
   hash: string;
   cursor: {

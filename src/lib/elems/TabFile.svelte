@@ -56,8 +56,8 @@
     }
   }
 
-  $: dateCreated = file.created.toLocaleDateString();
-  $: timeCreated = file.created.toLocaleTimeString();
+  $: dateModified = file.fileSystemModified ? file.fileSystemModified.toLocaleDateString() : file.created.toLocaleDateString();
+  $: timeModified = file.fileSystemModified ? file.fileSystemModified.toLocaleTimeString() : file.created.toLocaleTimeString();
 
   async function handleOpenFilePath() {
     try {
@@ -181,13 +181,22 @@
           content: file.content
         });
         
+        let fileSystemModified: Date | undefined;
+        try {
+          const modifiedTimestamp = await invoke('get_file_metadata', { path: savePath }) as number;
+          fileSystemModified = new Date(modifiedTimestamp * 1000);
+        } catch (error) {
+          console.error('Error getting file metadata after save:', error);
+        }
+        
         const pathParts = savePath.split(/[/\\]/);
         const fileName = pathParts[pathParts.length - 1];
         
         fileStore.updateFile(file.id, {
           path: savePath,
           name: fileName,
-          modified: new Date()
+          modified: new Date(),
+          fileSystemModified
         });
         
         fileStore.markAsSaved(file.id);
@@ -287,13 +296,13 @@
         on:keydown={handleRenameKeydown}
         class="w-full preset-filled-secondary-500 text-sm px-1 focus:outline-none"
       />
-      <span class="text-xs text-left opacity-50 truncate w-full">{dateCreated} {timeCreated}</span>
+      <span class="text-xs text-left opacity-50 truncate w-full">{dateModified} {timeModified}</span>
     {:else}
       <div class="w-full min-w-0">
         <div class="flex items-center gap-1 w-full">
           <span class="text-sm text-left truncate flex-1">{file.name}</span>
         </div>
-        <span class="text-xs text-left opacity-50 truncate block w-full">{dateCreated} {timeCreated}</span>
+        <span class="text-xs text-left opacity-50 truncate block w-full">{dateModified} {timeModified}</span>
       </div>
     {/if}
   </button>

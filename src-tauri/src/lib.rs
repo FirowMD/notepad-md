@@ -301,6 +301,19 @@ fn check_admin_privileges() -> bool {
 }
 
 #[tauri::command]
+fn get_file_metadata(path: &str) -> Result<u64, String> {
+    let metadata = fs::metadata(path).map_err(|e| e.to_string())?;
+    
+    let modified = metadata.modified()
+        .map_err(|e| e.to_string())?
+        .duration_since(std::time::UNIX_EPOCH)
+        .map_err(|e| e.to_string())?
+        .as_secs();
+    
+    Ok(modified)
+}
+
+#[tauri::command]
 fn relaunch_as_admin(args: Vec<String>) -> Result<(), String> {
     let current_exe = std::env::current_exe()
         .map_err(|e| format!("Failed to get current executable: {}", e))?;
@@ -449,7 +462,8 @@ pub fn run() {
             get_monaco_themes,
             read_monaco_theme,
             check_admin_privileges,
-            relaunch_as_admin
+            relaunch_as_admin,
+            get_file_metadata
         ]);
     
     app.run(tauri::generate_context!())

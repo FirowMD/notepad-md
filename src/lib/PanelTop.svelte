@@ -87,6 +87,15 @@
             path: filePath,
             encoding: $editorStore.encoding || 'utf-8'
           }) as { content: string, hash: string };
+          
+          let fileSystemModified: Date | undefined;
+          try {
+            const modifiedTimestamp = await invoke('get_file_metadata', { path: filePath }) as number;
+            fileSystemModified = new Date(modifiedTimestamp * 1000);
+          } catch (error) {
+            console.error('Error getting file metadata:', error);
+          }
+          
           const pathParts = filePath.split(/[/\\]/);
           const fileName = pathParts[pathParts.length - 1];
           const extension = fileName.split('.').pop()?.toLowerCase() || '';
@@ -101,6 +110,7 @@
             language: getLanguageFromExtension(extension),
             created: new Date(),
             modified: new Date(),
+            fileSystemModified,
             isModified: false,
             hash: fileData.hash,
             cursor: {
@@ -203,6 +213,15 @@
         path: filePath,
         encoding: $editorStore.encoding || 'utf-8'
       }) as { content: string, hash: string };
+      
+      let fileSystemModified: Date | undefined;
+      try {
+        const modifiedTimestamp = await invoke('get_file_metadata', { path: filePath }) as number;
+        fileSystemModified = new Date(modifiedTimestamp * 1000);
+      } catch (error) {
+        console.error('Error getting file metadata:', error);
+      }
+      
       const pathParts = filePath.split(/[/\\]/);
       const fileName = pathParts[pathParts.length - 1];
       const extension = fileName.split('.').pop()?.toLowerCase() || '';
@@ -217,6 +236,7 @@
         language: getLanguageFromExtension(extension),
         created: new Date(),
         modified: new Date(),
+        fileSystemModified,
         isModified: false,
         hash: fileData.hash,
         cursor: {
@@ -292,6 +312,14 @@
       
       const savedHash = await invoke('calculate_file_hash_command', { content: activeFile.content }) as string;
       
+      let fileSystemModified: Date | undefined;
+      try {
+        const modifiedTimestamp = await invoke('get_file_metadata', { path: savePath }) as number;
+        fileSystemModified = new Date(modifiedTimestamp * 1000);
+      } catch (error) {
+        console.error('Error getting file metadata after save:', error);
+      }
+      
       if (savePath !== activeFile.path) {
         const pathParts = savePath.split(/[/\\]/);
         const fileName = pathParts[pathParts.length - 1];
@@ -300,12 +328,14 @@
           path: savePath,
           name: fileName,
           hash: savedHash,
-          modified: new Date()
+          modified: new Date(),
+          fileSystemModified
         });
       } else {
         fileStore.updateFile(activeFile.id, {
           hash: savedHash,
-          modified: new Date()
+          modified: new Date(),
+          fileSystemModified
         });
       }
       

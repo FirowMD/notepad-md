@@ -79,6 +79,15 @@
                 path: filePath,
                 encoding: config.default_encoding || 'utf-8'
               }) as { content: string, hash: string };
+              
+              let fileSystemModified: Date | undefined;
+              try {
+                const modifiedTimestamp = await invoke('get_file_metadata', { path: filePath }) as number;
+                fileSystemModified = new Date(modifiedTimestamp * 1000);
+              } catch (error) {
+                console.error('Error getting file metadata:', error);
+              }
+              
               const pathParts = filePath.split(/[/\\]/);
               const fileName = pathParts[pathParts.length - 1];
               const extension = fileName.split('.').pop()?.toLowerCase() || '';
@@ -93,6 +102,7 @@
                 language: getLanguageFromExtension(extension),
                 created: new Date(),
                 modified: new Date(),
+                fileSystemModified,
                 isModified: false,
                 hash: fileData.hash,
                 cursor: {
@@ -162,10 +172,20 @@
           try {
             const fileData = await invoke('read_file', { path: filePath }) as { content: string, hash: string };
             if (fileData.hash !== file.hash) {
+              // Get updated file system metadata when file changes externally
+              let fileSystemModified: Date | undefined;
+              try {
+                const modifiedTimestamp = await invoke('get_file_metadata', { path: filePath }) as number;
+                fileSystemModified = new Date(modifiedTimestamp * 1000);
+              } catch (error) {
+                console.error('Error getting file metadata:', error);
+              }
+              
               fileStore.updateFileFromExternal(file.id, {
                 content: fileData.content,
                 hash: fileData.hash,
-                modified: new Date()
+                modified: new Date(),
+                fileSystemModified
               });
             }
           } catch (error) {
@@ -208,6 +228,15 @@
                 path: filePath,
                 encoding: config.default_encoding || 'utf-8'
               }) as { content: string, hash: string };
+              
+              let fileSystemModified: Date | undefined;
+              try {
+                const modifiedTimestamp = await invoke('get_file_metadata', { path: filePath }) as number;
+                fileSystemModified = new Date(modifiedTimestamp * 1000);
+              } catch (error) {
+                console.error('Error getting file metadata:', error);
+              }
+              
               const pathParts = filePath.split(/[/\\]/);
               const fileName = pathParts[pathParts.length - 1];
               const extension = fileName.split('.').pop()?.toLowerCase() || '';
@@ -222,6 +251,7 @@
                 language: getLanguageFromExtension(extension),
                 created: new Date(),
                 modified: new Date(),
+                fileSystemModified,
                 isModified: false,
                 hash: fileData.hash,
                 cursor: {
@@ -289,6 +319,15 @@
         path: filePath,
         encoding: $editorStore.encoding 
       }) as { content: string, hash: string };
+      
+      let fileSystemModified: Date | undefined;
+      try {
+        const modifiedTimestamp = await invoke('get_file_metadata', { path: filePath }) as number;
+        fileSystemModified = new Date(modifiedTimestamp * 1000);
+      } catch (error) {
+        console.error('Error getting file metadata:', error);
+      }
+      
       const pathParts = filePath.split(/[/\\]/);
       const fileName = pathParts[pathParts.length - 1];
       const extension = fileName.split('.').pop()?.toLowerCase() || '';
@@ -303,6 +342,7 @@
         language: getLanguageFromExtension(extension),
         created: new Date(),
         modified: new Date(),
+        fileSystemModified,
         isModified: false,
         hash: fileData.hash,
         cursor: {

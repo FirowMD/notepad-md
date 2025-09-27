@@ -1,6 +1,6 @@
 <script lang="ts">
   import { invoke } from "@tauri-apps/api/core";
-  import { FilePlus, FolderOpen, Save, WrapText, Eye, Palette, Code, RotateCcw, Info, PanelLeftClose, PanelLeft, FileCode } from "lucide-svelte";
+  import { FilePlus, FolderOpen, Save, WrapText, Eye, Palette, Code, RotateCcw, Info, PanelLeftClose, PanelLeft, FileCode, Clock } from "lucide-svelte";
   import { editorStore } from './stores/editor';
   import { themeStore } from './stores/theme';
   import { fileStore } from './stores/files';
@@ -8,6 +8,7 @@
   import { sidePanelStore } from './stores/sidePanelStore';
   import { monacoThemeStore } from './stores/monacoTheme';
   import { availableLanguages, getLanguageFromExtension } from './stores/language';
+  import { configStore } from './stores/configStore';
   import { open, save, message } from '@tauri-apps/plugin-dialog';
   import { onMount } from 'svelte';
 
@@ -17,9 +18,11 @@
   $: fontSize = $editorStore.fontSize;
   $: isSidePanelVisible = $sidePanelStore;
   $: monacoTheme = $monacoThemeStore;
+  $: recentFiles = ($configStore.recent_files || []).slice(0, 10);
 
   let isFontSizeMenuOpen = false;
   const fontSizes = [8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32];
+  let isRecentFilesMenuOpen = false;
 
   function handleFontSizeChange(size: number) {
     editorStore.setFontSize(size);
@@ -129,6 +132,64 @@
     }
   }
 
+  async function handleOpenRecentFile(filePath: string) {
+    try {
+      const fileData = await invoke('read_file', { 
+        path: filePath,
+        encoding: $editorStore.encoding || 'utf-8'
+      }) as { content: string, hash: string };
+      const pathParts = filePath.split(/[/\\]/);
+      const fileName = pathParts[pathParts.length - 1];
+      const extension = fileName.split('.').pop()?.toLowerCase() || '';
+      
+      const nextId = ($fileStore.files.length + 1).toString();
+      const fileInfo = {
+        id: nextId,
+        path: filePath,
+        name: fileName,
+        content: fileData.content,
+        encoding: 'utf-8',
+        language: getLanguageFromExtension(extension),
+        created: new Date(),
+        modified: new Date(),
+        isModified: false,
+        hash: fileData.hash,
+        cursor: {
+          line: 1,
+          column: 1
+        },
+        stats: {
+          lines: fileData.content.split('\n').length,
+          length: fileData.content.length
+        }
+      };
+      
+      fileStore.addFile(fileInfo);
+      
+      if (filePath) {
+        try {
+          await invoke('watch_file', { path: filePath });
+        } catch (error) {
+          console.error('Error setting up file watch:', error);
+        }
+      }
+      
+      isRecentFilesMenuOpen = false;
+    } catch (err) {
+      console.error("Error opening recent file:", err);
+      if (String(err).includes('File too large')) {
+        notificationStore.show('File too large (>100MB). Large files are not supported.', 'error');
+      } else if (String(err).includes('No such file')) {
+        notificationStore.show('File not found. It may have been moved or deleted.', 'error');
+        // Remove from recent files if it doesn't exist
+        const updatedRecent = recentFiles.filter(f => f !== filePath);
+        configStore.save({ recent_files: updatedRecent });
+      } else {
+        notificationStore.show("Error opening file", "error");
+      }
+    }
+  }
+
   async function handleSaveFile() {
     const activeFile = $fileStore.files.find(f => f.id === $fileStore.activeFileId);
     if (!activeFile) return;
@@ -208,6 +269,9 @@
     } else if ((event.ctrlKey || event.metaKey) && !event.shiftKey && event.code === 'KeyS') {
       event.preventDefault();
       handleSaveFile();
+    } else if ((event.ctrlKey || event.metaKey) && !event.shiftKey && event.code === 'KeyR') {
+      event.preventDefault();
+      isRecentFilesMenuOpen = !isRecentFilesMenuOpen;
     } else if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.code === 'KeyT') {
       event.preventDefault();
       handleRestoreFile();
@@ -295,7 +359,7 @@
     on:click={handleNewFile}
     title="New (Ctrl+N)"
   >
-    <FilePlus size={16} />
+    <FilePlus size={14} />
   </button>
   <button 
     type="button" 
@@ -303,7 +367,7 @@
     on:click={handleOpenFile}
     title="Open (Ctrl+O)"
   >
-    <FolderOpen size={16} />
+    <FolderOpen size={14} />
   </button>
   <button 
     type="button" 
@@ -311,8 +375,44 @@
     on:click={handleSaveFile}
     title="Save (Ctrl+S)"
   >
-    <Save size={16} />
+    <Save size={14} />
   </button>
+  <div class="relative">
+    <button 
+      type="button" 
+      class="btn btn-sm h-8 flex items-center {isRecentFilesMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500'} rounded-none"
+      on:click={() => isRecentFilesMenuOpen = !isRecentFilesMenuOpen}
+      title="Recent (Ctrl+R)"
+    >
+      <Clock size={14} />
+    </button>
+    {#if isRecentFilesMenuOpen}
+      <div 
+        role="menu"
+        tabindex="0"
+        class="absolute left-0 top-full mt-1 w-96 bg-surface-700 shadow-xl z-50 max-h-64 overflow-y-auto"
+        on:mouseleave={() => isRecentFilesMenuOpen = false}
+      >
+        {#if recentFiles.length > 0}
+          {#each recentFiles as filePath}
+            {@const fileName = filePath.split(/[/\\]/).pop() || filePath}
+            <button
+              role="menuitem"
+              class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors flex flex-col"
+              on:click={() => handleOpenRecentFile(filePath)}
+            >
+              <span class="font-medium">{fileName}</span>
+              <span class="text-surface-400 text-[10px] truncate">{filePath}</span>
+            </button>
+          {/each}
+        {:else}
+          <div class="text-xs px-3 py-2 text-surface-400">
+            No recent files
+          </div>
+        {/if}
+      </div>
+    {/if}
+  </div>
   <div class="w-px h-6 bg-surface-700 mx-1"></div>
   <button 
     type="button" 
@@ -320,7 +420,7 @@
     on:click={handleRestoreFile}
     title="Restore (Ctrl+Shift+T)"
   >
-    <RotateCcw size={16} />
+    <RotateCcw size={14} />
   </button>
   <button 
     type="button" 
@@ -328,7 +428,7 @@
     on:click={() => editorStore.setWordWrap(!wordWrap)}
     title="Word Wrap (Alt+Z)"
   >
-    <WrapText size={16} />
+    <WrapText size={14} />
   </button>
   <button 
     type="button" 
@@ -336,7 +436,7 @@
     on:click={() => editorStore.setShowInvisibles(!showInvisibles)}
     title="Show Space Characters"
   >
-    <Eye size={16} />
+    <Eye size={14} />
   </button>
   <div class="w-px h-6 bg-surface-700 mx-1"></div>
   <div class="relative">
@@ -346,7 +446,7 @@
       on:click={() => isThemeMenuOpen = !isThemeMenuOpen}
       title="Theme"
     >
-      <Palette size={16} />
+      <Palette size={14} />
     </button>
     {#if isThemeMenuOpen}
       <div 
@@ -378,7 +478,7 @@
       on:click={() => isMonacoThemeMenuOpen = !isMonacoThemeMenuOpen}
       title="Monaco Editor Theme"
     >
-      <FileCode size={16} />
+      <FileCode size={14} />
     </button>
     {#if isMonacoThemeMenuOpen}
       <div 
@@ -410,7 +510,7 @@
       on:click={() => isLanguageMenuOpen = !isLanguageMenuOpen}
       title="Language"
     >
-      <Code size={16} />
+      <Code size={14} />
       <span class="text-xs capitalize">{language}</span>
     </button>
     {#if isLanguageMenuOpen}
@@ -498,9 +598,9 @@
     title="Show/Hide Side Panel (Ctrl+B)"
   >
     {#if isSidePanelVisible}
-      <PanelLeftClose size={16} />
+      <PanelLeftClose size={14} />
     {:else}
-      <PanelLeft size={16} />
+      <PanelLeft size={14} />
     {/if}
   </button>
   <div class="w-px h-6 bg-surface-700 mx-1"></div>
@@ -510,7 +610,7 @@
     on:click={handleAbout}
     title="About"
   >
-    <Info size={16} />
+    <Info size={14} />
   </button>
   </div>
 </div>

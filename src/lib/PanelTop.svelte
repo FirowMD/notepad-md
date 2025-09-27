@@ -23,6 +23,8 @@
   let isFontSizeMenuOpen = false;
   const fontSizes = [8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32];
   let isRecentFilesMenuOpen = false;
+  let selectedRecentIndex = 0;
+  let recentFilesMenu: HTMLDivElement;
 
   function handleFontSizeChange(size: number) {
     editorStore.setFontSize(size);
@@ -130,6 +132,54 @@
         notificationStore.show("Error opening file", "error");
       }
     }
+  }
+
+  function openRecentFilesMenu() {
+    isRecentFilesMenuOpen = true;
+    selectedRecentIndex = 0;
+    setTimeout(() => {
+      if (recentFilesMenu) {
+        recentFilesMenu.focus();
+      }
+    }, 0);
+  }
+
+  function handleRecentMenuKeydown(event: KeyboardEvent) {
+    if (!isRecentFilesMenuOpen || recentFiles.length === 0) return;
+
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        selectedRecentIndex = (selectedRecentIndex + 1) % recentFiles.length;
+        scrollToSelectedItem();
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        selectedRecentIndex = (selectedRecentIndex - 1 + recentFiles.length) % recentFiles.length;
+        scrollToSelectedItem();
+        break;
+      case 'Enter':
+        event.preventDefault();
+        if (recentFiles[selectedRecentIndex]) {
+          handleOpenRecentFile(recentFiles[selectedRecentIndex]);
+        }
+        break;
+      case 'Escape':
+        event.preventDefault();
+        isRecentFilesMenuOpen = false;
+        break;
+    }
+  }
+
+  function scrollToSelectedItem() {
+    setTimeout(() => {
+      if (recentFilesMenu) {
+        const selectedElement = recentFilesMenu.querySelector(`[data-index="${selectedRecentIndex}"]`);
+        if (selectedElement) {
+          selectedElement.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        }
+      }
+    }, 0);
   }
 
   async function handleOpenRecentFile(filePath: string) {
@@ -271,7 +321,7 @@
       handleSaveFile();
     } else if ((event.ctrlKey || event.metaKey) && !event.shiftKey && event.code === 'KeyR') {
       event.preventDefault();
-      isRecentFilesMenuOpen = !isRecentFilesMenuOpen;
+      openRecentFilesMenu();
     } else if ((event.ctrlKey || event.metaKey) && event.shiftKey && event.code === 'KeyT') {
       event.preventDefault();
       handleRestoreFile();
@@ -381,25 +431,31 @@
     <button 
       type="button" 
       class="btn btn-sm h-8 flex items-center {isRecentFilesMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500'} rounded-none"
-      on:click={() => isRecentFilesMenuOpen = !isRecentFilesMenuOpen}
+      on:click={openRecentFilesMenu}
       title="Recent (Ctrl+R)"
     >
       <Clock size={14} />
     </button>
     {#if isRecentFilesMenuOpen}
       <div 
+        bind:this={recentFilesMenu}
         role="menu"
-        tabindex="0"
-        class="absolute left-0 top-full mt-1 w-96 bg-surface-700 shadow-xl z-50 max-h-64 overflow-y-auto"
+        tabindex="-1"
+        class="absolute left-0 top-full mt-1 w-96 bg-surface-700 shadow-xl z-50 max-h-64 overflow-y-auto focus:outline-none"
         on:mouseleave={() => isRecentFilesMenuOpen = false}
+        on:keydown={handleRecentMenuKeydown}
       >
         {#if recentFiles.length > 0}
-          {#each recentFiles as filePath}
+          {#each recentFiles as filePath, index}
             {@const fileName = filePath.split(/[/\\]/).pop() || filePath}
             <button
               role="menuitem"
-              class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors flex flex-col"
+              data-index={index}
+              class="text-xs w-full px-3 py-1.5 text-left transition-colors flex flex-col"
+              class:bg-surface-500={index === selectedRecentIndex}
+              class:hover:bg-surface-600={index !== selectedRecentIndex}
               on:click={() => handleOpenRecentFile(filePath)}
+              on:mouseenter={() => selectedRecentIndex = index}
             >
               <span class="font-medium">{fileName}</span>
               <span class="text-surface-400 text-[10px] truncate">{filePath}</span>

@@ -43,6 +43,7 @@ JSON files can be found [here](https://github.com/brijeshb42/monaco-themes/tree/
 | Open | Ctrl+O |
 | Save | Ctrl+S |
 | Save as | Ctrl+Shift+S |
+| Recent files | Ctrl+R |
 | Rename | F2 |
 | Close | Ctrl+W |
 | Restore | Ctrl+Shift+T |

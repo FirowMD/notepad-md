@@ -211,7 +211,7 @@
   </div>
 
   <div class="flex h-6 w-full px-2 preset-filled-secondary-500 items-center text-xs sticky bottom-0">
-    <div class="flex text-left gap-4 sticky left-0 w-full shrink-0 bg-secondary-500 z-10">
+    <div class="flex text-left gap-4 truncate sticky left-0 w-full shrink-0 bg-secondary-500 z-10">
       <span>{$editorStore.language}</span>
       <span>|</span>
       <span>Length: {$editorStore.stats.length}</span>

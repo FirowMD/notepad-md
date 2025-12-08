@@ -115,7 +115,7 @@
                 }
               };
               
-              fileStore.addFile(fileInfo, true);
+              fileStore.addFile(fileInfo, true, false);
               loadedFiles.push(filePath);
               
               try {
@@ -143,6 +143,10 @@
                 }
               }
             }
+          }
+          if ($fileStore.files.length > 0) {
+            const lastFileId = $fileStore.files[$fileStore.files.length - 1].id;
+            fileStore.setActiveFile(lastFileId);
           }
           
           if (loadedFiles.length > 0) {

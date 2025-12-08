@@ -47,12 +47,12 @@ function createFileStore() {
         untitledCounter: store.untitledCounter + 1
       };
     }),
-    addFile: (file: FileInfo, skipConfigSave: boolean = false) => update(store => {
+    addFile: (file: FileInfo, skipConfigSave: boolean = false, setActive: boolean = true) => update(store => {
       const existingFile = store.files.find(f => f.hash === file.hash && file.hash !== '');
       if (existingFile) {
         return {
           ...store,
-          activeFileId: existingFile.id
+          activeFileId: setActive ? existingFile.id : store.activeFileId
         };
       }
       const fileWithId = {
@@ -64,7 +64,7 @@ function createFileStore() {
       const newStore = {
         ...store,
         files: [...store.files, fileWithId],
-        activeFileId: store.nextId.toString(),
+        activeFileId: setActive ? store.nextId.toString() : store.activeFileId,
         nextId: store.nextId + 1
       };
       

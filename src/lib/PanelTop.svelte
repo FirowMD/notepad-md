@@ -11,14 +11,15 @@
   import { configStore } from './stores/configStore';
   import { open, save, message, ask } from '@tauri-apps/plugin-dialog';
   import { onMount } from 'svelte';
+  import { Combobox, Portal, type ComboboxRootProps, useListCollection } from '@skeletonlabs/skeleton-svelte';
 
-  $: wordWrap = $editorStore.wordWrap;
-  $: showInvisibles = $editorStore.showInvisibles;
-  $: language = $editorStore.language;
-  $: fontSize = $editorStore.fontSize;
-  $: isSidePanelVisible = $sidePanelStore;
-  $: monacoTheme = $monacoThemeStore;
-  $: recentFiles = ($configStore.recent_files || []).slice(0, 10);
+  const wordWrap = $derived($editorStore.wordWrap);
+  const showInvisibles = $derived($editorStore.showInvisibles);
+  const language = $derived($editorStore.language);
+  const fontSize = $derived($editorStore.fontSize);
+  const isSidePanelVisible = $derived($sidePanelStore);
+  const monacoTheme = $derived($monacoThemeStore);
+  const recentFiles = $derived(($configStore.recent_files || []).slice(0, 10));
 
   let isFontSizeMenuOpen = false;
   const fontSizes = [8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 24, 26, 28, 30, 32];
@@ -43,6 +44,29 @@
     isLanguageMenuOpen = false;
   }
 
+  const languageData = availableLanguages.map((lang) => ({ label: lang, value: lang }));
+  let languageItems = $state(languageData);
+  const languageCollection = $derived(
+    useListCollection({
+      items: languageItems,
+      itemToString: (item) => item.label,
+      itemToValue: (item) => item.value,
+    })
+  );
+  const onLanguageOpenChange = () => {
+    languageItems = languageData;
+  };
+  const onLanguageInputValueChange: ComboboxRootProps['onInputValueChange'] = (event) => {
+    const q = event.inputValue.toLowerCase();
+    const filtered = languageData.filter((l) => l.label.toLowerCase().includes(q));
+    languageItems = filtered.length > 0 ? filtered : languageData;
+  };
+  const onLanguageValueChange: ComboboxRootProps['onValueChange'] = (event) => {
+    const valAny = Array.isArray(event.value) ? event.value[0] : event.value;
+    const val = valAny as string;
+    handleLanguageChange(val);
+  };
+
   const themes = [
     'NotepadMD', 'catppuccin', 'cerberus', 'concord', 'crimson',
     'fennec', 'hamlindigo', 'legacy', 'mint', 'modern', 'mona',
@@ -53,6 +77,57 @@
   let isThemeMenuOpen = false;
   let isMonacoThemeMenuOpen = false;
   let availableMonacoThemes: string[] = ['vs', 'vs-dark', 'hc-black'];
+
+  const themesData = themes.map((theme) => ({ label: theme, value: theme }));
+  let themeItems = $state(themesData);
+  const themeCollection = $derived(
+    useListCollection({
+      items: themeItems,
+      itemToString: (item) => item.label,
+      itemToValue: (item) => item.value,
+    })
+  );
+  const onThemeOpenChange = () => {
+    themeItems = themesData;
+  };
+  const onThemeInputValueChange: ComboboxRootProps['onInputValueChange'] = (event) => {
+    const q = event.inputValue.toLowerCase();
+    const filtered = themesData.filter((t) => t.label.toLowerCase().includes(q));
+    themeItems = filtered.length > 0 ? filtered : themesData;
+  };
+  const onThemeValueChange: ComboboxRootProps['onValueChange'] = (event) => {
+    const valAny = Array.isArray(event.value) ? event.value[0] : event.value;
+    const val = valAny as typeof themes[number];
+    themeStore.setTheme(val);
+  };
+
+  const monacoThemesData = $derived(
+    availableMonacoThemes.map((theme) => ({ label: theme, value: theme }))
+  );
+  let monacoThemeItems = $state(monacoThemesData);
+  $effect(() => {
+    monacoThemeItems = monacoThemesData;
+  });
+  const monacoCollection = $derived(
+    useListCollection({
+      items: monacoThemeItems,
+      itemToString: (item) => item.label,
+      itemToValue: (item) => item.value,
+    })
+  );
+  const onMonacoOpenChange = () => {
+    monacoThemeItems = monacoThemesData;
+  };
+  const onMonacoInputValueChange: ComboboxRootProps['onInputValueChange'] = (event) => {
+    const q = event.inputValue.toLowerCase();
+    const filtered = monacoThemesData.filter((t) => t.label.toLowerCase().includes(q));
+    monacoThemeItems = filtered.length > 0 ? filtered : monacoThemesData;
+  };
+  const onMonacoValueChange: ComboboxRootProps['onValueChange'] = (event) => {
+    const valAny = Array.isArray(event.value) ? event.value[0] : event.value;
+    const val = valAny as string;
+    monacoThemeStore.setTheme(val);
+  };
 
   function handleNewFile() {
     fileStore.addUntitledFile();
@@ -374,15 +449,8 @@
   }
 
 
-  $: windowTitle = (() => {
-    const activeFile = $fileStore.files.find(f => f.id === $fileStore.activeFileId);
-    if (activeFile) {
-      const fileName = activeFile.name || 'Untitled';
-      const modifiedIndicator = activeFile.isModified ? ' •' : '';
-      return `${fileName}${modifiedIndicator}`;
-    }
-    return 'NotepadMD';
-  })();
+  const activeFile = $derived($fileStore.files.find(f => f.id === $fileStore.activeFileId));
+  const windowTitle = $derived(activeFile ? `${activeFile.name || 'Untitled'}${activeFile.isModified ? ' •' : ''}` : 'NotepadMD');
 
 
   function handleKeydown(event: KeyboardEvent) {
@@ -469,6 +537,29 @@
     }
     isEncodingMenuOpen = false;
   }
+
+  const encodingData = encodings.map((enc) => ({ label: enc, value: enc }));
+  let encodingItems = $state(encodingData);
+  const encodingCollection = $derived(
+    useListCollection({
+      items: encodingItems,
+      itemToString: (item) => item.label,
+      itemToValue: (item) => item.value,
+    })
+  );
+  const onEncodingOpenChange = () => {
+    encodingItems = encodingData;
+  };
+  const onEncodingInputValueChange: ComboboxRootProps['onInputValueChange'] = (event) => {
+    const q = event.inputValue.toLowerCase();
+    const filtered = encodingData.filter((e) => e.label.toLowerCase().includes(q));
+    encodingItems = filtered.length > 0 ? filtered : encodingData;
+  };
+  const onEncodingValueChange: ComboboxRootProps['onValueChange'] = (event) => {
+    const valAny = Array.isArray(event.value) ? event.value[0] : event.value;
+    const val = valAny as string;
+    handleEncodingChange(val);
+  };
 
   onMount(() => {
     window.addEventListener('keydown', handleKeydown);
@@ -586,128 +677,89 @@
     <Eye size={14} />
   </button>
   <div class="w-px h-6 bg-surface-700 mx-1"></div>
-  <div class="relative">
-    <button 
-      type="button" 
-      class="btn btn-sm h-8 flex items-center {isThemeMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500'} rounded-none"
-      on:click={() => isThemeMenuOpen = !isThemeMenuOpen}
-      title="Theme"
-    >
-      <Palette size={14} />
-    </button>
-    {#if isThemeMenuOpen}
-      <div 
-        role="menu"
-        tabindex="0"
-        class="absolute left-0 top-full mt-1 w-48 bg-surface-700 shadow-xl z-50 max-h-64 overflow-y-auto"
-        on:mouseleave={() => isThemeMenuOpen = false}
-      >
-        {#each themes as theme}
-          <button
-            role="menuitem"
-            class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors capitalize"
-            class:bg-surface-500={$themeStore === theme}
-            on:click={() => {
-              themeStore.setTheme(theme);
-              isThemeMenuOpen = false;
-            }}
-          >
-            {theme}
-          </button>
-        {/each}
-      </div>
-    {/if}
+  <div class="min-w-32">
+    <Combobox class="w-full" placeholder="Theme..." collection={themeCollection} onOpenChange={onThemeOpenChange} onInputValueChange={onThemeInputValueChange} onValueChange={onThemeValueChange}>
+      <Combobox.Label class="sr-only">Theme</Combobox.Label>
+      <Combobox.Control>
+        <Combobox.Input class="h-8 text-xs" />
+        <Combobox.Trigger />
+      </Combobox.Control>
+      <Portal>
+        <Combobox.Positioner>
+          <Combobox.Content class="max-h-64 overflow-y-auto">
+            {#each themeItems as item (item.value)}
+              <Combobox.Item {item}>
+                <Combobox.ItemText>{item.label}</Combobox.ItemText>
+                <Combobox.ItemIndicator />
+              </Combobox.Item>
+            {/each}
+          </Combobox.Content>
+        </Combobox.Positioner>
+      </Portal>
+    </Combobox>
   </div>
-  <div class="relative">
-    <button 
-      type="button" 
-      class="btn btn-sm h-8 flex items-center {isMonacoThemeMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500'} rounded-none"
-      on:click={() => isMonacoThemeMenuOpen = !isMonacoThemeMenuOpen}
-      title="Monaco Editor Theme"
-    >
-      <FileCode size={14} />
-    </button>
-    {#if isMonacoThemeMenuOpen}
-      <div 
-        role="menu"
-        tabindex="0"
-        class="absolute left-0 top-full mt-1 w-48 bg-surface-700 shadow-xl z-50 max-h-64 overflow-y-auto"
-        on:mouseleave={() => isMonacoThemeMenuOpen = false}
-      >
-        {#each availableMonacoThemes as theme}
-          <button
-            role="menuitem"
-            class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
-            class:bg-surface-500={monacoTheme === theme}
-            on:click={() => {
-              monacoThemeStore.setTheme(theme);
-              isMonacoThemeMenuOpen = false;
-            }}
-          >
-            {theme}
-          </button>
-        {/each}
-      </div>
-    {/if}
+  <div class="w-48">
+    <Combobox class="w-full" placeholder="Monaco theme..." collection={monacoCollection} onOpenChange={onMonacoOpenChange} onInputValueChange={onMonacoInputValueChange} onValueChange={onMonacoValueChange}>
+      <Combobox.Label class="sr-only">Monaco Editor Theme</Combobox.Label>
+      <Combobox.Control>
+        <Combobox.Input class="h-8 text-xs" />
+        <Combobox.Trigger />
+      </Combobox.Control>
+      <Portal>
+        <Combobox.Positioner>
+          <Combobox.Content class="max-h-64 overflow-y-auto">
+            {#each monacoThemeItems as item (item.value)}
+              <Combobox.Item {item}>
+                <Combobox.ItemText>{item.label}</Combobox.ItemText>
+                <Combobox.ItemIndicator />
+              </Combobox.Item>
+            {/each}
+          </Combobox.Content>
+        </Combobox.Positioner>
+      </Portal>
+    </Combobox>
   </div>
-  <div class="relative">
-    <button 
-      type="button" 
-      class="btn btn-sm h-8 flex items-center gap-2 {isLanguageMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500'} rounded-none"
-      on:click={() => isLanguageMenuOpen = !isLanguageMenuOpen}
-      title="Language"
-    >
-      <Code size={14} />
-      <span class="text-xs capitalize">{language}</span>
-    </button>
-    {#if isLanguageMenuOpen}
-      <div 
-        role="menu"
-        tabindex="0"
-        class="absolute left-0 top-full mt-1 w-48 bg-surface-700 shadow-xl z-50 max-h-64 overflow-y-auto"
-        on:mouseleave={() => isLanguageMenuOpen = false}
-      >
-        {#each availableLanguages as lang}
-          <button
-            role="menuitem"
-            class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors capitalize"
-            class:bg-surface-500={language === lang}
-            on:click={() => handleLanguageChange(lang)}
-          >
-            {lang}
-          </button>
-        {/each}
-      </div>
-    {/if}
+  <div class="w-48">
+    <Combobox class="w-full" placeholder="Language..." collection={languageCollection} onOpenChange={onLanguageOpenChange} onInputValueChange={onLanguageInputValueChange} onValueChange={onLanguageValueChange}>
+      <Combobox.Label class="sr-only">Language</Combobox.Label>
+      <Combobox.Control>
+        <Combobox.Input class="h-8 text-xs" />
+        <Combobox.Trigger />
+      </Combobox.Control>
+      <Portal>
+        <Combobox.Positioner>
+          <Combobox.Content class="max-h-64 overflow-y-auto">
+            {#each languageItems as item (item.value)}
+              <Combobox.Item {item}>
+                <Combobox.ItemText class="capitalize">{item.label}</Combobox.ItemText>
+                <Combobox.ItemIndicator />
+              </Combobox.Item>
+            {/each}
+          </Combobox.Content>
+        </Combobox.Positioner>
+      </Portal>
+    </Combobox>
   </div>
-  <div class="relative">
-    <button 
-      type="button" 
-      class="btn btn-sm h-8 flex items-center gap-2 {isEncodingMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500'} rounded-none"
-      on:click={() => isEncodingMenuOpen = !isEncodingMenuOpen}
-      title="Encoding"
-    >
-      <span class="text-xs uppercase">{$editorStore.encoding || 'UTF-8'}</span>
-    </button>
-    {#if isEncodingMenuOpen}
-      <div 
-        role="menu"
-        tabindex="0"
-        class="absolute left-0 top-full mt-1 w-48 bg-surface-700 shadow-xl z-50 max-h-64 overflow-y-auto"
-        on:mouseleave={() => isEncodingMenuOpen = false}
-      >
-        {#each encodings as encoding}
-          <button
-            role="menuitem"
-            class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors uppercase"
-            class:bg-surface-500={$editorStore.encoding === encoding}
-            on:click={() => handleEncodingChange(encoding)}
-          >
-            {encoding}
-          </button>
-        {/each}
-      </div>
-    {/if}
+  <div class="w-40">
+    <Combobox class="w-full" placeholder="Encoding..." collection={encodingCollection} onOpenChange={onEncodingOpenChange} onInputValueChange={onEncodingInputValueChange} onValueChange={onEncodingValueChange}>
+      <Combobox.Label class="sr-only">Encoding</Combobox.Label>
+      <Combobox.Control>
+        <Combobox.Input class="h-8 text-xs uppercase" />
+        <Combobox.Trigger />
+      </Combobox.Control>
+      <Portal>
+        <Combobox.Positioner>
+          <Combobox.Content class="max-h-64 overflow-y-auto">
+            {#each encodingItems as item (item.value)}
+              <Combobox.Item {item}>
+                <Combobox.ItemText class="uppercase">{item.label}</Combobox.ItemText>
+                <Combobox.ItemIndicator />
+              </Combobox.Item>
+            {/each}
+          </Combobox.Content>
+        </Combobox.Positioner>
+      </Portal>
+    </Combobox>
   </div>
   <div class="relative">
     <button 

@@ -487,16 +487,16 @@
 </script>
 
 <div class="flex flex-col w-full">
-  <div class="flex flex-row w-full min-h-[30px] max-h-[30px] bg-surface-900 items-center">
+  <div class="flex flex-row w-full min-h-[22px] max-h-[22px] bg-primary-900 items-center">
     <div class="flex-1 px-3 text-sm font-medium text-surface-200 select-none">
       {windowTitle}
     </div>
   </div>
   
-  <div class="flex flex-row w-full min-h-[40px] max-h-[40px] bg-surface-800 items-center px-2 gap-2">
+  <div class="flex flex-row w-full min-h-[36px] max-h-[36px] bg-surface-800 items-center px-2 gap-2">
   <button 
     type="button" 
-    class="btn btn-sm h-8 flex items-center preset-filled-surface-500 rounded-none"
+    class="btn btn-sm h-7 flex items-center preset-filled-surface-500"
     onclick={handleNewFile}
     title="New (Ctrl+N)"
   >
@@ -504,7 +504,7 @@
   </button>
   <button 
     type="button" 
-    class="btn btn-sm h-8 flex items-center preset-filled-surface-500 rounded-none"
+    class="btn btn-sm h-7 flex items-center preset-filled-surface-500"
     onclick={handleOpenFile}
     title="Open (Ctrl+O)"
   >
@@ -512,7 +512,7 @@
   </button>
   <button 
     type="button" 
-    class="btn btn-sm h-8 flex items-center preset-filled-surface-500 rounded-none"
+    class="btn btn-sm h-7 flex items-center preset-filled-surface-500"
     onclick={handleSaveFile}
     title="Save (Ctrl+S)"
   >
@@ -521,7 +521,7 @@
   <div class="relative">
     <button 
       type="button" 
-      class="btn btn-sm h-8 flex items-center {isRecentFilesMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500'} rounded-none"
+      class="btn btn-sm h-7 flex items-center {isRecentFilesMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500'}"
       onclick={openRecentFilesMenu}
       title="Recent (Ctrl+R)"
     >
@@ -563,7 +563,7 @@
   <div class="w-px h-6 bg-surface-700 mx-1"></div>
   <button 
     type="button" 
-    class="btn btn-sm h-8 flex items-center preset-filled-surface-500 rounded-none"
+    class="btn btn-sm h-7 flex items-center preset-filled-surface-500"
     onclick={handleRestoreFile}
     title="Restore (Ctrl+Shift+T)"
   >
@@ -571,7 +571,7 @@
   </button>
   <button 
     type="button" 
-    class="btn btn-sm h-8 flex items-center {wordWrap ? 'preset-tonal-surface' : 'preset-filled-surface-500'} rounded-none"
+    class="btn btn-sm h-7 flex items-center {wordWrap ? 'preset-tonal-surface' : 'preset-filled-surface-500'}"
     onclick={() => editorStore.setWordWrap(!wordWrap)}
     title="Word Wrap (Alt+Z)"
   >
@@ -579,7 +579,7 @@
   </button>
   <button 
     type="button" 
-    class="btn btn-sm h-8 flex items-center {showInvisibles ? 'preset-tonal-surface' : 'preset-filled-surface-500'} rounded-none"
+    class="btn btn-sm h-7 flex items-center {showInvisibles ? 'preset-tonal-surface' : 'preset-filled-surface-500'}"
     onclick={() => editorStore.setShowInvisibles(!showInvisibles)}
     title="Show Space Characters"
   >
@@ -589,7 +589,7 @@
   <div class="relative">
     <button 
       type="button" 
-      class="btn btn-sm h-8 flex items-center {isThemeMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500'} rounded-none"
+      class="btn btn-sm h-7 flex items-center {isThemeMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500'}"
       onclick={() => isThemeMenuOpen = !isThemeMenuOpen}
       title="Theme"
     >
@@ -621,7 +621,7 @@
   <div class="relative">
     <button 
       type="button" 
-      class="btn btn-sm h-8 flex items-center {isMonacoThemeMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500'} rounded-none"
+      class="btn btn-sm h-7 flex items-center {isMonacoThemeMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500'}"
       onclick={() => isMonacoThemeMenuOpen = !isMonacoThemeMenuOpen}
       title="Monaco Editor Theme"
     >
@@ -653,7 +653,7 @@
   <div class="relative">
     <button 
       type="button" 
-      class="btn btn-sm h-8 flex items-center gap-2 {isLanguageMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500'} rounded-none"
+      class="btn btn-sm h-7 flex items-center gap-2 {isLanguageMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500'}"
       onclick={() => isLanguageMenuOpen = !isLanguageMenuOpen}
       title="Language"
     >
@@ -683,7 +683,7 @@
   <div class="relative">
     <button 
       type="button" 
-      class="btn btn-sm h-8 flex items-center gap-2 {isEncodingMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500'} rounded-none"
+      class="btn btn-sm h-7 flex items-center gap-2 {isEncodingMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500'}"
       onclick={() => isEncodingMenuOpen = !isEncodingMenuOpen}
       title="Encoding"
     >
@@ -712,7 +712,7 @@
   <div class="relative">
     <button 
       type="button" 
-      class="btn btn-sm h-8 flex items-center gap-2 {isFontSizeMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500'} rounded-none"
+      class="btn btn-sm h-7 flex items-center gap-2 {isFontSizeMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500'}"
       onclick={() => isFontSizeMenuOpen = !isFontSizeMenuOpen}
       title="Font Size"
     >
@@ -740,7 +740,7 @@
   </div>
   <button 
     type="button" 
-    class="btn btn-sm h-8 flex items-center {isSidePanelVisible ? 'preset-tonal-surface' : 'preset-filled-surface-500'} rounded-none"
+    class="btn btn-sm h-7 flex items-center {isSidePanelVisible ? 'preset-tonal-surface' : 'preset-filled-surface-500'}"
     onclick={() => sidePanelStore.toggle()}
     title="Show/Hide Side Panel (Ctrl+B)"
   >
@@ -753,7 +753,7 @@
   <div class="w-px h-6 bg-surface-700 mx-1"></div>
   <button
     type="button"
-    class="btn btn-sm h-8 flex items-center preset-filled-surface-500 rounded-none"
+    class="btn btn-sm h-7 flex items-center preset-filled-surface-500"
     onclick={handleAbout}
     title="About"
   >

@@ -588,7 +588,7 @@
   <button 
     type="button" 
     class="btn btn-sm h-8 flex items-center preset-filled-surface-500 rounded-none"
-    on:click={handleNewFile}
+    onclick={handleNewFile}
     title="New (Ctrl+N)"
   >
     <FilePlus size={14} />
@@ -596,7 +596,7 @@
   <button 
     type="button" 
     class="btn btn-sm h-8 flex items-center preset-filled-surface-500 rounded-none"
-    on:click={handleOpenFile}
+    onclick={handleOpenFile}
     title="Open (Ctrl+O)"
   >
     <FolderOpen size={14} />
@@ -604,7 +604,7 @@
   <button 
     type="button" 
     class="btn btn-sm h-8 flex items-center preset-filled-surface-500 rounded-none"
-    on:click={handleSaveFile}
+    onclick={handleSaveFile}
     title="Save (Ctrl+S)"
   >
     <Save size={14} />
@@ -613,7 +613,7 @@
     <button 
       type="button" 
       class="btn btn-sm h-8 flex items-center {isRecentFilesMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500'} rounded-none"
-      on:click={openRecentFilesMenu}
+      onclick={openRecentFilesMenu}
       title="Recent (Ctrl+R)"
     >
       <Clock size={14} />
@@ -624,8 +624,8 @@
         role="menu"
         tabindex="-1"
         class="absolute left-0 top-full mt-1 w-96 bg-surface-700 shadow-xl z-50 max-h-64 overflow-y-auto focus:outline-none"
-        on:mouseleave={() => isRecentFilesMenuOpen = false}
-        on:keydown={handleRecentMenuKeydown}
+        onmouseleave={() => isRecentFilesMenuOpen = false}
+        onkeydown={handleRecentMenuKeydown}
       >
         {#if recentFiles.length > 0}
           {#each recentFiles as filePath, index}
@@ -636,8 +636,8 @@
               class="text-xs w-full px-3 py-1.5 text-left transition-colors flex flex-col"
               class:bg-surface-500={index === selectedRecentIndex}
               class:hover:bg-surface-600={index !== selectedRecentIndex}
-              on:click={() => handleOpenRecentFile(filePath)}
-              on:mouseenter={() => selectedRecentIndex = index}
+              onclick={() => handleOpenRecentFile(filePath)}
+              onmouseenter={() => selectedRecentIndex = index}
             >
               <span class="font-medium">{fileName}</span>
               <span class="text-surface-400 text-[10px] truncate">{filePath}</span>
@@ -655,7 +655,7 @@
   <button 
     type="button" 
     class="btn btn-sm h-8 flex items-center preset-filled-surface-500 rounded-none"
-    on:click={handleRestoreFile}
+    onclick={handleRestoreFile}
     title="Restore (Ctrl+Shift+T)"
   >
     <RotateCcw size={14} />
@@ -663,7 +663,7 @@
   <button 
     type="button" 
     class="btn btn-sm h-8 flex items-center {wordWrap ? 'preset-tonal-surface' : 'preset-filled-surface-500'} rounded-none"
-    on:click={() => editorStore.setWordWrap(!wordWrap)}
+    onclick={() => editorStore.setWordWrap(!wordWrap)}
     title="Word Wrap (Alt+Z)"
   >
     <WrapText size={14} />
@@ -671,7 +671,7 @@
   <button 
     type="button" 
     class="btn btn-sm h-8 flex items-center {showInvisibles ? 'preset-tonal-surface' : 'preset-filled-surface-500'} rounded-none"
-    on:click={() => editorStore.setShowInvisibles(!showInvisibles)}
+    onclick={() => editorStore.setShowInvisibles(!showInvisibles)}
     title="Show Space Characters"
   >
     <Eye size={14} />
@@ -765,7 +765,7 @@
     <button 
       type="button" 
       class="btn btn-sm h-8 flex items-center gap-2 {isFontSizeMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500'} rounded-none"
-      on:click={() => isFontSizeMenuOpen = !isFontSizeMenuOpen}
+      onclick={() => isFontSizeMenuOpen = !isFontSizeMenuOpen}
       title="Font Size"
     >
       <span class="text-xs">{fontSize}px</span>
@@ -775,14 +775,14 @@
         role="menu"
         tabindex="0"
         class="absolute left-0 top-full mt-1 w-24 bg-surface-700 shadow-xl z-50 max-h-64 overflow-y-auto"
-        on:mouseleave={() => isFontSizeMenuOpen = false}
+        onmouseleave={() => isFontSizeMenuOpen = false}
       >
         {#each fontSizes as size}
           <button
             role="menuitem"
             class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
             class:bg-surface-500={fontSize === size}
-            on:click={() => handleFontSizeChange(size)}
+            onclick={() => handleFontSizeChange(size)}
           >
             {size}px
           </button>
@@ -793,7 +793,7 @@
   <button 
     type="button" 
     class="btn btn-sm h-8 flex items-center {isSidePanelVisible ? 'preset-tonal-surface' : 'preset-filled-surface-500'} rounded-none"
-    on:click={() => sidePanelStore.toggle()}
+    onclick={() => sidePanelStore.toggle()}
     title="Show/Hide Side Panel (Ctrl+B)"
   >
     {#if isSidePanelVisible}
@@ -806,7 +806,7 @@
   <button
     type="button"
     class="btn btn-sm h-8 flex items-center preset-filled-surface-500 rounded-none"
-    on:click={handleAbout}
+    onclick={handleAbout}
     title="About"
   >
     <Info size={14} />

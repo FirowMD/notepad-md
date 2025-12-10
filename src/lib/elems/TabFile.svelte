@@ -254,7 +254,7 @@
 
 <div 
   class="relative group flex items-center w-full" 
-  on:contextmenu={handleContextMenu}
+  oncontextmenu={handleContextMenu}
   role="button"
   tabindex="0"
 >
@@ -262,7 +262,7 @@
     <button
       type="button"
       class="p-0.5 hover:bg-surface-600 disabled:opacity-25"
-      on:click={moveUp}
+      onclick={moveUp}
       disabled={index === 0}
     >
       <ArrowUp size={14} />
@@ -270,7 +270,7 @@
     <button
       type="button"
       class="p-0.5 hover:bg-surface-600 disabled:opacity-25"
-      on:click={moveDown}
+      onclick={moveDown}
       disabled={index === totalFiles - 1}
     >
       <ArrowDown size={14} />
@@ -284,7 +284,7 @@
       file.isModified ? 'preset-tonal-surface' :
       'preset-filled-surface-500'
     }"
-    on:click={handleClick}
+    onclick={handleClick}
     title="{file.name}{file.isModified ? ' (modified)' : ''}"
   >
     {#if isRenaming}
@@ -292,8 +292,8 @@
         type="text"
         bind:value={newFileName}
         bind:this={inputElement}
-        on:blur={handleRenameSubmit}
-        on:keydown={handleRenameKeydown}
+        onblur={handleRenameSubmit}
+        onkeydown={handleRenameKeydown}
         class="w-full preset-filled-secondary-500 text-sm px-1 focus:outline-none"
       />
       <span class="text-xs text-left opacity-50 truncate w-full">{dateModified} {timeModified}</span>
@@ -309,7 +309,7 @@
   <button
     type="button"
     class="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity"
-    on:click={handleClose}
+    onclick={handleClose}
   >
     ×
   </button>
@@ -322,37 +322,37 @@
     >
       <button
         class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
-        on:click={handleOpenInNewWindow}
+        onclick={handleOpenInNewWindow}
       >
         Open in new window
       </button>
       <button
         class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
-        on:click={handleOpenFilePath}
+        onclick={handleOpenFilePath}
       >
         Open file path
       </button>
       <button
         class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
-        on:click={handleRename}
+        onclick={handleRename}
       >
         Rename
       </button>
       <button
         class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
-        on:click={handleSaveAs}
+        onclick={handleSaveAs}
       >
         Save as
       </button>
       <button
         class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
-        on:click={handleDelete}
+        onclick={handleDelete}
       >
         Delete
       </button>
       <button
         class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
-        on:click={(e) => { handleClose(e); contextMenuStore.close(); }}
+        onclick={(e) => { handleClose(e); contextMenuStore.close(); }}
       >
         Close
       </button>

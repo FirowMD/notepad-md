@@ -71,7 +71,7 @@
     <button
       type="button"
       class="flex-shrink-0 rounded-md p-1.5 {textClass} hover:bg-surface-600/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-transparent {ringClass} transition-all duration-200"
-      on:click={handleClose}
+      onclick={handleClose}
     >
       <span class="sr-only">Dismiss</span>
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">

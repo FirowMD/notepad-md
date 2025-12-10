@@ -278,7 +278,7 @@
   </div>
   <button
     type="button"
-    class="flex-1 btn rounded-none h-14 flex flex-col items-start overflow-hidden {
+    class="flex-1 btn rounded-none h-10 flex flex-col items-start overflow-hidden {
       isActive && file.isModified ? 'preset-tonal-primary' :
       isActive ? 'preset-filled-primary-500' :
       file.isModified ? 'preset-tonal-surface' :

@@ -27,6 +27,36 @@ function createMonacoThemeStore() {
     setMonaco: (monacoInstance: any) => {
       monaco = monacoInstance;
     },
+    applyTransparentOverlay: async (enabled: boolean) => {
+      if (!monaco) return;
+      const current = get(monacoThemeStore);
+
+      if (enabled) {
+        const derived = `${current}-transparent-overlay`;
+        const base = (current === 'vs' || current === 'vs-dark' || current === 'hc-black') ? current : 'vs-dark';
+        try {
+          monaco.editor.defineTheme(derived, {
+            base,
+            inherit: true,
+            rules: [],
+            colors: {
+              'editor.background': '#00000000',
+              'editorPane.background': '#00000000',
+              'editorWidget.background': '#00000000'
+            }
+          });
+          monaco.editor.setTheme(derived);
+        } catch (e) {
+          console.error('Error applying transparent overlay to Monaco:', e);
+        }
+      } else {
+        try {
+          monaco.editor.setTheme(current);
+        } catch (e) {
+          console.error('Error restoring Monaco theme:', e);
+        }
+      }
+    },
     setTheme: async (themeName: string) => {
       set(themeName);
       

@@ -4,6 +4,6 @@
 
 </script>
 
-<main class="w-full h-full bg-surface-900">
+<main class="w-full h-full">
   <PageMain />
 </main>

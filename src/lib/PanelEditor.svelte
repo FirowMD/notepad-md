@@ -14,6 +14,9 @@
   let editor: any;
 
   $: monacoTheme = $monacoThemeStore;
+  $: if (editorInitialized) {
+    monacoThemeStore.applyTransparentOverlay($configStore.transparent_mode || false);
+  }
 
   let previousActiveFileId: string | null = null;
   let isSystemChange = false;
@@ -124,6 +127,8 @@
       }
 
       editorInitialized = true;
+
+      await monacoThemeStore.applyTransparentOverlay($configStore.transparent_mode || false);
 
       editor.getModel().onDidChangeContent(() => {
         const value = editor.getValue();

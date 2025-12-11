@@ -1,6 +1,6 @@
 <script lang="ts">
   import { invoke } from "@tauri-apps/api/core";
-  import { FilePlus, FolderOpen, Save, WrapText, Eye, Palette, Code, RotateCcw, Info, PanelLeftClose, PanelLeft, FileCode, Clock } from "lucide-svelte";
+  import { FilePlus, FolderOpen, Save, WrapText, Eye, Palette, Code, RotateCcw, Info, PanelLeftClose, PanelLeft, FileCode, Clock, Droplet } from "lucide-svelte";
   import { editorStore } from './stores/editor';
   import { themeStore } from './stores/theme';
   import { fileStore } from './stores/files';
@@ -53,6 +53,11 @@
   let isThemeMenuOpen = false;
   let isMonacoThemeMenuOpen = false;
   let availableMonacoThemes: string[] = ['vs', 'vs-dark', 'hc-black'];
+
+  function toggleTransparentMode() {
+    const next = !$configStore.transparent_mode;
+    configStore.save({ transparent_mode: next });
+  }
 
   function handleNewFile() {
     fileStore.addUntitledFile();
@@ -487,13 +492,18 @@
 </script>
 
 <div class="flex flex-col w-full">
-  <div class="flex flex-row w-full min-h-[22px] max-h-[22px] bg-primary-900 items-center">
+  <div class="flex flex-row w-full min-h-[22px] max-h-[22px] items-center"
+       data-tauri-drag-region
+       class:bg-primary-900={!$configStore.transparent_mode}
+       class:bg-transparent={$configStore.transparent_mode}>
     <div class="flex-1 px-3 text-sm font-medium text-surface-200 select-none">
       {windowTitle}
     </div>
   </div>
   
-  <div class="flex flex-row w-full min-h-[36px] max-h-[36px] bg-surface-800 items-center px-2 gap-2">
+  <div class="flex flex-row w-full min-h-[36px] max-h-[36px] items-center px-2 gap-2"
+       class:bg-surface-800={!$configStore.transparent_mode}
+       class:bg-transparent={$configStore.transparent_mode}>
   <button 
     type="button" 
     class="btn btn-sm h-7 flex items-center preset-filled-surface-500"
@@ -618,6 +628,14 @@
       </div>
     {/if}
   </div>
+  <button 
+    type="button" 
+    class="btn btn-sm h-7 flex items-center { $configStore.transparent_mode ? 'preset-tonal-surface' : 'preset-filled-surface-500' }"
+    onclick={toggleTransparentMode}
+    title="Transparent Mode"
+  >
+    <Droplet size={14} />
+  </button>
   <div class="relative">
     <button 
       type="button" 

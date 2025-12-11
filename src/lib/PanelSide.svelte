@@ -4,6 +4,7 @@
   import { fileStore } from "./stores/files";
   import type { FileInfo } from './types/file';
   import { Search } from 'lucide-svelte';
+  import { configStore } from './stores/configStore';
 
   $: files = $fileStore.files;
   $: activeFileId = $fileStore.activeFileId;
@@ -16,7 +17,9 @@
     : files;
 </script>
 
-<div class="flex flex-col w-full h-full bg-surface-900">
+<div class="flex flex-col w-full h-full"
+     class:bg-surface-900={!$configStore.transparent_mode}
+     class:bg-transparent={$configStore.transparent_mode}>
   <div class="flex items-center px-2 py-2 bg-surface-900 z-10">
     <div class="relative w-full">
       <input

@@ -6,7 +6,8 @@ function createConfigStore() {
   const { subscribe, set, update } = writable<AppConfig>({
     colorscheme: 'cerberus',
     recent_files: [],
-    opened_files: []
+    opened_files: [],
+    transparent_mode: false
   });
 
   return {

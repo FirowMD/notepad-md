@@ -9,4 +9,5 @@ export interface AppConfig {
   word_wrap?: boolean;
   show_invisibles?: boolean;
   default_encoding?: string;
+  transparent_mode?: boolean;
 }

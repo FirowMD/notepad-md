@@ -392,7 +392,9 @@
 </script>
 
 <div 
-  class="flex flex-col w-full h-full bg-surface-900 relative"
+  class="flex flex-col w-full h-full relative"
+  class:bg-surface-900={!$configStore.transparent_mode}
+  class:bg-transparent={$configStore.transparent_mode}
   role="presentation"
 >
   <PanelTop />

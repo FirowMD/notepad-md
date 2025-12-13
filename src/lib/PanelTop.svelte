@@ -588,7 +588,7 @@
       </div>
     {/if}
   </div>
-  <div class="w-px h-6 mx-1 bg-primary-500/40"></div>
+  <div class="w-px h-6 mx-1 bg-primary-100"></div>
   <button 
     type="button" 
     class="preset-filled-primary-950-50 btn btn-sm h-7 flex items-center transition-all duration-200 hover:scale-105"
@@ -613,7 +613,7 @@
   >
     <Eye size={14} />
   </button>
-  <div class="w-px h-6 mx-1 bg-primary-500/40"></div>
+  <div class="w-px h-6 mx-1 bg-primary-100"></div>
   <div class="relative">
     <button 
       type="button" 
@@ -811,7 +811,7 @@
       <PanelLeft size={14} />
     {/if}
   </button>
-  <div class="w-px h-6 mx-1 bg-primary-500/40"></div>
+  <div class="w-px h-6 mx-1 bg-primary-100"></div>
   <button
     type="button"
     class="preset-filled-primary-950-50 btn btn-sm h-7 flex items-center transition-all duration-200 hover:scale-105"

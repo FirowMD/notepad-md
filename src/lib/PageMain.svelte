@@ -419,7 +419,7 @@
 </script>
 
 <div 
-  class="flex flex-col w-full h-full relative { $configStore.transparent_mode ? 'bg-surface-900' : 'bg-surface-900' }"
+  class="preset-gradient flex flex-col w-full h-full relative"
   style="opacity: var(--overlayOpacity, 1)"
   role="presentation"
 >
@@ -429,7 +429,7 @@
       <Pane defaultSize={20} minSize={20}>
         <PanelSide />
       </Pane>
-      <PaneResizer class="w-1 bg-surface-700 hover:bg-primary-500/20 transition-colors cursor-col-resize" />
+      <PaneResizer class="preset-glass w-1 hover:bg-primary-500/40 transition-all duration-200 cursor-col-resize" />
     {/if}
     <Pane defaultSize={$sidePanelStore ? 80 : 100} minSize={30}>
       <PanelEditor />

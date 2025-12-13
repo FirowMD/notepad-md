@@ -261,7 +261,7 @@
   <div class="flex-none px-2 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col gap-0.5">
     <button
       type="button"
-      class="p-0.5 hover:bg-surface-600 disabled:opacity-25"
+      class="preset-ghost p-0.5 hover:bg-surface-600 disabled:opacity-25 rounded-md transition-all duration-200"
       onclick={moveUp}
       disabled={index === 0}
     >
@@ -269,7 +269,7 @@
     </button>
     <button
       type="button"
-      class="p-0.5 hover:bg-surface-600 disabled:opacity-25"
+      class="preset-ghost p-0.5 hover:bg-surface-600 disabled:opacity-25 rounded-md transition-all duration-200"
       onclick={moveDown}
       disabled={index === totalFiles - 1}
     >
@@ -278,10 +278,10 @@
   </div>
   <button
     type="button"
-    class="flex-1 btn rounded-none h-10 flex flex-col items-start overflow-hidden {
-      isActive && file.isModified ? 'preset-tonal-primary' :
-      isActive ? 'preset-filled-primary-500' :
-      file.isModified ? 'preset-tonal-surface' :
+    class="flex-1 btn rounded-xl h-10 flex flex-col items-start overflow-hidden transition-all duration-200 {
+      isActive && file.isModified ? 'shadow-xl preset-tonal-primary' :
+      isActive ? 'shadow-xl preset-filled-primary-500-700' :
+      file.isModified ? 'preset-tonal-primary' :
       'preset-filled-surface-500'
     }"
     onclick={handleClick}
@@ -294,7 +294,7 @@
         bind:this={inputElement}
         onblur={handleRenameSubmit}
         onkeydown={handleRenameKeydown}
-        class="w-full preset-filled-secondary-500 text-sm px-1 focus:outline-none"
+        class="preset-outlined-primary-500-500 w-full text-sm px-2 rounded-md focus:outline-none"
       />
       <span class="text-xs text-left opacity-50 truncate w-full">{dateModified} {timeModified}</span>
     {:else}
@@ -308,7 +308,7 @@
   </button>
   <button
     type="button"
-    class="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity"
+    class="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity preset-outlined-primary-500-500 rounded-full px-2 py-0.5"
     onclick={handleClose}
   >
     ×
@@ -317,41 +317,41 @@
   {#if $contextMenuStore.isOpen && $contextMenuStore.fileId === file.id}
     <div
       bind:this={contextMenuElement}
-      class="fixed z-50 w-40 bg-surface-700 shadow-xl rounded-none py-0.5 text-sm"
+      class="fixed z-50 w-40 preset-glass shadow-xl rounded-xl py-0.5 text-sm"
       style="left: {$contextMenuStore.x}px; top: {$contextMenuStore.y}px"
     >
       <button
-        class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
+        class="preset-ghost text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
         onclick={handleOpenInNewWindow}
       >
         Open in new window
       </button>
       <button
-        class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
+        class="preset-ghost text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
         onclick={handleOpenFilePath}
       >
         Open file path
       </button>
       <button
-        class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
+        class="preset-ghost text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
         onclick={handleRename}
       >
         Rename
       </button>
       <button
-        class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
+        class="preset-ghost text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
         onclick={handleSaveAs}
       >
         Save as
       </button>
       <button
-        class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
+        class="preset-ghost text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
         onclick={handleDelete}
       >
         Delete
       </button>
       <button
-        class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
+        class="preset-ghost text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
         onclick={(e) => { handleClose(e); contextMenuStore.close(); }}
       >
         Close

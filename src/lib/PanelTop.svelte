@@ -513,18 +513,18 @@
 </script>
 
 <div class="flex flex-col w-full">
-  <div class="flex flex-row w-full min-h-[22px] max-h-[22px] items-center bg-primary-900"
+  <div class="flex flex-row w-full min-h-[22px] max-h-[22px] items-center preset-gradient shadow-xl"
        role="toolbar" tabindex="0"
   >
-    <div class="flex-1 px-3 text-sm font-medium text-surface-200 select-none">
+    <div class="flex-1 px-3 text-sm font-medium text-primary-100 select-none">
       {windowTitle}
     </div>
   </div>
   
-  <div class="flex flex-row w-full min-h-[36px] max-h-[36px] items-center px-2 gap-2 bg-surface-800">
+  <div class="flex flex-row w-full min-h-[36px] max-h-[36px] items-center px-2 gap-2 preset-glass">
   <button 
     type="button" 
-    class="btn btn-sm h-7 flex items-center preset-filled-surface-500"
+    class="preset-filled-primary-950-50 btn btn-sm h-7 flex items-center transition-all duration-200 hover:scale-105"
     onclick={handleNewFile}
     title="New (Ctrl+N)"
   >
@@ -532,7 +532,7 @@
   </button>
   <button 
     type="button" 
-    class="btn btn-sm h-7 flex items-center preset-filled-surface-500"
+    class="preset-filled-primary-950-50 btn btn-sm h-7 flex items-center transition-all duration-200 hover:scale-105"
     onclick={handleOpenFile}
     title="Open (Ctrl+O)"
   >
@@ -540,7 +540,7 @@
   </button>
   <button 
     type="button" 
-    class="btn btn-sm h-7 flex items-center preset-filled-surface-500"
+    class="preset-filled-primary-950-50 btn btn-sm h-7 flex items-center transition-all duration-200 hover:scale-105"
     onclick={handleSaveFile}
     title="Save (Ctrl+S)"
   >
@@ -549,7 +549,7 @@
   <div class="relative">
     <button 
       type="button" 
-      class="btn btn-sm h-7 flex items-center { (isRecentFilesMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500') }"
+      class="btn btn-sm h-7 flex items-center { (isRecentFilesMenuOpen ? 'preset-tonal-primary' : 'preset-filled-primary-950-50') } transition-all duration-200 hover:scale-105"
       onclick={openRecentFilesMenu}
       title="Recent (Ctrl+R)"
     >
@@ -560,7 +560,7 @@
         bind:this={recentFilesMenu}
         role="menu"
         tabindex="-1"
-        class="absolute left-0 top-full mt-1 w-96 bg-surface-700 shadow-xl z-50 max-h-64 overflow-y-auto focus:outline-none"
+        class="absolute left-0 top-full mt-1 w-96 preset-glass rounded-xl p-2 shadow-xl z-50 max-h-64 overflow-y-auto focus:outline-none"
         onmouseleave={() => isRecentFilesMenuOpen = false}
         onkeydown={handleRecentMenuKeydown}
       >
@@ -570,7 +570,7 @@
             <button
               role="menuitem"
               data-index={index}
-              class="text-xs w-full px-3 py-1.5 text-left transition-colors flex flex-col"
+              class="preset-ghost text-xs w-full px-3 py-1.5 text-left transition-colors flex flex-col"
               class:bg-surface-500={index === selectedRecentIndex}
               class:hover:bg-surface-600={index !== selectedRecentIndex}
               onclick={() => handleOpenRecentFile(filePath)}
@@ -588,10 +588,10 @@
       </div>
     {/if}
   </div>
-  <div class="w-px h-6 mx-1 bg-surface-700"></div>
+  <div class="w-px h-6 mx-1 bg-primary-500/40"></div>
   <button 
     type="button" 
-    class="btn btn-sm h-7 flex items-center preset-filled-surface-500"
+    class="preset-filled-primary-950-50 btn btn-sm h-7 flex items-center transition-all duration-200 hover:scale-105"
     onclick={handleRestoreFile}
     title="Restore (Ctrl+Shift+T)"
   >
@@ -599,7 +599,7 @@
   </button>
   <button 
     type="button" 
-    class="btn btn-sm h-7 flex items-center { (wordWrap ? 'preset-tonal-surface' : 'preset-filled-surface-500') }"
+    class="btn btn-sm h-7 flex items-center { (wordWrap ? 'preset-tonal-primary' : 'preset-filled-primary-950-50') } transition-all duration-200 hover:scale-105"
     onclick={() => editorStore.setWordWrap(!wordWrap)}
     title="Word Wrap (Alt+Z)"
   >
@@ -607,17 +607,17 @@
   </button>
   <button 
     type="button" 
-    class="btn btn-sm h-7 flex items-center { (showInvisibles ? 'preset-tonal-surface' : 'preset-filled-surface-500') }"
+    class="btn btn-sm h-7 flex items-center { (showInvisibles ? 'preset-tonal-primary' : 'preset-filled-primary-950-50') } transition-all duration-200 hover:scale-105"
     onclick={() => editorStore.setShowInvisibles(!showInvisibles)}
     title="Show Space Characters"
   >
     <Eye size={14} />
   </button>
-  <div class="w-px h-6 mx-1 bg-surface-700"></div>
+  <div class="w-px h-6 mx-1 bg-primary-500/40"></div>
   <div class="relative">
     <button 
       type="button" 
-      class="btn btn-sm h-7 flex items-center { (isThemeMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500') }"
+      class="btn btn-sm h-7 flex items-center { (isThemeMenuOpen ? 'preset-tonal-primary' : 'preset-filled-primary-950-50') } transition-all duration-200 hover:scale-105"
       onclick={() => isThemeMenuOpen = !isThemeMenuOpen}
       title="Theme"
     >
@@ -627,7 +627,7 @@
       <div 
         role="menu"
         tabindex="0"
-        class="absolute left-0 top-full mt-1 w-48 shadow-xl z-50 max-h-64 overflow-y-auto"
+        class="absolute left-0 top-full mt-1 w-48 preset-glass rounded-xl p-2 shadow-xl z-50 max-h-64 overflow-y-auto"
         onmouseleave={() => isThemeMenuOpen = false}
       >
         {#each themes as theme}
@@ -649,7 +649,7 @@
   <div class="relative">
     <button 
       type="button" 
-      class="btn btn-sm h-7 flex items-center preset-filled-surface-500"
+      class="preset-filled-primary-950-50 btn btn-sm h-7 flex items-center transition-all duration-200 hover:scale-105"
       onclick={toggleTransparentMode}
       title="Transparency"
     >
@@ -659,7 +659,7 @@
       <div
         role="menu"
         tabindex="0"
-        class="absolute left-0 top-full mt-1 w-56 bg-surface-700 shadow-xl z-50 p-3"
+        class="absolute left-0 top-full mt-1 w-56 preset-glass rounded-xl p-3 shadow-xl z-50"
         onmouseleave={() => isOpacityMenuOpen = false}
       >
         <div class="flex items-center justify-between mb-2">
@@ -673,7 +673,7 @@
           step="1"
           bind:value={opacityPercent}
           oninput={(e) => applyOpacityFromPercent(Number((e.target as HTMLInputElement).value))}
-          class="w-full"
+          class="preset-outlined-primary-500-500 w-full"
           aria-label="Window opacity percentage"
         />
       </div>
@@ -682,7 +682,7 @@
   <div class="relative">
     <button 
       type="button" 
-      class="btn btn-sm h-7 flex items-center { (isMonacoThemeMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500') }"
+      class="btn btn-sm h-7 flex items-center { (isMonacoThemeMenuOpen ? 'preset-tonal-primary' : 'preset-filled-primary-950-50') } transition-all duration-200 hover:scale-105"
       onclick={() => isMonacoThemeMenuOpen = !isMonacoThemeMenuOpen}
       title="Monaco Editor Theme"
     >
@@ -692,13 +692,13 @@
       <div 
         role="menu"
         tabindex="0"
-        class="absolute left-0 top-full mt-1 w-48 bg-surface-700 shadow-xl z-50 max-h-64 overflow-y-auto"
+        class="absolute left-0 top-full mt-1 w-48 preset-glass rounded-xl p-2 shadow-xl z-50 max-h-64 overflow-y-auto"
         onmouseleave={() => isMonacoThemeMenuOpen = false}
       >
         {#each availableMonacoThemes as theme}
           <button
             role="menuitem"
-            class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
+            class="preset-ghost text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
             class:bg-surface-500={monacoTheme === theme}
             onclick={() => {
               monacoThemeStore.setTheme(theme);
@@ -714,7 +714,7 @@
   <div class="relative">
     <button 
       type="button" 
-      class="btn btn-sm h-7 flex items-center gap-2 { (isLanguageMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500') }"
+      class="btn btn-sm h-7 flex items-center gap-2 { (isLanguageMenuOpen ? 'preset-tonal-primary' : 'preset-filled-primary-950-50') } transition-all duration-200 hover:scale-105"
       onclick={() => isLanguageMenuOpen = !isLanguageMenuOpen}
       title="Language"
     >
@@ -725,13 +725,13 @@
       <div 
         role="menu"
         tabindex="0"
-        class="absolute left-0 top-full mt-1 w-48 bg-surface-700 shadow-xl z-50 max-h-64 overflow-y-auto"
+        class="absolute left-0 top-full mt-1 w-48 preset-glass rounded-xl p-2 shadow-xl z-50 max-h-64 overflow-y-auto"
         onmouseleave={() => isLanguageMenuOpen = false}
       >
         {#each availableLanguages as lang}
           <button
             role="menuitem"
-            class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors capitalize"
+            class="preset-ghost text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors capitalize"
             class:bg-surface-500={language === lang}
             onclick={() => handleLanguageChange(lang)}
           >
@@ -744,7 +744,7 @@
   <div class="relative">
     <button 
       type="button" 
-      class="btn btn-sm h-7 flex items-center gap-2 { (isEncodingMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500') }"
+      class="btn btn-sm h-7 flex items-center gap-2 { (isEncodingMenuOpen ? 'preset-tonal-primary' : 'preset-filled-primary-950-50') } transition-all duration-200 hover:scale-105"
       onclick={() => isEncodingMenuOpen = !isEncodingMenuOpen}
       title="Encoding"
     >
@@ -754,13 +754,13 @@
       <div 
         role="menu"
         tabindex="0"
-        class="absolute left-0 top-full mt-1 w-48 bg-surface-700 shadow-xl z-50 max-h-64 overflow-y-auto"
+        class="absolute left-0 top-full mt-1 w-48 preset-glass rounded-xl p-2 shadow-xl z-50 max-h-64 overflow-y-auto"
         onmouseleave={() => isEncodingMenuOpen = false}
       >
         {#each encodings as encoding}
           <button
             role="menuitem"
-            class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors uppercase"
+            class="preset-ghost text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors uppercase"
             class:bg-surface-500={$editorStore.encoding === encoding}
             onclick={() => handleEncodingChange(encoding)}
           >
@@ -773,7 +773,7 @@
   <div class="relative">
     <button 
       type="button" 
-      class="btn btn-sm h-7 flex items-center gap-2 { (isFontSizeMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500') }"
+      class="btn btn-sm h-7 flex items-center gap-2 { (isFontSizeMenuOpen ? 'preset-tonal-primary' : 'preset-filled-primary-950-50') } transition-all duration-200 hover:scale-105"
       onclick={() => isFontSizeMenuOpen = !isFontSizeMenuOpen}
       title="Font Size"
     >
@@ -783,13 +783,13 @@
       <div 
         role="menu"
         tabindex="0"
-        class="absolute left-0 top-full mt-1 w-24 bg-surface-700 shadow-xl z-50 max-h-64 overflow-y-auto"
+        class="absolute left-0 top-full mt-1 w-24 preset-glass rounded-xl p-2 shadow-xl z-50 max-h-64 overflow-y-auto"
         onmouseleave={() => isFontSizeMenuOpen = false}
       >
         {#each fontSizes as size}
           <button
             role="menuitem"
-            class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
+            class="preset-ghost text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
             class:bg-surface-500={fontSize === size}
             onclick={() => handleFontSizeChange(size)}
           >
@@ -801,7 +801,7 @@
   </div>
   <button 
     type="button" 
-    class="btn btn-sm h-7 flex items-center { (isSidePanelVisible ? 'preset-tonal-surface' : 'preset-filled-surface-500') }"
+    class="btn btn-sm h-7 flex items-center { (isSidePanelVisible ? 'preset-tonal-primary' : 'preset-filled-primary-950-50') } transition-all duration-200 hover:scale-105"
     onclick={() => sidePanelStore.toggle()}
     title="Show/Hide Side Panel (Ctrl+B)"
   >
@@ -811,10 +811,10 @@
       <PanelLeft size={14} />
     {/if}
   </button>
-  <div class="w-px h-6 mx-1 bg-surface-700"></div>
+  <div class="w-px h-6 mx-1 bg-primary-500/40"></div>
   <button
     type="button"
-    class="btn btn-sm h-7 flex items-center preset-filled-surface-500"
+    class="preset-filled-primary-950-50 btn btn-sm h-7 flex items-center transition-all duration-200 hover:scale-105"
     onclick={handleAbout}
     title="About"
   >

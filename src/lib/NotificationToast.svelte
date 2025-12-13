@@ -38,7 +38,7 @@
 </script>
 
 <div 
-  class="relative overflow-hidden rounded-lg border shadow-xl backdrop-blur-sm max-w-sm {bgClass} {borderClass}"
+  class="preset-glass relative overflow-hidden rounded-lg border shadow-xl max-w-sm {bgClass} {borderClass}"
   in:fly={{ x: 300, duration: 400, easing: quintOut }}
   out:fly={{ x: 300, duration: 300, easing: quintOut }}
 >

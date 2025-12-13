@@ -17,16 +17,16 @@
     : files;
 </script>
 
-<div class="flex flex-col w-full h-full { $configStore.transparent_mode ? 'bg-surface-900' : 'bg-surface-900' }">
-  <div class="flex items-center px-2 py-2 z-10 { $configStore.transparent_mode ? 'bg-surface-900' : 'bg-surface-900' }">
+<div class="flex flex-col w-full h-full preset-glass">
+  <div class="flex items-center px-2 py-2 z-10 preset-filled-surface-100-900 shadow-xl">
     <div class="relative w-full">
       <input
         type="text"
         bind:value={searchQuery}
         placeholder="Search files..."
-        class="w-full h-8 text-sm px-8 rounded-none focus:outline-none { $configStore.transparent_mode ? 'bg-surface-700' : 'bg-surface-700' }"
+        class="preset-outlined-primary-500-500 w-full h-8 text-sm px-8 rounded-xl focus:outline-none"
       />
-      <Search size={14} class="absolute left-2 top-1/2 -translate-y-1/2 opacity-50" />
+      <Search size={14} class="absolute left-2 top-1/2 -translate-y-1/2 opacity-70 text-primary-300" />
     </div>
   </div>
   

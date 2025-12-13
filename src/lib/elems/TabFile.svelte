@@ -279,10 +279,10 @@
   <button
     type="button"
     class="flex-1 btn rounded-none h-10 flex flex-col items-start overflow-hidden transition-all duration-200 {
-      isActive && file.isModified ? 'shadow-xl preset-filled-surface-800-200' :
-      isActive ? 'shadow-xl preset-filled-primary-800-200' :
-      file.isModified ? 'preset-filled-secondary-800-200' :
-      'preset-filled-surface-500'
+      isActive && file.isModified ? 'shadow-xl preset-gradient-five' :
+      isActive ? 'shadow-xl preset-gradient-four' :
+      file.isModified ? 'preset-gradient-six' :
+      'preset-gradient-three'
     }"
     onclick={handleClick}
     title="{file.name}{file.isModified ? ' (modified)' : ''}"

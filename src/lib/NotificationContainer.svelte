@@ -9,7 +9,7 @@
 </script>
 
 {#if $notificationStore.notifications.length > 0}
-  <div class="fixed top-4 right-4 z-50 flex flex-col gap-3 max-w-md pointer-events-none">
+  <div class="fixed top-4 right-4 z-100 flex flex-col gap-3 max-w-md pointer-events-none">
     {#each $notificationStore.notifications as notification (notification.id)}
       <div 
         class="pointer-events-auto"

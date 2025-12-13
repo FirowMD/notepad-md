@@ -204,7 +204,7 @@
   }
 </script>
 
-<div class="w-full h-full flex flex-col">
+<div class="w-full h-full flex flex-col z-10">
   <div class="w-full h-full relative" bind:this={containerRef}>
     <EasyMonacoEditor onLoad={handleMonaco}>
       <div class="h-full w-full absolute inset-0" bind:this={editorRef}></div>

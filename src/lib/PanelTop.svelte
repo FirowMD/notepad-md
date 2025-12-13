@@ -3,6 +3,7 @@
   import { FilePlus, FolderOpen, Save, WrapText, Eye, Palette, Code, RotateCcw, Info, PanelLeftClose, PanelLeft, FileCode, Clock, Droplet } from "lucide-svelte";
   import { editorStore } from './stores/editor';
   import { themeStore } from './stores/theme';
+  import type { Theme } from './stores/theme';
   import { fileStore } from './stores/files';
   import { notificationStore } from './stores/notification';
   import { sidePanelStore } from './stores/sidePanelStore';
@@ -512,8 +513,8 @@
   });
 </script>
 
-<div class="flex flex-col w-full">
-  <div class="flex flex-row w-full min-h-[22px] max-h-[22px] items-center preset-gradient shadow-xl"
+<div class="flex flex-col w-full z-50">
+  <div class="flex flex-row w-full min-h-[22px] max-h-[22px] items-center preset-gradient-one shadow-xl"
        role="toolbar" tabindex="0"
   >
     <div class="flex-1 px-3 text-sm font-medium text-primary-100 select-none">
@@ -521,7 +522,7 @@
     </div>
   </div>
   
-  <div class="flex flex-row w-full min-h-[36px] max-h-[36px] items-center px-2 gap-2 preset-glass">
+  <div class="flex flex-row w-full min-h-[36px] max-h-[36px] items-center px-2 gap-2 preset-gradient-two">
   <button 
     type="button" 
     class="preset-filled-primary-950-50 btn btn-sm h-7 flex items-center transition-all duration-200 hover:scale-105"
@@ -560,7 +561,7 @@
         bind:this={recentFilesMenu}
         role="menu"
         tabindex="-1"
-        class="absolute left-0 top-full mt-1 w-96 preset-glass rounded-xl p-2 shadow-xl z-50 max-h-64 overflow-y-auto focus:outline-none"
+        class="absolute left-0 top-full mt-1 w-96 preset-filled-primary-950-50 rounded-none shadow-xl z-50 max-h-64 overflow-y-auto focus:outline-none"
         onmouseleave={() => isRecentFilesMenuOpen = false}
         onkeydown={handleRecentMenuKeydown}
       >
@@ -569,10 +570,9 @@
             {@const fileName = filePath.split(/[/\\]/).pop() || filePath}
             <button
               role="menuitem"
+              type="button"
               data-index={index}
-              class="preset-ghost text-xs w-full px-3 py-1.5 text-left transition-colors flex flex-col"
-              class:bg-surface-500={index === selectedRecentIndex}
-              class:hover:bg-surface-600={index !== selectedRecentIndex}
+              class="text-xs w-full text-left btn preset-filled-primary-950-50 rounded-none"
               onclick={() => handleOpenRecentFile(filePath)}
               onmouseenter={() => selectedRecentIndex = index}
             >
@@ -626,19 +626,17 @@
     {#if isThemeMenuOpen}
       <div 
         role="menu"
-        tabindex="0"
-        class="absolute left-0 top-full mt-1 w-48 preset-glass rounded-xl p-2 shadow-xl z-50 max-h-64 overflow-y-auto"
+        tabindex="-1"
+        class="absolute left-0 top-full mt-1 w-64 preset-filled-primary-950-50 rounded-none shadow-xl z-50 max-h-64 overflow-y-auto focus:outline-none"
         onmouseleave={() => isThemeMenuOpen = false}
       >
         {#each themes as theme}
           <button
             role="menuitem"
-            class="text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors capitalize"
+            type="button"
+            class="text-xs w-full text-left btn preset-filled-primary-950-50 rounded-none capitalize"
             class:bg-surface-500={$themeStore === theme}
-            onclick={() => {
-              themeStore.setTheme(theme);
-              isThemeMenuOpen = false;
-            }}
+            onclick={() => { themeStore.setTheme(theme as Theme); isThemeMenuOpen = false; }}
           >
             {theme}
           </button>
@@ -658,24 +656,26 @@
     {#if isOpacityMenuOpen}
       <div
         role="menu"
-        tabindex="0"
-        class="absolute left-0 top-full mt-1 w-56 preset-glass rounded-xl p-3 shadow-xl z-50"
+        tabindex="-1"
+        class="absolute left-0 top-full mt-1 w-64 preset-filled-primary-950-50 rounded-none shadow-xl z-50 p-3 focus:outline-none"
         onmouseleave={() => isOpacityMenuOpen = false}
       >
-        <div class="flex items-center justify-between mb-2">
-          <span class="text-xs">Transparency</span>
-          <span class="text-[11px] opacity-70">{opacityPercent}%</span>
+        <div class="w-full space-y-2">
+          <div class="flex items-center justify-between">
+            <span class="text-xs">Transparency</span>
+            <span class="text-[11px] opacity-70">{opacityPercent}%</span>
+          </div>
+          <input
+            class="input w-full"
+            type="range"
+            min="10"
+            max="100"
+            step="1"
+            bind:value={opacityPercent}
+            oninput={(e) => applyOpacityFromPercent(Number((e.target as HTMLInputElement).value))}
+            aria-label="Window opacity percentage"
+          />
         </div>
-        <input
-          type="range"
-          min="10"
-          max="100"
-          step="1"
-          bind:value={opacityPercent}
-          oninput={(e) => applyOpacityFromPercent(Number((e.target as HTMLInputElement).value))}
-          class="preset-outlined-primary-500-500 w-full"
-          aria-label="Window opacity percentage"
-        />
       </div>
     {/if}
   </div>
@@ -691,19 +691,17 @@
     {#if isMonacoThemeMenuOpen}
       <div 
         role="menu"
-        tabindex="0"
-        class="absolute left-0 top-full mt-1 w-48 preset-glass rounded-xl p-2 shadow-xl z-50 max-h-64 overflow-y-auto"
+        tabindex="-1"
+        class="absolute left-0 top-full mt-1 w-64 preset-filled-primary-950-50 rounded-none shadow-xl z-50 max-h-64 overflow-y-auto focus:outline-none"
         onmouseleave={() => isMonacoThemeMenuOpen = false}
       >
         {#each availableMonacoThemes as theme}
           <button
             role="menuitem"
-            class="preset-ghost text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
+            type="button"
+            class="text-xs w-full text-left btn preset-filled-primary-950-50 rounded-none"
             class:bg-surface-500={monacoTheme === theme}
-            onclick={() => {
-              monacoThemeStore.setTheme(theme);
-              isMonacoThemeMenuOpen = false;
-            }}
+            onclick={() => { monacoThemeStore.setTheme(theme); isMonacoThemeMenuOpen = false; }}
           >
             {theme}
           </button>
@@ -724,14 +722,15 @@
     {#if isLanguageMenuOpen}
       <div 
         role="menu"
-        tabindex="0"
-        class="absolute left-0 top-full mt-1 w-48 preset-glass rounded-xl p-2 shadow-xl z-50 max-h-64 overflow-y-auto"
+        tabindex="-1"
+        class="absolute left-0 top-full mt-1 w-64 preset-filled-primary-950-50 rounded-none shadow-xl z-50 max-h-64 overflow-y-auto focus:outline-none"
         onmouseleave={() => isLanguageMenuOpen = false}
       >
         {#each availableLanguages as lang}
           <button
             role="menuitem"
-            class="preset-ghost text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors capitalize"
+            type="button"
+            class="text-xs w-full text-left btn preset-filled-primary-950-50 rounded-none capitalize"
             class:bg-surface-500={language === lang}
             onclick={() => handleLanguageChange(lang)}
           >
@@ -753,14 +752,15 @@
     {#if isEncodingMenuOpen}
       <div 
         role="menu"
-        tabindex="0"
-        class="absolute left-0 top-full mt-1 w-48 preset-glass rounded-xl p-2 shadow-xl z-50 max-h-64 overflow-y-auto"
+        tabindex="-1"
+        class="absolute left-0 top-full mt-1 w-32 preset-filled-primary-950-50 rounded-none shadow-xl z-50 max-h-64 overflow-y-auto focus:outline-none"
         onmouseleave={() => isEncodingMenuOpen = false}
       >
         {#each encodings as encoding}
           <button
             role="menuitem"
-            class="preset-ghost text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors uppercase"
+            type="button"
+            class="text-xs w-full text-left btn preset-filled-primary-950-50 rounded-none uppercase"
             class:bg-surface-500={$editorStore.encoding === encoding}
             onclick={() => handleEncodingChange(encoding)}
           >
@@ -782,14 +782,15 @@
     {#if isFontSizeMenuOpen}
       <div 
         role="menu"
-        tabindex="0"
-        class="absolute left-0 top-full mt-1 w-24 preset-glass rounded-xl p-2 shadow-xl z-50 max-h-64 overflow-y-auto"
+        tabindex="-1"
+        class="absolute left-0 top-full mt-1 w-32 preset-filled-primary-950-50 rounded-none shadow-xl z-50 max-h-64 overflow-y-auto focus:outline-none"
         onmouseleave={() => isFontSizeMenuOpen = false}
       >
         {#each fontSizes as size}
           <button
             role="menuitem"
-            class="preset-ghost text-xs w-full px-3 py-1.5 text-left hover:bg-surface-600 transition-colors"
+            type="button"
+            class="text-xs w-full text-left btn preset-filled-primary-950-50 rounded-none"
             class:bg-surface-500={fontSize === size}
             onclick={() => handleFontSizeChange(size)}
           >

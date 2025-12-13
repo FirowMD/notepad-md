@@ -40,9 +40,9 @@ function createMonacoThemeStore() {
             inherit: true,
             rules: [],
             colors: {
-              'editor.background': '#00000000',
-              'editorPane.background': '#00000000',
-              'editorWidget.background': '#00000000'
+              'editor.background': '#00000014',
+              'editorPane.background': '#00000014',
+              'editorWidget.background': '#00000014'
             }
           });
           monaco.editor.setTheme(derived);

@@ -17,7 +17,7 @@ pub struct GlobalConfig {
 impl Default for GlobalConfig {
     fn default() -> Self {
         Self {
-            colorscheme: Some("NotepadMD".to_string()),
+            colorscheme: Some("FirowNotepad".to_string()),
             monaco_editor_theme: Some("vs-dark".to_string()),
             font_size: Some(14),
             word_wrap: Some(false),
@@ -57,7 +57,7 @@ pub struct AppConfig {
 impl Default for AppConfig {
     fn default() -> Self {
         Self {
-            colorscheme: Some("NotepadMD".to_string()),
+            colorscheme: Some("FirowNotepad".to_string()),
             monaco_editor_theme: Some("vs-dark".to_string()),
             recent_files: Some(vec![]),
             opened_files: Some(vec![]),
@@ -182,7 +182,7 @@ impl ConfigManager {
             .path()
             .config_dir()
             .map_err(|e| e.to_string())?;
-        let notepad_dir = config_dir.join("NotepadMD");
+        let notepad_dir = config_dir.join("FirowNotepad");
         
         if !notepad_dir.exists() {
             fs::create_dir_all(&notepad_dir).map_err(|e| e.to_string())?;
@@ -193,12 +193,12 @@ impl ConfigManager {
     
     pub fn get_global_config_path(app_handle: &tauri::AppHandle) -> Result<PathBuf, String> {
         let notepad_dir = Self::get_notepad_md_dir(app_handle)?;
-        Ok(notepad_dir.join("notepad-md-global.json"))
+        Ok(notepad_dir.join("firow-notepad-global.json"))
     }
 
     pub fn get_instance_config_path(app_handle: &tauri::AppHandle, instance_id: &str) -> Result<PathBuf, String> {
         let notepad_dir = Self::get_notepad_md_dir(app_handle)?;
-        let instances_dir = notepad_dir.join("notepad-md-instances");
+        let instances_dir = notepad_dir.join("firow-notepad-instances");
         
         if !instances_dir.exists() {
             fs::create_dir_all(&instances_dir).map_err(|e| e.to_string())?;
@@ -212,11 +212,15 @@ impl ConfigManager {
             .path()
             .config_dir()
             .map_err(|e| e.to_string())?;
-        Ok(config_dir.join("notepad-md.json"))
+        Ok(config_dir.join("firow-notepad.json"))
     }
 
     pub fn migrate_legacy_config(app_handle: &tauri::AppHandle) -> Result<(), String> {
-        let legacy_path = Self::get_legacy_config_path(app_handle)?;
+        let legacy_path = app_handle
+            .path()
+            .config_dir()
+            .map_err(|e| e.to_string())?
+            .join("notepad-md.json");
         if legacy_path.exists() {
             let legacy_config = AppConfig::from_file(&legacy_path)?;
             
@@ -253,7 +257,7 @@ impl ConfigManager {
         let old_instances_dir = config_dir.join("notepad-md-instances");
         if old_instances_dir.exists() {
             let notepad_dir = Self::get_notepad_md_dir(app_handle)?;
-            let new_instances_dir = notepad_dir.join("notepad-md-instances");
+            let new_instances_dir = notepad_dir.join("firow-notepad-instances");
             
             if !new_instances_dir.exists() {
                 fs::rename(&old_instances_dir, &new_instances_dir).map_err(|e| e.to_string())?;

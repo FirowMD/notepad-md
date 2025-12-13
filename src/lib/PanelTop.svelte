@@ -44,7 +44,7 @@
   }
 
   const themes = [
-    'NotepadMD', 'catppuccin', 'cerberus', 'concord', 'crimson',
+    'FirowNotepad', 'catppuccin', 'cerberus', 'concord', 'crimson',
     'fennec', 'hamlindigo', 'legacy', 'mint', 'modern', 'mona',
     'nosh', 'nouveau', 'pine', 'reign', 'rocket', 'rose', 'sahara',
     'seafoam', 'terminus', 'vintage', 'vox', 'wintry'
@@ -375,7 +375,7 @@
   }
 
   async function handleAbout() {
-    await message('NotepadMD v.0.2.1', 'About');
+    await message('FirowNotepad v.0.2.1', 'About');
   }
 
 
@@ -386,7 +386,7 @@
       const modifiedIndicator = activeFile.isModified ? ' •' : '';
       return `${fileName}${modifiedIndicator}`;
     }
-    return 'NotepadMD';
+    return 'FirowNotepad';
   })();
 
 
@@ -492,21 +492,17 @@
 </script>
 
 <div class="flex flex-col w-full">
-  <div class="flex flex-row w-full min-h-[22px] max-h-[22px] items-center"
-       data-tauri-drag-region
-       class:bg-primary-900={!$configStore.transparent_mode}
-       class:bg-transparent={$configStore.transparent_mode}>
+  <div class="flex flex-row w-full min-h-[22px] max-h-[22px] items-center { $configStore.transparent_mode ? 'bg-primary-900/10' : 'bg-primary-900' }"
+       data-tauri-drag-region>
     <div class="flex-1 px-3 text-sm font-medium text-surface-200 select-none">
       {windowTitle}
     </div>
   </div>
   
-  <div class="flex flex-row w-full min-h-[36px] max-h-[36px] items-center px-2 gap-2"
-       class:bg-surface-800={!$configStore.transparent_mode}
-       class:bg-transparent={$configStore.transparent_mode}>
+  <div class="flex flex-row w-full min-h-[36px] max-h-[36px] items-center px-2 gap-2 { $configStore.transparent_mode ? 'bg-surface-800/10' : 'bg-surface-800' }">
   <button 
     type="button" 
-    class="btn btn-sm h-7 flex items-center preset-filled-surface-500"
+    class="btn btn-sm h-7 flex items-center { $configStore.transparent_mode ? 'bg-transparent hover:bg-surface-600/50' : 'preset-filled-surface-500' }"
     onclick={handleNewFile}
     title="New (Ctrl+N)"
   >
@@ -514,7 +510,7 @@
   </button>
   <button 
     type="button" 
-    class="btn btn-sm h-7 flex items-center preset-filled-surface-500"
+    class="btn btn-sm h-7 flex items-center { $configStore.transparent_mode ? 'bg-transparent hover:bg-surface-600/50' : 'preset-filled-surface-500' }"
     onclick={handleOpenFile}
     title="Open (Ctrl+O)"
   >
@@ -522,7 +518,7 @@
   </button>
   <button 
     type="button" 
-    class="btn btn-sm h-7 flex items-center preset-filled-surface-500"
+    class="btn btn-sm h-7 flex items-center { $configStore.transparent_mode ? 'bg-transparent hover:bg-surface-600/50' : 'preset-filled-surface-500' }"
     onclick={handleSaveFile}
     title="Save (Ctrl+S)"
   >
@@ -531,7 +527,7 @@
   <div class="relative">
     <button 
       type="button" 
-      class="btn btn-sm h-7 flex items-center {isRecentFilesMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500'}"
+      class="btn btn-sm h-7 flex items-center { $configStore.transparent_mode ? 'bg-transparent hover:bg-surface-600/50' : (isRecentFilesMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500') }"
       onclick={openRecentFilesMenu}
       title="Recent (Ctrl+R)"
     >
@@ -570,10 +566,10 @@
       </div>
     {/if}
   </div>
-  <div class="w-px h-6 bg-surface-700 mx-1"></div>
+  <div class="w-px h-6 mx-1" class:bg-surface-700={!$configStore.transparent_mode} class:bg-transparent={$configStore.transparent_mode}></div>
   <button 
     type="button" 
-    class="btn btn-sm h-7 flex items-center preset-filled-surface-500"
+    class="btn btn-sm h-7 flex items-center { $configStore.transparent_mode ? 'bg-transparent hover:bg-surface-600/50' : 'preset-filled-surface-500' }"
     onclick={handleRestoreFile}
     title="Restore (Ctrl+Shift+T)"
   >
@@ -581,7 +577,7 @@
   </button>
   <button 
     type="button" 
-    class="btn btn-sm h-7 flex items-center {wordWrap ? 'preset-tonal-surface' : 'preset-filled-surface-500'}"
+    class="btn btn-sm h-7 flex items-center { $configStore.transparent_mode ? 'bg-transparent hover:bg-surface-600/50' : (wordWrap ? 'preset-tonal-surface' : 'preset-filled-surface-500') }"
     onclick={() => editorStore.setWordWrap(!wordWrap)}
     title="Word Wrap (Alt+Z)"
   >
@@ -589,17 +585,17 @@
   </button>
   <button 
     type="button" 
-    class="btn btn-sm h-7 flex items-center {showInvisibles ? 'preset-tonal-surface' : 'preset-filled-surface-500'}"
+    class="btn btn-sm h-7 flex items-center { $configStore.transparent_mode ? 'bg-transparent hover:bg-surface-600/50' : (showInvisibles ? 'preset-tonal-surface' : 'preset-filled-surface-500') }"
     onclick={() => editorStore.setShowInvisibles(!showInvisibles)}
     title="Show Space Characters"
   >
     <Eye size={14} />
   </button>
-  <div class="w-px h-6 bg-surface-700 mx-1"></div>
+  <div class="w-px h-6 mx-1" class:bg-surface-700={!$configStore.transparent_mode} class:bg-transparent={$configStore.transparent_mode}></div>
   <div class="relative">
     <button 
       type="button" 
-      class="btn btn-sm h-7 flex items-center {isThemeMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500'}"
+      class="btn btn-sm h-7 flex items-center { $configStore.transparent_mode ? 'bg-transparent hover:bg-surface-600/50' : (isThemeMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500') }"
       onclick={() => isThemeMenuOpen = !isThemeMenuOpen}
       title="Theme"
     >
@@ -630,7 +626,7 @@
   </div>
   <button 
     type="button" 
-    class="btn btn-sm h-7 flex items-center { $configStore.transparent_mode ? 'preset-tonal-surface' : 'preset-filled-surface-500' }"
+    class="btn btn-sm h-7 flex items-center { $configStore.transparent_mode ? 'bg-transparent hover:bg-surface-600/50' : 'preset-filled-surface-500' }"
     onclick={toggleTransparentMode}
     title="Transparent Mode"
   >
@@ -639,7 +635,7 @@
   <div class="relative">
     <button 
       type="button" 
-      class="btn btn-sm h-7 flex items-center {isMonacoThemeMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500'}"
+      class="btn btn-sm h-7 flex items-center { $configStore.transparent_mode ? 'bg-transparent hover:bg-surface-600/50' : (isMonacoThemeMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500') }"
       onclick={() => isMonacoThemeMenuOpen = !isMonacoThemeMenuOpen}
       title="Monaco Editor Theme"
     >
@@ -671,7 +667,7 @@
   <div class="relative">
     <button 
       type="button" 
-      class="btn btn-sm h-7 flex items-center gap-2 {isLanguageMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500'}"
+      class="btn btn-sm h-7 flex items-center gap-2 { $configStore.transparent_mode ? 'bg-transparent hover:bg-surface-600/50' : (isLanguageMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500') }"
       onclick={() => isLanguageMenuOpen = !isLanguageMenuOpen}
       title="Language"
     >
@@ -701,7 +697,7 @@
   <div class="relative">
     <button 
       type="button" 
-      class="btn btn-sm h-7 flex items-center gap-2 {isEncodingMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500'}"
+      class="btn btn-sm h-7 flex items-center gap-2 { $configStore.transparent_mode ? 'bg-transparent hover:bg-surface-600/50' : (isEncodingMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500') }"
       onclick={() => isEncodingMenuOpen = !isEncodingMenuOpen}
       title="Encoding"
     >
@@ -730,7 +726,7 @@
   <div class="relative">
     <button 
       type="button" 
-      class="btn btn-sm h-7 flex items-center gap-2 {isFontSizeMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500'}"
+      class="btn btn-sm h-7 flex items-center gap-2 { $configStore.transparent_mode ? 'bg-transparent hover:bg-surface-600/50' : (isFontSizeMenuOpen ? 'preset-tonal-surface' : 'preset-filled-surface-500') }"
       onclick={() => isFontSizeMenuOpen = !isFontSizeMenuOpen}
       title="Font Size"
     >
@@ -758,7 +754,7 @@
   </div>
   <button 
     type="button" 
-    class="btn btn-sm h-7 flex items-center {isSidePanelVisible ? 'preset-tonal-surface' : 'preset-filled-surface-500'}"
+    class="btn btn-sm h-7 flex items-center { $configStore.transparent_mode ? 'bg-transparent hover:bg-surface-600/50' : (isSidePanelVisible ? 'preset-tonal-surface' : 'preset-filled-surface-500') }"
     onclick={() => sidePanelStore.toggle()}
     title="Show/Hide Side Panel (Ctrl+B)"
   >
@@ -768,10 +764,10 @@
       <PanelLeft size={14} />
     {/if}
   </button>
-  <div class="w-px h-6 bg-surface-700 mx-1"></div>
+  <div class="w-px h-6 mx-1" class:bg-surface-700={!$configStore.transparent_mode} class:bg-transparent={$configStore.transparent_mode}></div>
   <button
     type="button"
-    class="btn btn-sm h-7 flex items-center preset-filled-surface-500"
+    class="btn btn-sm h-7 flex items-center { $configStore.transparent_mode ? 'bg-transparent hover:bg-surface-600/50' : 'preset-filled-surface-500' }"
     onclick={handleAbout}
     title="About"
   >

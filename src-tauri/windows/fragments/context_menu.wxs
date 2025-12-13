@@ -7,85 +7,85 @@
         <!-- Context menu for all files -->
         <RegistryKey
           Root="HKCR"
-          Key="*\shell\Open with NotepadMD"
+          Key="*\shell\Open with FirowNotepad"
           Action="createAndRemoveOnUninstall"
         >
           <RegistryValue
             Type="string"
-            Value="Open with NotepadMD"
+            Value="Open with FirowNotepad"
             KeyPath="yes"
           />
           <RegistryValue
             Type="string"
             Name="Icon"
-            Value="[INSTALLDIR]notepad-md.exe,0"
+            Value="[INSTALLDIR]firow-notepad.exe,0"
           />
         </RegistryKey>
         
         <RegistryKey
           Root="HKCR"
-          Key="*\shell\Open with NotepadMD\command"
+          Key="*\shell\Open with FirowNotepad\command"
           Action="createAndRemoveOnUninstall"
         >
           <RegistryValue
             Type="string"
-            Value="&quot;[INSTALLDIR]notepad-md.exe&quot; &quot;%1&quot;"
+            Value="&quot;[INSTALLDIR]firow-notepad.exe&quot; &quot;%1&quot;"
           />
         </RegistryKey>
         
         <!-- Context menu for directories -->
         <RegistryKey
           Root="HKCR"
-          Key="Directory\shell\Open with NotepadMD"
+          Key="Directory\shell\Open with FirowNotepad"
           Action="createAndRemoveOnUninstall"
         >
           <RegistryValue
             Type="string"
-            Value="Open with NotepadMD"
+            Value="Open with FirowNotepad"
           />
           <RegistryValue
             Type="string"
             Name="Icon"
-            Value="[INSTALLDIR]notepad-md.exe,0"
+            Value="[INSTALLDIR]firow-notepad.exe,0"
           />
         </RegistryKey>
         
         <RegistryKey
           Root="HKCR"
-          Key="Directory\shell\Open with NotepadMD\command"
+          Key="Directory\shell\Open with FirowNotepad\command"
           Action="createAndRemoveOnUninstall"
         >
           <RegistryValue
             Type="string"
-            Value="&quot;[INSTALLDIR]notepad-md.exe&quot; &quot;%1&quot;"
+            Value="&quot;[INSTALLDIR]firow-notepad.exe&quot; &quot;%1&quot;"
           />
         </RegistryKey>
         
         <!-- Context menu for directory background -->
         <RegistryKey
           Root="HKCR"
-          Key="Directory\Background\shell\Open with NotepadMD"
+          Key="Directory\Background\shell\Open with FirowNotepad"
           Action="createAndRemoveOnUninstall"
         >
           <RegistryValue
             Type="string"
-            Value="Open with NotepadMD"
+            Value="Open with FirowNotepad"
           />
           <RegistryValue
             Type="string"
             Name="Icon"
-            Value="[INSTALLDIR]notepad-md.exe,0"
+            Value="[INSTALLDIR]firow-notepad.exe,0"
           />
         </RegistryKey>
         
         <RegistryKey
           Root="HKCR"
-          Key="Directory\Background\shell\Open with NotepadMD\command"
+          Key="Directory\Background\shell\Open with FirowNotepad\command"
           Action="createAndRemoveOnUninstall"
         >
           <RegistryValue
             Type="string"
-            Value="&quot;[INSTALLDIR]notepad-md.exe&quot; &quot;%V&quot;"
+            Value="&quot;[INSTALLDIR]firow-notepad.exe&quot; &quot;%V&quot;"
           />
         </RegistryKey>
         

@@ -392,9 +392,7 @@
 </script>
 
 <div 
-  class="flex flex-col w-full h-full relative"
-  class:bg-surface-900={!$configStore.transparent_mode}
-  class:bg-transparent={$configStore.transparent_mode}
+  class="flex flex-col w-full h-full relative { $configStore.transparent_mode ? 'bg-surface-900/5' : 'bg-surface-900' }"
   role="presentation"
 >
   <PanelTop />

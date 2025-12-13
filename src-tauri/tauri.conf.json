@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "notepad-md",
+  "productName": "firow-notepad",
   "version": "0.2.1",
-  "identifier": "com.notepad-md.app",
+  "identifier": "com.firow-notepad.app",
   "build": {
     "beforeDevCommand": "bun run dev",
     "devUrl": "http://localhost:1422",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "NotepadMD",
+        "title": "FirowNotepad",
         "width": 800,
         "height": 600,
         "dragDropEnabled": true,

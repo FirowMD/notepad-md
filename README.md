@@ -1,9 +1,9 @@
-# notepad-md
+# firow-notepad
 
 Simple notepad based on monaco editor
 
 <div style="display: flex; gap: 10px;">
-    <img src="docs/images/notepad-md.png" alt="Notepad MD Screenshot">
+    <img src="docs/images/firow-notepad.png" alt="FirowNotepad Screenshot">
 </div>
 
 ## Features
@@ -26,13 +26,13 @@ Simple notepad based on monaco editor
 
 ## Monaco themes
 
-To set up monaco themes you need to copy `.json` files to `C:\Users\<username>\AppData\Roaming\NotepadMD\monaco-editor`.
+To set up monaco themes you need to copy `.json` files to `C:\Users\<username>\AppData\Roaming\FirowNotepad\monaco-editor`.
 JSON files can be found [here](https://github.com/brijeshb42/monaco-themes/tree/master/themes)
 
 <div style="display: flex; gap: 10px;">
-    <img src="docs/images/nmd-1.png" alt="Notepad MD Screenshot 1" width="30%">
-    <img src="docs/images/nmd-2.png" alt="Notepad MD Screenshot 2" width="30%">
-    <img src="docs/images/nmd-3.png" alt="Notepad MD Screenshot 3" width="30%">
+    <img src="docs/images/nmd-1.png" alt="FirowNotepad Screenshot 1" width="30%">
+    <img src="docs/images/nmd-2.png" alt="FirowNotepad Screenshot 2" width="30%">
+    <img src="docs/images/nmd-3.png" alt="FirowNotepad Screenshot 3" width="30%">
 </div>
 
 ## Keyboard Shortcuts
@@ -50,4 +50,4 @@ JSON files can be found [here](https://github.com/brijeshb42/monaco-themes/tree/
 | Word wrap | Alt+Z |
 | Show/hide side panel | Ctrl+B |
 
-Download [here](https://github.com/FirowMD/notepad-md/releases)
+Download [here](https://github.com/FirowMD/firow-notepad/releases)

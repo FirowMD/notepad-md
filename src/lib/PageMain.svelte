@@ -419,7 +419,7 @@
 </script>
 
 <div 
-  class="flex flex-col w-full h-full relative { $configStore.transparent_mode ? 'bg-surface-900/5' : 'bg-surface-900' }"
+  class="flex flex-col w-full h-full relative { $configStore.transparent_mode ? 'bg-surface-900' : 'bg-surface-900' }"
   style="opacity: var(--overlayOpacity, 1)"
   role="presentation"
 >

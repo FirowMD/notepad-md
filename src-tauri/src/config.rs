@@ -12,6 +12,7 @@ pub struct GlobalConfig {
     pub word_wrap: Option<bool>,
     pub show_invisibles: Option<bool>,
     pub transparent_mode: Option<bool>,
+    pub window_opacity: Option<f32>,
 }
 
 impl Default for GlobalConfig {
@@ -23,6 +24,7 @@ impl Default for GlobalConfig {
             word_wrap: Some(false),
             show_invisibles: Some(false),
             transparent_mode: Some(false),
+            window_opacity: Some(0.85),
         }
     }
 }
@@ -52,6 +54,7 @@ pub struct AppConfig {
     pub word_wrap: Option<bool>,
     pub show_invisibles: Option<bool>,
     pub transparent_mode: Option<bool>,
+    pub window_opacity: Option<f32>,
 }
 
 impl Default for AppConfig {
@@ -65,6 +68,7 @@ impl Default for AppConfig {
             word_wrap: Some(false),
             show_invisibles: Some(false),
             transparent_mode: Some(false),
+            window_opacity: Some(0.85),
         }
     }
 }
@@ -82,6 +86,7 @@ impl AppConfig {
             word_wrap: global.word_wrap,
             show_invisibles: global.show_invisibles,
             transparent_mode: global.transparent_mode,
+            window_opacity: global.window_opacity,
             recent_files: instance.recent_files,
             opened_files: instance.opened_files,
         }
@@ -95,6 +100,7 @@ impl AppConfig {
             word_wrap: self.word_wrap,
             show_invisibles: self.show_invisibles,
             transparent_mode: self.transparent_mode,
+            window_opacity: self.window_opacity,
         }
     }
 

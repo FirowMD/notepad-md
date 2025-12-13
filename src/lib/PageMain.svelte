@@ -17,6 +17,8 @@
   import { onMount, onDestroy } from 'svelte';
   import { listen } from '@tauri-apps/api/event';
   import { ask } from '@tauri-apps/plugin-dialog';
+  import { getCurrentWindow } from '@tauri-apps/api/window';
+  import { isTauri } from '@tauri-apps/api/core';
 
   let isDragging = false;
   let unlisten: (() => void) | undefined;
@@ -69,6 +71,12 @@
 
         if (config.show_invisibles !== undefined) {
           editorStore.setShowInvisibles(config.show_invisibles);
+        }
+        
+        if (isTauri()) {
+          const win = getCurrentWindow();
+          try { await win.setDecorations(!(config.transparent_mode || false)); } catch {}
+          try { await win.setAlwaysOnTop(config.transparent_mode || false); } catch {}
         }
         
         if (config.opened_files) {
@@ -389,10 +397,30 @@
       }
     }
   }
+  
+  $: if (isTauri()) {
+    const win = getCurrentWindow();
+    try { win.setDecorations(true); } catch {}
+    try { win.setAlwaysOnTop($configStore.transparent_mode || false); } catch {}
+    try {
+      const next = ($configStore.transparent_mode || false)
+        ? String(($configStore.window_opacity ?? 0.85))
+        : '1';
+      document.documentElement.style.setProperty('--overlayOpacity', next);
+    } catch {}
+    try {
+      if ($configStore.transparent_mode) {
+        document.documentElement.classList.add('transparent-mode');
+      } else {
+        document.documentElement.classList.remove('transparent-mode');
+      }
+    } catch {}
+  }
 </script>
 
 <div 
   class="flex flex-col w-full h-full relative { $configStore.transparent_mode ? 'bg-surface-900/5' : 'bg-surface-900' }"
+  style="opacity: var(--overlayOpacity, 1)"
   role="presentation"
 >
   <PanelTop />

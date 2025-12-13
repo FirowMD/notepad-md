@@ -11,6 +11,7 @@
   import { configStore } from './stores/configStore';
   import { open, save, message, ask } from '@tauri-apps/plugin-dialog';
   import { onMount } from 'svelte';
+  
 
   $: wordWrap = $editorStore.wordWrap;
   $: showInvisibles = $editorStore.showInvisibles;
@@ -54,9 +55,28 @@
   let isMonacoThemeMenuOpen = false;
   let availableMonacoThemes: string[] = ['vs', 'vs-dark', 'hc-black'];
 
+  let isOpacityMenuOpen = false;
+  let opacityPercent = 85;
+  $: if ($configStore.window_opacity !== undefined) {
+    opacityPercent = Math.round(($configStore.window_opacity || 0.85) * 100);
+  }
+
   function toggleTransparentMode() {
-    const next = !$configStore.transparent_mode;
-    configStore.save({ transparent_mode: next });
+    isOpacityMenuOpen = !isOpacityMenuOpen;
+  }
+
+  function applyOpacityFromPercent(percent: number) {
+    const clamped = Math.max(10, Math.min(100, Math.round(percent)));
+    const nextOpacity = clamped / 100;
+    try {
+      document.documentElement.style.setProperty('--overlayOpacity', String(nextOpacity));
+    } catch {}
+    const enableTransparent = nextOpacity < 1;
+    configStore.save({
+      window_opacity: nextOpacity,
+      transparent_mode: enableTransparent
+    });
+    opacityPercent = clamped;
   }
 
   function handleNewFile() {
@@ -389,6 +409,7 @@
     return 'FirowNotepad';
   })();
 
+  
 
   function handleKeydown(event: KeyboardEvent) {
     if ((event.ctrlKey || event.metaKey) && !event.shiftKey && event.code === 'KeyN') {
@@ -493,7 +514,8 @@
 
 <div class="flex flex-col w-full">
   <div class="flex flex-row w-full min-h-[22px] max-h-[22px] items-center { $configStore.transparent_mode ? 'bg-primary-900/10' : 'bg-primary-900' }"
-       data-tauri-drag-region>
+       role="toolbar" tabindex="0"
+  >
     <div class="flex-1 px-3 text-sm font-medium text-surface-200 select-none">
       {windowTitle}
     </div>
@@ -624,14 +646,39 @@
       </div>
     {/if}
   </div>
-  <button 
-    type="button" 
-    class="btn btn-sm h-7 flex items-center { $configStore.transparent_mode ? 'bg-transparent hover:bg-surface-600/50' : 'preset-filled-surface-500' }"
-    onclick={toggleTransparentMode}
-    title="Transparent Mode"
-  >
-    <Droplet size={14} />
-  </button>
+  <div class="relative">
+    <button 
+      type="button" 
+      class="btn btn-sm h-7 flex items-center { $configStore.transparent_mode ? 'bg-transparent hover:bg-surface-600/50' : 'preset-filled-surface-500' }"
+      onclick={toggleTransparentMode}
+      title="Transparency"
+    >
+      <Droplet size={14} />
+    </button>
+    {#if isOpacityMenuOpen}
+      <div
+        role="menu"
+        tabindex="0"
+        class="absolute left-0 top-full mt-1 w-56 bg-surface-700 shadow-xl z-50 p-3"
+        onmouseleave={() => isOpacityMenuOpen = false}
+      >
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs">Transparency</span>
+          <span class="text-[11px] opacity-70">{opacityPercent}%</span>
+        </div>
+        <input
+          type="range"
+          min="10"
+          max="100"
+          step="1"
+          bind:value={opacityPercent}
+          oninput={(e) => applyOpacityFromPercent(Number((e.target as HTMLInputElement).value))}
+          class="w-full"
+          aria-label="Window opacity percentage"
+        />
+      </div>
+    {/if}
+  </div>
   <div class="relative">
     <button 
       type="button" 

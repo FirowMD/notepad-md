@@ -28,6 +28,10 @@
 
 @import '@skeletonlabs/skeleton-svelte';
 
+.transparent-mode body {
+  background-color: transparent;
+}
+
 .titlebar-button {
   appearance: none;
   padding: 0;

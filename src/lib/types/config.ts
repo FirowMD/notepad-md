@@ -10,4 +10,5 @@ export interface AppConfig {
   show_invisibles?: boolean;
   default_encoding?: string;
   transparent_mode?: boolean;
+  window_opacity?: number;
 }

@@ -7,7 +7,8 @@ function createConfigStore() {
     colorscheme: 'cerberus',
     recent_files: [],
     opened_files: [],
-    transparent_mode: false
+    transparent_mode: false,
+    window_opacity: 0.85
   });
 
   return {

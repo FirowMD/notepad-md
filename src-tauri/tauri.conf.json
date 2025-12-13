@@ -13,7 +13,7 @@
     "windows": [
       {
         "title": "FirowNotepad",
-        "width": 800,
+        "width": 832,
         "height": 600,
         "dragDropEnabled": true,
         "decorations": true,

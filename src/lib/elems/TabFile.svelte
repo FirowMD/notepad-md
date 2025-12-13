@@ -261,7 +261,7 @@
   <div class="flex-none px-2 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col gap-0.5">
     <button
       type="button"
-      class="preset-ghost p-0.5 hover:bg-surface-600 disabled:opacity-25 rounded-md transition-all duration-200"
+      class="preset-ghost p-0.5 hover:bg-surface-600 disabled:opacity-25 rounded-none transition-all duration-200"
       onclick={moveUp}
       disabled={index === 0}
     >
@@ -269,7 +269,7 @@
     </button>
     <button
       type="button"
-      class="preset-ghost p-0.5 hover:bg-surface-600 disabled:opacity-25 rounded-md transition-all duration-200"
+      class="preset-ghost p-0.5 hover:bg-surface-600 disabled:opacity-25 rounded-none transition-all duration-200"
       onclick={moveDown}
       disabled={index === totalFiles - 1}
     >
@@ -278,10 +278,10 @@
   </div>
   <button
     type="button"
-    class="flex-1 btn rounded-xl h-10 flex flex-col items-start overflow-hidden transition-all duration-200 {
-      isActive && file.isModified ? 'shadow-xl preset-tonal-primary' :
-      isActive ? 'shadow-xl preset-filled-primary-500-700' :
-      file.isModified ? 'preset-tonal-primary' :
+    class="flex-1 btn rounded-none h-10 flex flex-col items-start overflow-hidden transition-all duration-200 {
+      isActive && file.isModified ? 'shadow-xl preset-filled-surface-800-200' :
+      isActive ? 'shadow-xl preset-filled-primary-800-200' :
+      file.isModified ? 'preset-filled-secondary-800-200' :
       'preset-filled-surface-500'
     }"
     onclick={handleClick}
@@ -294,7 +294,7 @@
         bind:this={inputElement}
         onblur={handleRenameSubmit}
         onkeydown={handleRenameKeydown}
-        class="preset-outlined-primary-500-500 w-full text-sm px-2 rounded-md focus:outline-none"
+        class="preset-tonal-primary w-full text-sm px-2 rounded-none focus:outline-none"
       />
       <span class="text-xs text-left opacity-50 truncate w-full">{dateModified} {timeModified}</span>
     {:else}

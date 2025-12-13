@@ -577,7 +577,7 @@
               onmouseenter={() => selectedRecentIndex = index}
             >
               <span class="font-medium">{fileName}</span>
-              <span class="text-surface-400 text-[10px] truncate">{filePath}</span>
+              <span class="text-[10px] truncate">{filePath}</span>
             </button>
           {/each}
         {:else}
@@ -635,7 +635,6 @@
             role="menuitem"
             type="button"
             class="text-xs w-full text-left btn preset-filled-primary-950-50 rounded-none capitalize"
-            class:bg-surface-500={$themeStore === theme}
             onclick={() => { themeStore.setTheme(theme as Theme); isThemeMenuOpen = false; }}
           >
             {theme}

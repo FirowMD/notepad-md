@@ -258,27 +258,9 @@
   role="button"
   tabindex="0"
 >
-  <div class="flex-none px-2 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col gap-0.5">
-    <button
-      type="button"
-      class="preset-ghost p-0.5 hover:bg-surface-600 disabled:opacity-25 rounded-none transition-all duration-200"
-      onclick={moveUp}
-      disabled={index === 0}
-    >
-      <ArrowUp size={14} />
-    </button>
-    <button
-      type="button"
-      class="preset-ghost p-0.5 hover:bg-surface-600 disabled:opacity-25 rounded-none transition-all duration-200"
-      onclick={moveDown}
-      disabled={index === totalFiles - 1}
-    >
-      <ArrowDown size={14} />
-    </button>
-  </div>
   <button
     type="button"
-    class="flex-1 btn rounded-none h-10 flex flex-col items-start overflow-hidden transition-all duration-200 {
+    class="w-full btn rounded-none h-10 flex flex-col items-start overflow-hidden transition-all duration-200 pl-6 {
       isActive && file.isModified ? 'shadow-xl preset-gradient-five' :
       isActive ? 'shadow-xl preset-gradient-four' :
       file.isModified ? 'preset-gradient-six' :
@@ -306,6 +288,24 @@
       </div>
     {/if}
   </button>
+  <div class="absolute left-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col gap-0.5">
+    <button
+      type="button"
+      class="preset-ghost p-0.5 hover:bg-surface-600 disabled:opacity-25 rounded-none transition-all duration-200"
+      onclick={moveUp}
+      disabled={index === 0}
+    >
+      <ArrowUp size={14} />
+    </button>
+    <button
+      type="button"
+      class="preset-ghost p-0.5 hover:bg-surface-600 disabled:opacity-25 rounded-none transition-all duration-200"
+      onclick={moveDown}
+      disabled={index === totalFiles - 1}
+    >
+      <ArrowDown size={14} />
+    </button>
+  </div>
   <button
     type="button"
     class="absolute right-1 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity preset-outlined-primary-500-500 rounded-full px-2 py-0.5"

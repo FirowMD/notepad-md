@@ -317,7 +317,7 @@
   {#if $contextMenuStore.isOpen && $contextMenuStore.fileId === file.id}
     <div
       bind:this={contextMenuElement}
-      class="fixed z-50 w-40 preset-glass shadow-xl rounded-xl py-0.5 text-sm"
+      class="fixed z-50 w-40 preset-glass shadow-xl rounded-none py-0.5 text-sm"
       style="left: {$contextMenuStore.x}px; top: {$contextMenuStore.y}px"
     >
       <button

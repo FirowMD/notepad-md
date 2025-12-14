@@ -30,9 +30,11 @@ To set up monaco themes you need to copy `.json` files to `C:\Users\<username>\A
 JSON files can be found [here](https://github.com/brijeshb42/monaco-themes/tree/master/themes)
 
 <div style="display: flex; gap: 10px;">
-    <img src="docs/images/nmd-1.png" alt="FirowNotepad Screenshot 1" width="30%">
-    <img src="docs/images/nmd-2.png" alt="FirowNotepad Screenshot 2" width="30%">
-    <img src="docs/images/nmd-3.png" alt="FirowNotepad Screenshot 3" width="30%">
+    <img src="docs/images/theme-1.png" alt="FirowNotepad Theme 1" width="19%">
+    <img src="docs/images/theme-2.png" alt="FirowNotepad Theme 2" width="19%">
+    <img src="docs/images/theme-3.png" alt="FirowNotepad Theme 3" width="19%">
+    <img src="docs/images/theme-4.png" alt="FirowNotepad Theme 4" width="19%">
+    <img src="docs/images/theme-5.png" alt="FirowNotepad Theme 5" width="19%">
 </div>
 
 ## Keyboard Shortcuts

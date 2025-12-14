@@ -221,75 +221,7 @@ impl ConfigManager {
         Ok(config_dir.join("firow-notepad.json"))
     }
 
-    pub fn migrate_legacy_config(app_handle: &tauri::AppHandle) -> Result<(), String> {
-        let legacy_path = app_handle
-            .path()
-            .config_dir()
-            .map_err(|e| e.to_string())?
-            .join("notepad-md.json");
-        if legacy_path.exists() {
-            let legacy_config = AppConfig::from_file(&legacy_path)?;
-            
-            let global_path = Self::get_global_config_path(app_handle)?;
-            if !global_path.exists() {
-                let global_config = legacy_config.to_global();
-                global_config.save_to_file(&global_path)?;
-            }
-            
-            let instance_path = Self::get_instance_config_path(app_handle, "main")?;
-            if !instance_path.exists() {
-                let instance_config = legacy_config.to_instance();
-                instance_config.save_to_file(&instance_path)?;
-            }
-            
-            fs::remove_file(legacy_path).ok();
-        }
-        
-        let config_dir = app_handle
-            .path()
-            .config_dir()
-            .map_err(|e| e.to_string())?;
-        
-        let old_global_path = config_dir.join("notepad-md-global.json");
-        if old_global_path.exists() {
-            let new_global_path = Self::get_global_config_path(app_handle)?;
-            if !new_global_path.exists() {
-                fs::rename(&old_global_path, &new_global_path).map_err(|e| e.to_string())?;
-            } else {
-                fs::remove_file(old_global_path).ok();
-            }
-        }
-        
-        let old_instances_dir = config_dir.join("notepad-md-instances");
-        if old_instances_dir.exists() {
-            let notepad_dir = Self::get_notepad_md_dir(app_handle)?;
-            let new_instances_dir = notepad_dir.join("firow-notepad-instances");
-            
-            if !new_instances_dir.exists() {
-                fs::rename(&old_instances_dir, &new_instances_dir).map_err(|e| e.to_string())?;
-            } else {
-                if let Ok(entries) = fs::read_dir(&old_instances_dir) {
-                    for entry in entries {
-                        if let Ok(entry) = entry {
-                            let file_name = entry.file_name();
-                            let old_file = old_instances_dir.join(&file_name);
-                            let new_file = new_instances_dir.join(&file_name);
-                            if !new_file.exists() {
-                                fs::copy(&old_file, &new_file).ok();
-                            }
-                        }
-                    }
-                }
-                fs::remove_dir_all(old_instances_dir).ok();
-            }
-        }
-        
-        Ok(())
-    }
-
     pub fn load_config(app_handle: &tauri::AppHandle) -> Result<(), String> {
-        Self::migrate_legacy_config(app_handle)?;
-        
         let storage = app_handle.state::<Storage>();
         let mut app_data = storage.app_data.lock().map_err(|e| e.to_string())?;
         

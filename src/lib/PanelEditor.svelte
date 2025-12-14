@@ -211,7 +211,7 @@
     </EasyMonacoEditor>
   </div>
 
-  <div class="flex h-6 w-full px-2 items-center text-xs sticky bottom-0 shadow-xl">
+  <div class="flex h-6 w-full px-2 items-center text-xs sticky bottom-0 shadow-xl preset-gradient-seven">
     <div class="flex text-left gap-4 truncate sticky left-0 w-full shrink-0 z-10">
       <span>{$editorStore.language}</span>
       <span>|</span>

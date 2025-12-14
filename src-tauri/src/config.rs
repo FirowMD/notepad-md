@@ -213,14 +213,6 @@ impl ConfigManager {
         Ok(instances_dir.join(format!("{}.json", instance_id)))
     }
 
-    pub fn get_legacy_config_path(app_handle: &tauri::AppHandle) -> Result<PathBuf, String> {
-        let config_dir = app_handle
-            .path()
-            .config_dir()
-            .map_err(|e| e.to_string())?;
-        Ok(config_dir.join("firow-notepad.json"))
-    }
-
     pub fn load_config(app_handle: &tauri::AppHandle) -> Result<(), String> {
         let storage = app_handle.state::<Storage>();
         let mut app_data = storage.app_data.lock().map_err(|e| e.to_string())?;

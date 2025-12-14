@@ -276,7 +276,7 @@
         bind:this={inputElement}
         onblur={handleRenameSubmit}
         onkeydown={handleRenameKeydown}
-        class="preset-tonal-primary w-full text-sm px-2 rounded-none focus:outline-none"
+        class="w-full text-sm rounded-none focus:outline-none"
       />
       <span class="text-xs text-left opacity-50 truncate w-full">{dateModified} {timeModified}</span>
     {:else}

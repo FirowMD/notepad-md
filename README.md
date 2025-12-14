@@ -15,6 +15,7 @@ Simple notepad based on monaco editor
 - [x] Keep opened files
 - [x] Keep recent files
 - [x] Themes
+- [x] Transparent mode
 - [x] Restore closed file(s)
 - [x] Word wrap
 - [x] Show/hide space characters

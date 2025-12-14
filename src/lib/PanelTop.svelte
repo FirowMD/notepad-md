@@ -396,7 +396,7 @@
   }
 
   async function handleAbout() {
-    await message('FirowNotepad v.0.2.1', 'About');
+    await message('FirowNotepad v.0.3.0', 'About');
   }
 
 

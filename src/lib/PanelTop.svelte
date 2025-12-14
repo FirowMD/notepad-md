@@ -517,7 +517,7 @@
   <div class="flex flex-row w-full min-h-[22px] max-h-[22px] items-center preset-gradient-one shadow-xl"
        role="toolbar" tabindex="0"
   >
-    <div class="flex-1 px-3 text-sm font-medium select-none">
+    <div class="flex-1 px-3 text-sm font-medium select-none truncate">
       {windowTitle}
     </div>
   </div>
